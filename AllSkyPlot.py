@@ -19,6 +19,15 @@ def ra_to_deg(ra):
     secs = pieces[2]
     return float(hrs)*(360/24) + float(mins)*(15./60.) + float(secs)*(15./3600.)
 
+def ra_from_deg(ra):
+    tmp_hrs = ra/15.
+    hrs = np.floor(tmp_hrs)
+    tmp_mins = (tmp_hrs-hrs)*60
+    mins = np.floor(tmp_mins)
+    tmp_secs = (tmp_mins-mins)*60
+    secs = round(tmp_secs,2)
+    return "{} {} {}".format(int(hrs),str(int(mins)).zfill(2),str(secs).zfill(5))
+
 def dec_to_deg(dec):
     pieces = dec.split(' ')
     #check to see if unicode minus sign is present
@@ -33,7 +42,22 @@ def dec_to_deg(dec):
         mins = float(pieces[1])
         secs = float(pieces[2])
         return degs+mins/60.+secs/3600.
-    
+
+def dec_from_deg(dec):
+    if dec < 0:
+        degs = np.ceil(dec)
+        tmp_mins = (degs-dec)*60
+        mins = np.floor(tmp_mins)
+        tmp_secs = (tmp_mins-mins)*60
+        secs = np.round(tmp_secs,1)
+        return "{} {} {}".format(str(int(degs)).zfill(3),str(int(mins)).zfill(2),str(secs).zfill(4))
+    if dec > 0:
+        degs = np.floor(dec)
+        tmp_mins = (dec-degs)*60
+        mins = np.floor(tmp_mins)
+        tmp_secs = (tmp_mins-mins)*60
+        secs = np.round(tmp_secs,1)
+        return "{} {} {}".format("+"+str(int(degs)).zfill(2),str(int(mins)).zfill(2),str(secs).zfill(4))
 
 # Creating Data Structures
 ra_raw = []
@@ -45,10 +69,11 @@ dec_deg = []
 
 # Retrieving RA/DEC
 for sheet in wb.sheets():
-    for i in range(sheet.nrows):
-        if i != 0:
-            ra_raw.append(sheet.row(i)[19])
-            dec_raw.append(sheet.row(i)[20])
+    if sheet.name == 'Sheet1':
+        for i in range(sheet.nrows):
+            if i != 0:
+                ra_raw.append(sheet.row(i)[19])
+                dec_raw.append(sheet.row(i)[20])
 
 # Get only good values
 badlist = ['TBD','nan','infty']
@@ -60,7 +85,7 @@ for i in range(len(ra_raw)):
 for i in range(len(ra_hms)):
     ra_deg.append(ra_to_deg(ra_hms[i]))
     dec_deg.append(dec_to_deg(dec_dms[i]))
-ipdb.set_trace()
+
 # Transform the data into a SkyCoord object.
 c = SkyCoord(ra=ra_deg*u.degree, dec=dec_deg*u.degree, frame='icrs')
 
