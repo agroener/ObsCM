@@ -24,68 +24,69 @@ mvir,mvir_p,mvir_m = ([],[],[])
 
 # Filling Data Structures From Worksheet
 for sheet in wb.sheets():
-    for i in range(sheet.nrows):
-        if i != 0:
-            clusters.append("{}".format(sheet.row(i)[0]).split("'")[1])
-            redshifts.append(np.float("{}".format(sheet.row(i)[1]).split(':')[1]))
-            methods.append("{}".format(sheet.row(i)[2]).split("'")[1])
-            refs.append("{}".format(sheet.row(i)[-4]).split("'")[1])
-            origdelta.append("{}".format(sheet.row(i)[-3]).split(":")[1])
-            cosmology.append("{}".format(sheet.row(i)[-2]).split("'")[1])
-            notes.append("{}".format(sheet.row(i)[-1]).split("'")[1])
-            # c200
-            try:
-                c200.append(np.float("{}".format(sheet.row(i)[3]).split(':')[1]))
-            except ValueError:
-                c200.append("{}".format(sheet.row(i)[3]).split(':')[1])
-            try:
-                c200_p.append(np.float("{}".format(sheet.row(i)[4]).split(':')[1]))
-            except ValueError:
-                c200_p.append("{}".format(sheet.row(i)[4]).split(':')[1])
-            try:
-                c200_m.append(np.float("{}".format(sheet.row(i)[5]).split(':')[1]))
-            except ValueError:
-                c200_m.append("{}".format(sheet.row(i)[5]).split(':')[1])
-            # m200
-            try:
-                m200.append(np.float("{}".format(sheet.row(i)[6]).split(':')[1]))
-            except ValueError:
-                m200.append("{}".format(sheet.row(i)[6]).split(':')[1])
-            try:
-                m200_p.append(np.float("{}".format(sheet.row(i)[7]).split(':')[1]))
-            except ValueError:
-                m200_p.append("{}".format(sheet.row(i)[7]).split(':')[1])
-            try:
-                m200_m.append(np.float("{}".format(sheet.row(i)[8]).split(':')[1]))
-            except ValueError:
-                m200_m.append("{}".format(sheet.row(i)[8]).split(':')[1])
-            # cvir
-            try:
-                cvir.append(np.float("{}".format(sheet.row(i)[9]).split(':')[1]))
-            except ValueError:
-                cvir.append("{}".format(sheet.row(i)[9]).split(':')[1])
-            try:
-                cvir_p.append(np.float("{}".format(sheet.row(i)[10]).split(':')[1]))
-            except ValueError:
-                cvir_p.append("{}".format(sheet.row(i)[10]).split(':')[1])
-            try:
-                cvir_m.append(np.float("{}".format(sheet.row(i)[11]).split(':')[1]))
-            except ValueError:
-                cvir_m.append("{}".format(sheet.row(i)[11]).split(':')[1])
-            # mvir
-            try:
-                mvir.append(np.float("{}".format(sheet.row(i)[12]).split(':')[1]))
-            except ValueError:
-                mvir.append("{}".format(sheet.row(i)[12]).split(':')[1])
-            try:
-                mvir_p.append(np.float("{}".format(sheet.row(i)[13]).split(':')[1]))
-            except ValueError:
-                mvir_p.append("{}".format(sheet.row(i)[13]).split(':')[1])
-            try:
-                mvir_m.append(np.float("{}".format(sheet.row(i)[14]).split(':')[1]))
-            except ValueError:
-                mvir_m.append("{}".format(sheet.row(i)[14]).split(':')[1])
-
+    if sheet.name == 'Sheet1':
+        for i in range(sheet.nrows):
+            if i != 0:
+                clusters.append("{}".format(sheet.row(i)[0]).split("'")[1])
+                redshifts.append(np.float("{}".format(sheet.row(i)[1]).split(':')[1]))
+                methods.append("{}".format(sheet.row(i)[2]).split("'")[1])
+                refs.append("{}".format(sheet.row(i)[-4]).split("'")[1])
+                origdelta.append("{}".format(sheet.row(i)[-3]).split(":")[1])
+                cosmology.append("{}".format(sheet.row(i)[-2]).split("'")[1])
+                notes.append("{}".format(sheet.row(i)[-1]).split("'")[1])
+                # c200
+                try:
+                    c200.append(np.float("{}".format(sheet.row(i)[3]).split(':')[1]))
+                except ValueError:
+                    c200.append("{}".format(sheet.row(i)[3]).split(':')[1])
+                try:
+                    c200_p.append(np.float("{}".format(sheet.row(i)[4]).split(':')[1]))
+                except ValueError:
+                    c200_p.append("{}".format(sheet.row(i)[4]).split(':')[1])
+                try:
+                    c200_m.append(np.float("{}".format(sheet.row(i)[5]).split(':')[1]))
+                except ValueError:
+                    c200_m.append("{}".format(sheet.row(i)[5]).split(':')[1])
+                # m200
+                try:
+                    m200.append(np.float("{}".format(sheet.row(i)[6]).split(':')[1]))
+                except ValueError:
+                    m200.append("{}".format(sheet.row(i)[6]).split(':')[1])
+                try:
+                    m200_p.append(np.float("{}".format(sheet.row(i)[7]).split(':')[1]))
+                except ValueError:
+                    m200_p.append("{}".format(sheet.row(i)[7]).split(':')[1])
+                try:
+                    m200_m.append(np.float("{}".format(sheet.row(i)[8]).split(':')[1]))
+                except ValueError:
+                    m200_m.append("{}".format(sheet.row(i)[8]).split(':')[1])
+                # cvir
+                try:
+                    cvir.append(np.float("{}".format(sheet.row(i)[9]).split(':')[1]))
+                except ValueError:
+                    cvir.append("{}".format(sheet.row(i)[9]).split(':')[1])
+                try:
+                    cvir_p.append(np.float("{}".format(sheet.row(i)[10]).split(':')[1]))
+                except ValueError:
+                    cvir_p.append("{}".format(sheet.row(i)[10]).split(':')[1])
+                try:
+                    cvir_m.append(np.float("{}".format(sheet.row(i)[11]).split(':')[1]))
+                except ValueError:
+                    cvir_m.append("{}".format(sheet.row(i)[11]).split(':')[1])
+                # mvir
+                try:
+                    mvir.append(np.float("{}".format(sheet.row(i)[12]).split(':')[1]))
+                except ValueError:
+                    mvir.append("{}".format(sheet.row(i)[12]).split(':')[1])
+                try:
+                    mvir_p.append(np.float("{}".format(sheet.row(i)[13]).split(':')[1]))
+                except ValueError:
+                    mvir_p.append("{}".format(sheet.row(i)[13]).split(':')[1])
+                try:
+                    mvir_m.append(np.float("{}".format(sheet.row(i)[14]).split(':')[1]))
+                except ValueError:
+                    mvir_m.append("{}".format(sheet.row(i)[14]).split(':')[1])
+    
                 
                 
 # Converting nans to np.nans, and dealing with infinities
