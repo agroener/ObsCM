@@ -113,6 +113,7 @@ def NoDialogFromVir(Mold,ConcentOld,DeltaNew,redshift,Omega_m_0=0.3,Omega_L_0=0.
 
 if __name__ == '__main__':
     repeat = True
+    ipdb.set_trace()
     while repeat:
         repeat = Dialog()
 

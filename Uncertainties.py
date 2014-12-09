@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.misc import derivative
-
-
+import MConvert_Personal as mc
+import ipdb
 
 #################################
 ###          Functions        ###
@@ -23,15 +23,18 @@ def propagate_mass_uncertainty_independent(m_orig_best,m_orig_err,c_orig_best,c_
 def propagate_mass_uncertainty_notindependent(m_orig_best,m_orig_err,c_orig_best,c_orig_err,delta_orig,delta_new): # mass and concentration are part of the conversion process for mass
     partial_mass = partial_derivative(mc.Mconvert,var=0,point=[m_orig_best,delta_orig,delta_new,c_orig_best])
     partial_conc = partial_derivative(mc.Mconvert,var=3,point=[m_orig_best,delta_orig,delta_new,c_orig_best])
+    ipdb.set_trace()
     uncertainty = abs(partial_mass*m_orig_err) + abs(partial_conc*c_orig_err)
     return uncertainty
 
 def propagate_conc_uncertainty(m_orig_best,m_orig_err,c_orig_best,c_orig_err,delta_orig,delta_new): # mass is truly not part of the conversion process for concentration
     partial_conc = partial_derivative(mc.Cconvert,var=3,point=[m_orig_best,delta_orig,delta_new,c_orig_best])
+    ipdb.set_trace()
     uncertainty = abs(partial_conc*c_orig_err)
     return uncertainty
 
 
 if __name__ == "__main__":
     
-    print propagate_mass_uncertainty_notindependent(10.5e14,2.1e14,7.5,1.4,200,500)
+    print propagate_mass_uncertainty_notindependent(11.9,2.6,9.3,1.7,119.24,200)
+    #print propagate_conc_uncertainty(11.9,2.6,9.3,1.7,119.24,200)
