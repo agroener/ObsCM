@@ -30,3 +30,8 @@ def propagate_conc_uncertainty(m_orig_best,m_orig_err,c_orig_best,c_orig_err,del
     partial_conc = partial_derivative(mc.Cconvert,var=3,point=[m_orig_best,delta_orig,delta_new,c_orig_best])
     uncertainty = abs(partial_conc*c_orig_err)
     return uncertainty
+
+
+if __name__ == "__main__":
+    
+    print propagate_mass_uncertainty_notindependent(10.5e14,2.1e14,7.5,1.4,200,500)
