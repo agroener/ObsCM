@@ -86,6 +86,10 @@ for sheet in wb.sheets():
                     mvir_m.append(np.float("{}".format(sheet.row(i)[14]).split(':')[1]))
                 except ValueError:
                     mvir_m.append("{}".format(sheet.row(i)[14]).split(':')[1])
+<<<<<<< HEAD
+=======
+    
+>>>>>>> fee738fd1cce48a0dfb01e602285a4a733466fa7
                 
                 
 # Converting nans to np.nans, and dealing with infinities
