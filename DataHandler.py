@@ -32,7 +32,7 @@ for sheet in wb.sheets():
                 methods.append("{}".format(sheet.row(i)[2]).split("'")[1])
                 refs.append("{}".format(sheet.row(i)[15]).split("'")[1])
                 origdelta.append("{}".format(sheet.row(i)[-3]).split(":")[1])
-                cosmology.append("{}".format(sheet.row(i)[-2]).split("'")[1])
+                cosmology.append("{}".format(sheet.row(i)[17]).split("'")[1])
                 notes.append("{}".format(sheet.row(i)[-1]).split("'")[1])
                 # c200
                 try:
@@ -86,10 +86,6 @@ for sheet in wb.sheets():
                     mvir_m.append(np.float("{}".format(sheet.row(i)[14]).split(':')[1]))
                 except ValueError:
                     mvir_m.append("{}".format(sheet.row(i)[14]).split(':')[1])
-<<<<<<< HEAD
-=======
-    
->>>>>>> fee738fd1cce48a0dfb01e602285a4a733466fa7
                 
                 
 # Converting nans to np.nans, and dealing with infinities
@@ -754,11 +750,24 @@ def scatter_uncertainty_sample(delta='200',witherrors=True,coloredmethods=True,m
         plt.ylabel(r'$(1+z)c_{vir}$')
         plt.show()
 
-                
+def check_cosmology():
+    method_list = []
+    cosmo_list = []
+    for i in range(len(cosmology)):
+        tmp = cosmology[i].strip('(').strip(')').split('/')
+        if tmp[0] != '0.3' or tmp[1] != '0.7':
+            method_list.append(methods[i])
+            if cosmology[i] != 'TBD':
+                cosmo_list.append(cosmology[i])
+        else:
+            print cosmology[i]
+    return method_list,cosmo_list
+                        
 if __name__ == '__main__':
     #scatter_full_sample(delta='vir',witherrors=True,coloredmethods=True,method='all')
     #explore_data()
-    ipdb.set_trace()
     #uncertainty_summary(redshift_plot = True)
     #scatter_uncertainty_sample(delta='vir')
+    methods_notLCDM,nonstandard_cosmologies = check_cosmology()
+    ipdb.set_trace()
 
