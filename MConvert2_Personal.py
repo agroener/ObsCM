@@ -51,6 +51,8 @@ def Hubble(z,Omega_M=0.3,Omega_L=0.7,Omega_k=0.0,Omega_g=0.0,h=0.7):
 
 if __name__ == "__main__":
     #MConvert_SE14(10.5,200,500,7.5,0.183,'WL',0.32,0.68)
+
+    # Making the M(c1)/M(c2) plot
     omega_m_list = np.linspace(0.0,1.0,1000)
     rat = [conversion_ratio(0.183,'WL',i,1-i) for i in omega_m_list]
     rat_u = [abs(rat[i]-1.01) for i in range(len(rat))]
