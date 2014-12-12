@@ -25,7 +25,7 @@ def MConvert_SE14(Mold,DeltaOld,DeltaNew,ConcentOld,redshift,method,Omega_m_0_ne
         return R
 
 def conversion_ratio(redshift,method,Omega_m_0_new,Omega_L_0_new,Omega_m_0_old=0.3,Omega_L_0_old=0.7):
-    z_source = 1
+    z_source = 1 # errors are fairly insensitive to this; as long as it's large
     # original cosmology
     Dds_c1 = DAng(1/(1+z_source),1/(1+redshift),Omega_m_0_old,Omega_L_0_old)
     Ds_c1 = DAng(1/(1+z_source),1.0,Omega_m_0_old,Omega_L_0_old)
@@ -59,6 +59,7 @@ if __name__ == "__main__":
     lim_u = rat_u.index(min(rat_u))
     rat_l = [abs(rat[i]-0.99) for i in range(len(rat))]
     lim_l = rat_l.index(min(rat_l))
+    '''
     plt.plot(omega_m_list,rat)
     plt.title(r'$\Omega_{m,0}=0.3$, $\Omega_{\Lambda,0}=0.7$, $h=0.7$')
     plt.xlabel(r'$\Omega_{m,0}$'+" " + r'$(\Omega_{\Lambda,0} = 1 - \Omega_{m,0})$',fontsize=16)
@@ -71,3 +72,20 @@ if __name__ == "__main__":
     plt.text(0.12,0.85,r"$\Omega_{m,0} = $"+"{}".format(round(omega_m_list[lim_l],3),rotation='horizontal'))
     plt.text(0.33,0.85,r"$\Omega_{m,0} = $"+"{}".format(round(omega_m_list[lim_u],3),rotation='horizontal'))
     plt.show()
+    '''
+    rat_cubed_inv = [rat[i]**(-3) for i in range(len(rat))]
+    plt.plot(omega_m_list,rat_cubed_inv)
+    plt.title(r'$\Omega_{m,0}=0.3$, $\Omega_{\Lambda,0}=0.7$, $h=0.7$')
+    plt.xlabel(r'$\Omega_{m,0}$'+" " + r'$(\Omega_{\Lambda,0} = 1 - \Omega_{m,0})$',fontsize=16)
+    plt.ylabel(r'$ c_{\Delta}(c2)/c_{\Delta}(c1) = R^{-3}$',fontsize=17)
+    plt.axvline(x=0.3,color='red',linewidth=3,linestyle="--")
+    plt.axvspan(omega_m_list[lim_l],omega_m_list[lim_u],alpha=0.5,color='red')
+    plt.axhspan(rat_cubed_inv[lim_l],rat_cubed_inv[lim_u],alpha=0.5,color='blue')
+    plt.text(0.1,round(rat_cubed_inv[lim_l]+0.01,3),"{}".format(round(rat_cubed_inv[lim_l],3)))
+    plt.text(0.1,round(rat_cubed_inv[lim_u]-0.035,3),"{}".format(round(rat_cubed_inv[lim_u],3)))
+    plt.text(0.12,0.65,r"$\Omega_{m,0} = $"+"{}".format(round(omega_m_list[lim_l],3),rotation='horizontal'))
+    plt.text(0.33,0.65,r"$\Omega_{m,0} = $"+"{}".format(round(omega_m_list[lim_u],3),rotation='horizontal'))
+    plt.show()
+
+    
+    #ipdb.set_trace()
