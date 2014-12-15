@@ -342,7 +342,7 @@ def colorselect(methods):
         col = 'orange'
     return col
         
-def scatter_full_sample(delta='200',witherrors=True,coloredmethods=True,method='all'):
+def scatter_full_sample(delta='200',witherrors=True,coloredmethods=True,method='all',legend=True):
     fig = plt.figure(figsize=(8,8))
     if delta =='200':
         tmp_z,tmp_methods = ([],[])
@@ -384,8 +384,17 @@ def scatter_full_sample(delta='200',witherrors=True,coloredmethods=True,method='
                                 tmp_m200[i],tmp_m200_p[i],tmp_m200_m[i],
                                 tmp_c200[i],tmp_c200_p[i],tmp_c200_m[i],
                                 tmp_z[i])
-        plt.xlim(0.1,110)
-        plt.ylim(0.1,160)
+        # making legend
+        if legend is True:
+            plt.scatter(1e6,1e6,color='green',label='X-ray')
+            plt.scatter(1e6,1e6,color='purple',label='WL')
+            plt.scatter(1e6,1e6,color='red',label='SL')
+            plt.scatter(1e6,1e6,color='black',label='WL+SL')
+            plt.scatter(1e6,1e6,color='blue',label='CM')
+            plt.scatter(1e6,1e6,color='orange',label='LOSVD')
+            plt.legend(loc=0,scatterpoints=1)
+        plt.xlim(0.1,120)
+        plt.ylim(0.2,160)
         plt.xlabel(r'$\mathrm{M_{200}}/{10^{14}\mathrm{M} \odot}$')
         plt.ylabel(r'$(1+z)c_{200}$')
         plt.show()
@@ -433,6 +442,15 @@ def scatter_full_sample(delta='200',witherrors=True,coloredmethods=True,method='
                                 tmp_mvir[i],tmp_mvir_p[i],tmp_mvir_m[i],
                                 tmp_cvir[i],tmp_cvir_p[i],tmp_cvir_m[i],
                                 tmp_z[i])
+        # making legend
+        if legend is True:
+            plt.scatter(1e6,1e6,color='green',label='X-ray')
+            plt.scatter(1e6,1e6,color='purple',label='WL')
+            plt.scatter(1e6,1e6,color='red',label='SL')
+            plt.scatter(1e6,1e6,color='black',label='WL+SL')
+            plt.scatter(1e6,1e6,color='blue',label='CM')
+            plt.scatter(1e6,1e6,color='orange',label='LOSVD')
+            plt.legend(loc=0,scatterpoints=1)
         plt.xlim(0.1,110)
         plt.ylim(0.1,160)
         plt.xlabel(r'$\mathrm{M_{vir}}/{10^{14}\mathrm{M} \odot}$')
@@ -764,10 +782,10 @@ def check_cosmology():
     return method_list,cosmo_list
                         
 if __name__ == '__main__':
-    #scatter_full_sample(delta='vir',witherrors=True,coloredmethods=True,method='all')
+    scatter_full_sample(delta='vir',witherrors=True,coloredmethods=True,method='all')
     #explore_data()
     #uncertainty_summary(redshift_plot = True)
     #scatter_uncertainty_sample(delta='vir')
-    methods_notLCDM,nonstandard_cosmologies = check_cosmology()
-    ipdb.set_trace()
+    #methods_notLCDM,nonstandard_cosmologies = check_cosmology()
+    #ipdb.set_trace()
 
