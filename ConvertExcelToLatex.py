@@ -80,22 +80,17 @@ clusters = [i.encode('utf-8') for i in clusters]
 t['Clusters'] = clusters
 t['Redshift'] = redshift
 t['Method'] = methods
-t['c200'] = c200
-t['c200+err'] = c200_plus
-t['c200-err'] = c200_minus
-t['M200'] = m200
-t['M200+err'] = m200_plus
-t['M200-err'] = m200_minus
-t['cvir'] = cvir
-t['cvir+err'] = cvir_plus
-t['cvir-err'] = cvir_minus
-t['Mvir'] = mvir
-t['Mvir+err'] = mvir_plus
-t['Mvir-err'] = mvir_minus
+c200_all = ["${"+"{}".format(c200[i])+"}^{+" + "{}".format(c200_plus[i]) +"}_{" + "{}".format(c200_minus[i]) +"}$" for i in range(len(c200))]
+t['c200'] = c200_all
+M200_all = ["${"+"{}".format(m200[i])+"}^{+" + "{}".format(m200_plus[i]) +"}_{" + "{}".format(m200_minus[i]) +"}$" for i in range(len(m200))]
+t['M200'] = M200_all
+cvir_all = ["${"+"{}".format(cvir[i])+"}^{+" + "{}".format(cvir_plus[i]) +"}_{" + "{}".format(cvir_minus[i]) +"}$" for i in range(len(cvir))]
+t['cvir'] = cvir_all
+Mvir_all = ["${"+"{}".format(mvir[i])+"}^{+" + "{}".format(mvir_plus[i]) +"}_{" + "{}".format(mvir_minus[i]) +"}$" for i in range(len(mvir))]
+t['Mvir'] = Mvir_all
 t['Ref.'] = short_refs
 t['Orig. Convention'] = orig_convention
 t['Cosmology'] = cosmology
-
     
 # Write data out to latex file
 t.write('cm_data_test.tex', format='latex')
