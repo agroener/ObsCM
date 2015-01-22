@@ -72,7 +72,66 @@ headers.append(cosmology.pop(0))
 # Create astropy.Table object
 
 ## Other things to check: 'infty' turns into infinity symbol
-## Need to compress errors as superscript and subscript of measurements of c/M to save space.
+for i in range(len(c200)):
+    if c200[i] == u'TBD':
+        c200[i] = '\mathrm{TBD}'
+    if c200_plus[i] == u'TBD':
+        c200_plus[i] = '\mathrm{TBD}'
+    if c200_minus[i] == u'TBD':
+        c200_minus[i] = '\mathrm{TBD}'
+    if m200[i] == u'TBD':
+        m200[i] = '\mathrm{TBD}'
+    if m200_plus[i] == u'TBD':
+        m200_plus[i] = '\mathrm{TBD}'
+    if m200_minus[i] == u'TBD':
+        m200_minus[i] = '\mathrm{TBD}'
+    if cvir[i] == u'TBD':
+        cvir[i] = '\mathrm{TBD}'
+    if cvir_plus[i] == u'TBD':
+        cvir_plus[i] = '\mathrm{TBD}'
+    if cvir_minus[i] == u'TBD':
+        cvir_minus[i] = '\mathrm{TBD}'
+    if mvir[i] == u'TBD':
+        mvir[i] = '\mathrm{TBD}'
+    if mvir_plus[i] == u'TBD':
+        mvir_plus[i] = '\mathrm{TBD}'
+    if mvir_minus[i] == u'TBD':
+        mvir_minus[i] = '\mathrm{TBD}'
+for i in range(len(c200)):
+    if c200[i] == u'nan':
+        c200[i] = '-'
+    if c200_plus[i] == u'nan':
+        c200_plus[i] = ''
+    if c200_minus[i] == u'nan':
+        c200_minus[i] = ''
+    if m200[i] == u'nan':
+        m200[i] = '-'
+    if m200_plus[i] == u'nan':
+        m200_plus[i] = ''
+    if m200_minus[i] == u'nan':
+        m200_minus[i] = ''
+    if cvir[i] == u'nan':
+        cvir[i] = '-'
+    if cvir_plus[i] == u'nan':
+        cvir_plus[i] = ''
+    if cvir_minus[i] == u'nan':
+        cvir_minus[i] = ''
+    if mvir[i] == u'nan':
+        mvir[i] = '-'
+    if mvir_plus[i] == u'nan':
+        mvir_plus[i] = ''
+    if mvir_minus[i] == u'nan':
+        mvir_minus[i] = ''         
+for i in range(len(c200)):
+    if c200_plus[i] != '' or c200_plus[i] != '\mathrm{TBD}':
+        c200_plus[i] = "+{}".format(c200_plus[i])
+    if m200_plus[i] != '' or m200_plus[i] != '\mathrm{TBD}':
+        m200_plus[i] = "+{}".format(m200_plus[i])
+    if cvir_plus[i] != '' or cvir_plus[i] != '\mathrm{TBD}':
+        cvir_plus[i] = "+{}".format(cvir_plus[i])
+    if mvir_plus[i] != '' or mvir_plus[i] != '\mathrm{TBD}':
+        mvir_plus[i] = "+{}".format(mvir_plus[i])
+        
 
 t = Table()
 
@@ -80,16 +139,22 @@ clusters = [i.encode('utf-8') for i in clusters]
 t['Clusters'] = clusters
 t['Redshift'] = redshift
 t['Method'] = methods
-c200_all = ["${"+"{}".format(c200[i])+"}^{+" + "{}".format(c200_plus[i]) +"}_{" + "{}".format(c200_minus[i]) +"}$" for i in range(len(c200))]
+c200_all = ["${"+"{}".format(c200[i])+"}^{" + "{}".format(c200_plus[i]) +"}_{" + "{}".format(c200_minus[i]) +"}$" for i in range(len(c200))]
 t['c200'] = c200_all
-M200_all = ["${"+"{}".format(m200[i])+"}^{+" + "{}".format(m200_plus[i]) +"}_{" + "{}".format(m200_minus[i]) +"}$" for i in range(len(m200))]
+M200_all = ["${"+"{}".format(m200[i])+"}^{" + "{}".format(m200_plus[i]) +"}_{" + "{}".format(m200_minus[i]) +"}$" for i in range(len(m200))]
 t['M200'] = M200_all
-cvir_all = ["${"+"{}".format(cvir[i])+"}^{+" + "{}".format(cvir_plus[i]) +"}_{" + "{}".format(cvir_minus[i]) +"}$" for i in range(len(cvir))]
+cvir_all = ["${"+"{}".format(cvir[i])+"}^{" + "{}".format(cvir_plus[i]) +"}_{" + "{}".format(cvir_minus[i]) +"}$" for i in range(len(cvir))]
 t['cvir'] = cvir_all
-Mvir_all = ["${"+"{}".format(mvir[i])+"}^{+" + "{}".format(mvir_plus[i]) +"}_{" + "{}".format(mvir_minus[i]) +"}$" for i in range(len(mvir))]
+Mvir_all = ["${"+"{}".format(mvir[i])+"}^{" + "{}".format(mvir_plus[i]) +"}_{" + "{}".format(mvir_minus[i]) +"}$" for i in range(len(mvir))]
 t['Mvir'] = Mvir_all
 t['Ref.'] = short_refs
-t['Orig. Convention'] = orig_convention
+orig_convention_corr = []
+for i in range(len(orig_convention)):
+    try:
+        orig_convention_corr.append(int(orig_convention[i]))
+    except ValueError:
+        orig_convention_corr.append(orig_convention[i])
+t['Orig. Convention'] = orig_convention_corr
 t['Cosmology'] = cosmology
     
 # Write data out to latex file
