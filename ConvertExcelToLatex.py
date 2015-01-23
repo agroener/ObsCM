@@ -121,17 +121,27 @@ for i in range(len(c200)):
     if mvir_plus[i] == u'nan':
         mvir_plus[i] = ''
     if mvir_minus[i] == u'nan':
-        mvir_minus[i] = ''         
+        mvir_minus[i] = ''
 for i in range(len(c200)):
-    if c200_plus[i] != '' or c200_plus[i] != '\mathrm{TBD}':
+    if c200_plus[i] not in ['', '\mathrm{TBD}']:
         c200_plus[i] = "+{}".format(c200_plus[i])
-    if m200_plus[i] != '' or m200_plus[i] != '\mathrm{TBD}':
+    if m200_plus[i] not in ['', '\mathrm{TBD}']:
         m200_plus[i] = "+{}".format(m200_plus[i])
-    if cvir_plus[i] != '' or cvir_plus[i] != '\mathrm{TBD}':
+    if cvir_plus[i] not in ['', '\mathrm{TBD}']:
         cvir_plus[i] = "+{}".format(cvir_plus[i])
-    if mvir_plus[i] != '' or mvir_plus[i] != '\mathrm{TBD}':
+    if mvir_plus[i] not in ['', '\mathrm{TBD}']:
         mvir_plus[i] = "+{}".format(mvir_plus[i])
-        
+for i in range(len(c200)):
+    if c200_plus[i] == '+infty':
+        c200_plus[i] = "+\infty"
+    if m200_plus[i] == '+infty':
+        m200_plus[i] = "+\infty"
+    if cvir_plus[i] == '+infty':
+        cvir_plus[i] = "+\infty"
+    if mvir_plus[i] == '+infty':
+        mvir_plus[i] = "+\infty"
+for i in range(len(cosmology)):
+    cosmology[i] = cosmology[i].strip('(').strip(')')
 
 t = Table()
 
