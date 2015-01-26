@@ -143,11 +143,18 @@ for i in range(len(c200)):
 for i in range(len(cosmology)):
     cosmology[i] = cosmology[i].strip('(').strip(')')
 for i in range(len(short_refs)):
-    short_refs[i] = "\citet{"+"{}".format(short_refs[i])+"}"
-
+    short_refs[i] = r"{\footnotesize \citet{"+"{}".format(short_refs[i])+"}}"
+clusters = [i.encode('utf-8') for i in clusters]
+for i in range(len(clusters)):
+    if len(clusters[i]) >= 14:
+        clusters[i] = r"{\footnotesize "+"{}".format(clusters[i])+"}"
+    else:
+        clusters[i] = r"{\small "+"{}".format(clusters[i])+"}"
+    redshift[i] = r"{\small "+"{}".format(redshift[i])+"}"
+    methods[i] = r"{\small "+"{}".format(methods[i])+"}"
+        
 t = Table()
 
-clusters = [i.encode('utf-8') for i in clusters]
 t['Clusters'] = clusters
 t['Redshift'] = redshift
 t['Method'] = methods
@@ -166,7 +173,11 @@ for i in range(len(orig_convention)):
         orig_convention_corr.append(int(orig_convention[i]))
     except ValueError:
         orig_convention_corr.append(orig_convention[i])
+for i in range(len(orig_convention_corr)):
+    orig_convention_corr[i] = r"{\small "+"{}".format(orig_convention_corr[i])+"}"
 t['Orig. Convention'] = orig_convention_corr
+for i in range(len(cosmology)):
+    cosmology[i] = r"{\small "+"{}".format(cosmology[i])+"}"
 t['Cosmology'] = cosmology
     
 # Write data out to latex file
