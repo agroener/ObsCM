@@ -142,6 +142,8 @@ for i in range(len(c200)):
         mvir_plus[i] = "+\infty"
 for i in range(len(cosmology)):
     cosmology[i] = cosmology[i].strip('(').strip(')')
+for i in range(len(short_refs)):
+    short_refs[i] = "\citet{"+"{}".format(short_refs[i])+"}"
 
 t = Table()
 
@@ -168,4 +170,4 @@ t['Orig. Convention'] = orig_convention_corr
 t['Cosmology'] = cosmology
     
 # Write data out to latex file
-t.write('cm_data_test.tex', format='latex')
+t.write('/Users/groenera/Desktop/Dropbox/Private/Research/Papers/My_Publications/ConcentrationMassProject/Iteration1/cm_data_test.tex', format='latex')
