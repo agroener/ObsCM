@@ -59,6 +59,21 @@ def dec_from_deg(dec):
         secs = np.round(tmp_secs,1)
         return "{} {} {}".format("+"+str(int(degs)).zfill(2),str(int(mins)).zfill(2),str(secs).zfill(4))
 
+def color_data(colors,i):
+    if method_raw[i].value == 'WL':
+        colors.append('purple')
+    elif method_raw[i].value == 'SL':
+        colors.append('red')
+    elif method_raw[i].value == 'WL+SL':
+        colors.append('black')
+    elif method_raw[i].value == 'LOSVD':
+        colors.append('yellow')
+    elif method_raw[i].value == 'X-ray':
+        colors.append('green')
+    elif method_raw[i].value == 'CM':
+        colors.append('blue')
+    return colors
+
 # Creating Data Structures
 ra_raw = []
 dec_raw = []
@@ -66,7 +81,8 @@ ra_hms = []
 dec_dms = []
 ra_deg = []
 dec_deg = []
-
+method_raw = []
+colors = []
 # Retrieving RA/DEC
 for sheet in wb.sheets():
     if sheet.name == 'Sheet1':
@@ -74,13 +90,16 @@ for sheet in wb.sheets():
             if i != 0:
                 ra_raw.append(sheet.row(i)[19])
                 dec_raw.append(sheet.row(i)[20])
+                method_raw.append(sheet.row(i)[2])
 
 # Get only good values
 badlist = ['TBD','nan','infty']
 for i in range(len(ra_raw)):
     if ra_raw[i].value not in badlist and dec_raw[i].value not in badlist:
         ra_hms.append(ra_raw[i].value)
-        dec_dms.append(dec_raw[i].value)            
+        dec_dms.append(dec_raw[i].value)
+        colors = color_data(colors,i)
+                    
 # Covnert to degrees
 for i in range(len(ra_hms)):
     ra_deg.append(ra_to_deg(ra_hms[i]))
@@ -101,5 +120,20 @@ fig = plt.figure()
 lab.subplot(111,projection="aitoff")
 lab.title(r"Aitoff Projection")
 lab.grid(True)
-plt.plot(ra_rad, dec_rad, 'o')
+
+from astropy import units as u
+from astropy.coordinates import SkyCoord
+
+l_list = np.linspace(0,0,100) # galactic plane
+b_list = np.linspace(0,100,100) # galactic plane
+ra_mw, dec_mw = ([],[])
+for i in range(len(l_list)):
+    coord = SkyCoord(l=l_list[i]*u.degree, b=b_list[i]*u.degree, frame='galactic')
+    ra_mw.append(coord.icrs.ra.value*2*np.pi/360.)
+    dec_mw.append(coord.icrs.dec.value*2*np.pi/360.)
+
+for i in range(len(l_list)):
+    plt.plot(ra_mw[i], dec_mw[i], 'o', color='pink')
+for i in range(len(ra_rad)):
+    plt.plot(ra_rad[i], dec_rad[i], '.', color='{}'.format(colors[i]))
 plt.show()
