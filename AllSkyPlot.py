@@ -97,9 +97,9 @@ dec_rad = c.dec.radian
 ra_rad[ra_rad > np.pi] -= 2. * np.pi
 
 # Now plot the data in Aitoff projection with a grid.
-#fig = plt.figure()
-#lab.subplot(111,projection="aitoff")
-#lab.title(r"Aitoff Projection")
-#lab.grid(True)
-#plt.plot(ra_rad, dec_rad, 'o')
-#plt.show()
+fig = plt.figure()
+lab.subplot(111,projection="aitoff")
+lab.title(r"Aitoff Projection")
+lab.grid(True)
+plt.plot(ra_rad, dec_rad, 'o')
+plt.show()
