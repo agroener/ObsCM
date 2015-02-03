@@ -142,6 +142,7 @@ for i in range(len(c200)):
         mvir_plus[i] = "+\infty"
 for i in range(len(cosmology)):
     cosmology[i] = cosmology[i].strip('(').strip(')')
+ipdb.set_trace()     
 for i in range(len(short_refs)):
     short_refs[i] = r"{\footnotesize \citet{"+"{}".format(short_refs[i])+"}}"
 clusters = [i.encode('utf-8') for i in clusters]
@@ -152,7 +153,7 @@ for i in range(len(clusters)):
         clusters[i] = r"{\small "+"{}".format(clusters[i])+"}"
     redshift[i] = r"{\small "+"{}".format(redshift[i])+"}"
     methods[i] = r"{\small "+"{}".format(methods[i])+"}"
-        
+       
 t = Table()
 
 t['Clusters'] = clusters
