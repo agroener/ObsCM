@@ -9,7 +9,8 @@ from xlrd import open_workbook
 import ipdb
 
 # Opening Excel File
-wb = open_workbook('/Users/groenera/Desktop/Dropbox/Private/Research/DataFiles/ObservedClusterConcsDB/cm_data.xlsx')
+#wb = open_workbook('/Users/groenera/Desktop/Dropbox/Private/Research/DataFiles/ObservedClusterConcsDB/cm_data.xlsx') # laptop and work machine
+wb = open_workbook('/home/groenera/Desktop/Dropbox/Private/Research/DataFiles/ObservedClusterConcsDB/cm_data.xlsx') # home desktop
 
 # Some functions for converting
 def ra_to_deg(ra):
@@ -124,13 +125,13 @@ lab.grid(True)
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-l_list = np.linspace(0,0,100) # galactic plane
-b_list = np.linspace(0,100,100) # galactic plane
+l_list = np.linspace(0,10,1000) # galactic plane
+b_list = np.linspace(0,10,1000) # galactic plane
 ra_mw, dec_mw = ([],[])
 for i in range(len(l_list)):
     coord = SkyCoord(l=l_list[i]*u.degree, b=b_list[i]*u.degree, frame='galactic')
-    ra_mw.append(coord.icrs.ra.value*2*np.pi/360.)
-    dec_mw.append(coord.icrs.dec.value*2*np.pi/360.)
+    ra_mw.append(coord.icrs.ra.value)
+    dec_mw.append(coord.icrs.dec.value)
 
 for i in range(len(l_list)):
     plt.plot(ra_mw[i], dec_mw[i], 'o', color='pink')
