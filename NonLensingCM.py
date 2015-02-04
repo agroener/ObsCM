@@ -59,24 +59,23 @@ headers.append(orig_convention.pop(0))
 cosmology = sheet1.col_values(17)
 headers.append(cosmology.pop(0))
 
-mvir_tbd = [i for i in range(len(mvir)) if mvir[i] == 'TBD' and methods[i] == 'CM']
-cvir_tbd = [i for i in range(len(cvir)) if cvir[i] == 'TBD' and methods[i] == 'CM']
-m200_tbd = [i for i in range(len(m200)) if m200[i] == 'TBD' and methods[i] == 'CM']
-c200_tbd = [i for i in range(len(c200)) if c200[i] == 'TBD' and methods[i] == 'CM']
+mvir_tbd = [i for i in range(len(mvir)) if mvir[i] in ['TBD','nan'] and methods[i] not in ['WL','SL','WL+SL']]
+cvir_tbd = [i for i in range(len(cvir)) if cvir[i] in ['TBD','nan'] and methods[i] not in ['WL','SL','WL+SL']]
+m200_tbd = [i for i in range(len(m200)) if m200[i] in ['TBD','nan'] and methods[i] not in ['WL','SL','WL+SL']]
+c200_tbd = [i for i in range(len(c200)) if c200[i] in ['TBD','nan'] and methods[i] not in ['WL','SL','WL+SL']]
 
-assert len(mvir) == len(cvir)
-assert mvir_tbd == cvir_tbd 
-assert len(m200) == len(c200)
-assert m200_tbd == c200_tbd
-assert len(mvir) == len(m200)
-assert mvir_tbd == m200_tbd
+# some entries do not have masses. add tbd lists of each type (virial, 200) together to form a do not use list
 
-mvir_cm = [mvir[i]*1e14 for i in range(len(mvir)) if i not in mvir_tbd and methods[i] == 'CM']
-cvir_cm = [cvir[i] for i in range(len(cvir)) if i not in cvir_tbd and methods[i] == 'CM']
-m200_cm = [m200[i]*1e14 for i in range(len(m200)) if i not in m200_tbd and methods[i] == 'CM']
-c200_cm = [c200[i] for i in range(len(c200)) if i not in c200_tbd and methods[i] == 'CM']
+tbd_vir = set(mvir_tbd+cvir_tbd)
+tbd_200 = set(m200_tbd+c200_tbd)
 
-z_cm = [redshift[i] for i in range(len(redshift)) if i not in mvir_tbd and methods[i] == 'CM']
+mvir_nonlens = [mvir[i]*1e14 for i in range(len(mvir)) if i not in tbd_vir and methods[i] not in ['WL','SL','WL+SL']]
+cvir_nonlens = [cvir[i] for i in range(len(cvir)) if i not in tbd_vir and methods[i] not in ['WL','SL','WL+SL']]
+m200_nonlens = [m200[i]*1e14 for i in range(len(m200)) if i not in tbd_200 and methods[i] not in ['WL','SL','WL+SL']]
+c200_nonlens = [c200[i] for i in range(len(c200)) if i not in tbd_200 and methods[i] not in ['WL','SL','WL+SL']]
+
+z_vir_nonlens = [redshift[i] for i in range(len(redshift)) if i not in tbd_vir and methods[i] not in ['WL','SL','WL+SL']]
+z_200_nonlens = [redshift[i] for i in range(len(redshift)) if i not in tbd_200 and methods[i] not in ['WL','SL','WL+SL']]
 
 #___________________________________________
 # Functions #
@@ -88,7 +87,7 @@ def lnlike(theta, x, y, z):
 
 def lnprior(theta):
     alpha, c0 = theta
-    if 0.0 < alpha < 0.5 and 0.0 < c0 < 20.0:
+    if -0.5 < alpha < 0.0 and 0.0 < c0 < 20.0:
         return 0.0
     return -np.inf
 
@@ -111,7 +110,7 @@ pos = [1e-4*np.random.randn(ndim) for i in range(nwalkers)]
 
 # setting up and running the algorithm
 sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, a=3.0, 
-                                args=(np.array(mvir_cm), np.array(cvir_cm), np.array(z_cm)),
+                                args=(np.array(mvir_nonlens), np.array(cvir_nonlens), np.array(z_vir_nonlens)),
                                 threads=2)
 sampler.run_mcmc(pos, 500)
 samples = sampler.chain[:, 50:, :].reshape((-1, ndim))
@@ -123,10 +122,10 @@ if __name__ == '__main__':
                           quantiles=[0.16, 0.5, 0.84],
                           plot_contours=True,plot_datapoints=True, bins=nbins)
     plt.show()
-    ipdb.set_trace()
+
     # plotting the fit over the data
-    xl = np.array([min(mvir_cm)*1.10, max(mvir_cm)*1.10])
+    xl = np.array([min(mvir_nonlens)*1.10, max(mvir_nonlens)*1.10])
     for alpha, c0 in samples[np.random.randint(len(samples), size=300)]:
         plt.plot(xl, ((xl/mstar)**alpha) * (c0/(1+0.01)), color="k", alpha=0.1)
-    plt.scatter(mvir_cm, cvir_cm)
+    plt.scatter(mvir_nonlens, cvir_nonlens)
     plt.show()
