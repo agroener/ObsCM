@@ -103,9 +103,11 @@ for i in range(len(se14_c200)):
 delta_orig = 200 # constant for all clusters
 accuracy = 1 # number of places after the decimal to round to
 se14_mvir = [round(mc.Mconvert(se14_m200[i],delta_orig,se14_deltavir[i],se14_c200[i]),accuracy) for i in range(len(se14_m200))]
-se14_mvir_err = [un.propagate_mass_uncertainty_notindependent(se14_m200[i],se14_m200_p[i],se14_c200[i],se14_c200_p[i],delta_orig,se14_deltavir[i])
+se14_mvir_err = [round(un.propagate_mass_uncertainty_notindependent(se14_m200[i],se14_m200_p[i],se14_c200[i],se14_c200_p[i],delta_orig,se14_deltavir[i]),accuracy)
                  for i in range(len(se14_m200))]
-se14_cvir = [mc.Cconvert(se14_m200[i],delta_orig,se14_deltavir[i],se14_c200[i]) for i in range(len(se14_m200))]
-se14_mvir_err = [un.propagate_conc_uncertainty(se14_m200[i],se14_m200_p[i],se14_c200[i],se14_c200_p[i],delta_orig,se14_deltavir[i])
+se14_cvir = [round(mc.Cconvert(se14_m200[i],delta_orig,se14_deltavir[i],se14_c200[i]),accuracy) for i in range(len(se14_m200))]
+se14_cvir_err = [round(un.propagate_conc_uncertainty(se14_m200[i],se14_m200_p[i],se14_c200[i],se14_c200_p[i],delta_orig,se14_deltavir[i]),accuracy)
                  for i in range(len(se14_m200))]
-ipdb.set_trace()
+
+for i in range(len(se14_mvir)):
+    print i+1,se14_clusters[i],se14_z[i],se14_m200[i],se14_m200_p[i],se14_c200[i],se14_c200_p[i],se14_mvir[i],se14_mvir_err[i],se14_cvir[i],se14_cvir_err[i]
