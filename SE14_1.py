@@ -83,7 +83,7 @@ se14_c200 = [c200[i] for i in range(len(c200)) if short_refs[i] == 'SE14.1']
 se14_c200_p = [c200_plus[i] for i in range(len(c200_plus)) if short_refs[i] == 'SE14.1']
 se14_c200_m = [c200_minus[i] for i in range(len(c200_minus)) if short_refs[i] == 'SE14.1']
 se14_z = [redshift[i] for i in range(len(redshift)) if short_refs[i] == 'SE14.1']
-se14_deltavir = [mc.DeltaFinder(0.3,0.7,redshift[i]) for i in range(len(redshift))]
+se14_deltavir = [mc.DeltaFinder(0.3,0.7,redshift[i]) for i in range(len(redshift)) if short_refs[i] == 'SE14.1']
 
 # testing to make sure that data are in the expected format
 # make sure both concentration and mass measurements are there in all cases
@@ -110,4 +110,4 @@ se14_cvir_err = [round(un.propagate_conc_uncertainty(se14_m200[i],se14_m200_p[i]
                  for i in range(len(se14_m200))]
 
 for i in range(len(se14_mvir)):
-    print i+1,se14_clusters[i],se14_z[i],se14_m200[i],se14_m200_p[i],se14_c200[i],se14_c200_p[i],se14_mvir[i],se14_mvir_err[i],se14_cvir[i],se14_cvir_err[i]
+    print "{}, {}, {}, {}, +/-{}, {}, +/-{}, {}, +/-{}, {}, +/-{}".format(i+1,se14_clusters[i],se14_z[i],se14_c200[i],se14_c200_p[i],se14_m200[i],se14_m200_p[i],se14_cvir[i],se14_cvir_err[i],se14_mvir[i],se14_mvir_err[i])
