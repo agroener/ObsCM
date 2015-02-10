@@ -82,7 +82,7 @@ og12_cvir = [cvir[i] for i in range(len(cvir)) if short_refs[i] == 'OG12.1']
 og12_cvir_p = [cvir_plus[i] for i in range(len(cvir_plus)) if short_refs[i] == 'OG12.1']
 og12_cvir_m = [cvir_minus[i] for i in range(len(cvir_minus)) if short_refs[i] == 'OG12.1']
 og12_z = [redshift[i] for i in range(len(redshift)) if short_refs[i] == 'OG12.1']
-og12_deltavir = [mc.DeltaFinder(0.27,0.73,redshift[i]) for i in range(len(redshift)) if short_refs[i] == 'OG12.1']
+og12_deltavir = [mc.DeltaFinder(0.275,0.725,redshift[i]) for i in range(len(redshift)) if short_refs[i] == 'OG12.1']
 
 # testing to make sure that data are in the expected format
 # a few orders of business first
