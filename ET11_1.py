@@ -85,12 +85,32 @@ et11_c200_m = [c200_minus[i] for i in range(len(c200_minus)) if short_refs[i] ==
 et11_z = [redshift[i] for i in range(len(redshift)) if short_refs[i] == 'ET11.1']
 et11_deltavir = [mc.DeltaFinder(0.3,0.7,redshift[i]) for i in range(len(redshift)) if short_refs[i] == 'ET11.1']
 
-ipdb.set_trace()
-'''
+# testing to make sure that data are in the expected format
+# a few orders of business first
+assert len(et11_clusters) == len(et11_z)
+assert len(et11_z) == len(et11_deltavir)
+# make sure both concentration and mass measurements are there in all cases
+assert len(et11_m200) == len(et11_c200)
+assert 'TBD' not in et11_m200
+assert 'TBD' not in et11_c200
+# make sure both mass uncertainties are there in all cases, and are the same
+assert len(et11_m200_p) == len(et11_m200), "M200 uncertainties appear to be missing for some clusters..."
+assert len(et11_m200_p) == len(et11_m200_m), "M200 uncertainties do not have the same length..."
+# make sure both concentration uncertainties are there in all cases, and are the same
+assert len(et11_c200_p) == len(et11_c200), "c200 uncertainties appear to be missing for some clusters..."
+assert len(et11_c200_p) == len(et11_c200_m), "c200 uncertainties do not have the same length..."
 
-se14_c200 = [c200[i] for i in range(len(c200)) if short_refs[i] == 'SE14.1']
-se14_c200_p = [c200_plus[i] for i in range(len(c200_plus)) if short_refs[i] == 'SE14.1']
-se14_c200_m = [c200_minus[i] for i in range(len(c200_minus)) if short_refs[i] == 'SE14.1']
-se14_z = [redshift[i] for i in range(len(redshift)) if short_refs[i] == 'SE14.1']
-se14_deltavir = [mc.DeltaFinder(0.3,0.7,redshift[i]) for i in range(len(redshift))]
-'''
+# time to convert; for asymmetric uncertainties, I've decided to keep the fractional error constant
+delta_orig = 200 # constant for all clusters
+accuracy = 2 # number of places after the decimal to round to
+et11_mvir = [round(mc.Mconvert(et11_m200[i],delta_orig,et11_deltavir[i],et11_c200[i]),accuracy) for i in range(len(et11_m200))]
+et11_mvir_p = [round(et11_mvir[i]*(et11_m200_p[i]/et11_m200[i]),accuracy) for i in range(len(et11_m200))]
+et11_mvir_m = [round(et11_mvir[i]*(et11_m200_m[i]/et11_m200[i]),accuracy) for i in range(len(et11_m200))]
+et11_cvir = [round(mc.Cconvert(et11_m200[i],delta_orig,et11_deltavir[i],et11_c200[i]),accuracy) for i in range(len(et11_m200))]
+et11_cvir_p = [round(et11_cvir[i]*(et11_c200_p[i]/et11_c200[i]),accuracy) for i in range(len(et11_m200))]
+et11_cvir_m = [round(et11_cvir[i]*(et11_c200_m[i]/et11_c200[i]),accuracy) for i in range(len(et11_m200))]
+
+
+for i in range(len(et11_mvir)):
+    print "{}, {}, {}, {}, +{}, {}, {}, +{}, {}, {}, +{}, {}, {}, +{}, {}".format(i+1,et11_clusters[i],et11_z[i],et11_c200[i],et11_c200_p[i],et11_c200_m[i],et11_m200[i],et11_m200_p[i],et11_m200_m[i],et11_cvir[i],et11_cvir_p[i],et11_cvir_m[i],et11_mvir[i],et11_mvir_p[i],et11_mvir_m[i])
+
