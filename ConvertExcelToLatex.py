@@ -74,29 +74,29 @@ headers.append(cosmology.pop(0))
 ## Other things to check: 'infty' turns into infinity symbol
 for i in range(len(c200)):
     if c200[i] == u'TBD':
-        c200[i] = '\mathrm{TBD}'
+        c200[i] = '{\color{red} \mathrm{TBD}}'
     if c200_plus[i] == u'TBD':
-        c200_plus[i] = '\mathrm{TBD}'
+        c200_plus[i] = '{\color{red} \mathrm{TBD}}'
     if c200_minus[i] == u'TBD':
-        c200_minus[i] = '\mathrm{TBD}'
+        c200_minus[i] = '{\color{red} \mathrm{TBD}}'
     if m200[i] == u'TBD':
-        m200[i] = '\mathrm{TBD}'
+        m200[i] = '{\color{red} \mathrm{TBD}}'
     if m200_plus[i] == u'TBD':
-        m200_plus[i] = '\mathrm{TBD}'
+        m200_plus[i] = '{\color{red} \mathrm{TBD}}'
     if m200_minus[i] == u'TBD':
-        m200_minus[i] = '\mathrm{TBD}'
+        m200_minus[i] = '{\color{red} \mathrm{TBD}}'
     if cvir[i] == u'TBD':
-        cvir[i] = '\mathrm{TBD}'
+        cvir[i] = '{\color{red} \mathrm{TBD}}'
     if cvir_plus[i] == u'TBD':
-        cvir_plus[i] = '\mathrm{TBD}'
+        cvir_plus[i] = '{\color{red} \mathrm{TBD}}'
     if cvir_minus[i] == u'TBD':
-        cvir_minus[i] = '\mathrm{TBD}'
+        cvir_minus[i] = '{\color{red} \mathrm{TBD}}'
     if mvir[i] == u'TBD':
-        mvir[i] = '\mathrm{TBD}'
+        mvir[i] = '{\color{red} \mathrm{TBD}}'
     if mvir_plus[i] == u'TBD':
-        mvir_plus[i] = '\mathrm{TBD}'
+        mvir_plus[i] = '{\color{red} \mathrm{TBD}}'
     if mvir_minus[i] == u'TBD':
-        mvir_minus[i] = '\mathrm{TBD}'
+        mvir_minus[i] = '{\color{red} \mathrm{TBD}}'
 for i in range(len(c200)):
     if c200[i] == u'nan':
         c200[i] = '-'
@@ -123,13 +123,13 @@ for i in range(len(c200)):
     if mvir_minus[i] == u'nan':
         mvir_minus[i] = ''
 for i in range(len(c200)):
-    if c200_plus[i] not in ['', '\mathrm{TBD}']:
+    if c200_plus[i] not in ['', '{\color{red} \mathrm{TBD}}']:
         c200_plus[i] = "+{}".format(c200_plus[i])
-    if m200_plus[i] not in ['', '\mathrm{TBD}']:
+    if m200_plus[i] not in ['', '{\color{red} \mathrm{TBD}}']:
         m200_plus[i] = "+{}".format(m200_plus[i])
-    if cvir_plus[i] not in ['', '\mathrm{TBD}']:
+    if cvir_plus[i] not in ['', '{\color{red} \mathrm{TBD}}']:
         cvir_plus[i] = "+{}".format(cvir_plus[i])
-    if mvir_plus[i] not in ['', '\mathrm{TBD}']:
+    if mvir_plus[i] not in ['', '{\color{red} \mathrm{TBD}}']:
         mvir_plus[i] = "+{}".format(mvir_plus[i])
 for i in range(len(c200)):
     if c200_plus[i] == '+infty':
@@ -142,7 +142,7 @@ for i in range(len(c200)):
         mvir_plus[i] = "+\infty"
 for i in range(len(cosmology)):
     cosmology[i] = cosmology[i].strip('(').strip(')')
-#ipdb.set_trace()     
+ipdb.set_trace()     
 for i in range(len(short_refs)):
     short_refs[i] = r"{\footnotesize \citet{"+"{}".format(short_refs[i])+"}}"
 clusters = [i.encode('utf-8') for i in clusters]
