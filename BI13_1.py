@@ -112,5 +112,5 @@ bi13_cvir_err = [round(un.propagate_conc_uncertainty(bi13_m200[i],bi13_m200_p[i]
                  for i in range(len(bi13_m200))]
 
 for i in range(len(bi13_mvir)):
-    print "{}, {}, {}, {}, {}, -{}, {}, {}, -{}, {}, {}, -{}, {}, {}, -{}".format(i+1,bi13_clusters[i],bi13_z[i],bi13_c200[i],bi13_c200_p[i],bi13_c200_m[i],bi13_m200[i],bi13_m200_p[i],bi13_m200_m[i],bi13_cvir[i],bi13_cvir_err[i],bi13_cvir_err[i],bi13_mvir[i],bi13_mvir_err[i],bi13_mvir_err[i])
+    print "{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, -{}, {}, {}, -{}".format(i+1,bi13_clusters[i],bi13_z[i],bi13_c200[i],bi13_c200_p[i],bi13_c200_m[i],bi13_m200[i],bi13_m200_p[i],bi13_m200_m[i],bi13_cvir[i],bi13_cvir_err[i],bi13_cvir_err[i],bi13_mvir[i],bi13_mvir_err[i],bi13_mvir_err[i])
 
