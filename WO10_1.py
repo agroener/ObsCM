@@ -8,7 +8,7 @@ import MConvert_Personal as mc
 import ipdb
 
 # Importing original conc/Mass data in delta_vir=102, from text file
-fh = ascii.read('/Users/groenera/Desktop/Dropbox/Private/Research/DataFiles/ObservedClusterConcsDB/WO10_1.txt',
+fh = ascii.read('/Users/groenera/Desktop/Dropbox/Private/Research/DataFiles/ObservedClusterConcsDB/WO10_1_orig.txt',
                 delimiter=',')
 
 # Importing redshifts from excel db (entries have been made)
