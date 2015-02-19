@@ -70,5 +70,23 @@ cosmology = sheet1.col_values(17)
 headers.append(cosmology.pop(0))
 
 # clusters with 10 or more measurements
-clustergte10 = set([i for i in clusters if clusters.count(i) >= 10])
+clusters_gte10 = set([i for i in clusters if clusters.count(i) >= 10])
+mvir_out,mvir_p_out,mvir_m_out,cvir_out,cvir_p_out,cvir_m_out = ([],[],[],[],[],[])
+for i in clusters_gte10:
+    tmp_mvir,tmp_mvir_p,tmp_mvir_m,tmp_cvir,tmp_cvir_p,tmp_cvir_m = ([],[],[],[],[],[])
+    for j in range(len(clusters)):
+        if clusters[j] == i:
+            tmp_mvir.append(mvir[j])
+            tmp_mvir_p.append(mvir_plus[j])
+            tmp_mvir_m.append(mvir_minus[j])
+            tmp_cvir.append(cvir[j])
+            tmp_cvir_p.append(cvir_plus[j])
+            tmp_cvir_m.append(cvir_minus[j])
+    mvir_out.append(tmp_mvir)
+    mvir_p_out.append(tmp_mvir_p)
+    mvir_m_out.append(tmp_mvir_m)
+    cvir_out.append(tmp_cvir)
+    cvir_p_out.append(tmp_cvir_p)
+    cvir_m_out.append(tmp_cvir_m)
+ipdb.set_trace()
 
