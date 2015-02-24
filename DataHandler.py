@@ -11,187 +11,198 @@ from astropy.io import ascii
 
 import ipdb
 
-# Opening Excel File
-wb = open_workbook('/Users/groenera/Desktop/Dropbox/Private/Research/DataFiles/ObservedClusterConcsDB/cm_data.xlsx')
+def startup():
+    # Opening Excel File
+    wb = open_workbook('/Users/groenera/Desktop/Dropbox/Private/Research/DataFiles/ObservedClusterConcsDB/cm_data.xlsx')
 
-# Creating Data Structures
-clusters,redshifts,methods,refs = ([],[],[],[])
-origdelta,cosmology,notes = ([],[],[])
-c200,c200_p,c200_m = ([],[],[])
-m200,m200_p,m200_m = ([],[],[])
-cvir,cvir_p,cvir_m = ([],[],[])
-mvir,mvir_p,mvir_m = ([],[],[])
+    # Creating Data Structures
+    clusters,redshifts,methods,refs = ([],[],[],[])
+    origdelta,cosmology,notes = ([],[],[])
+    c200,c200_p,c200_m = ([],[],[])
+    m200,m200_p,m200_m = ([],[],[])
+    cvir,cvir_p,cvir_m = ([],[],[])
+    mvir,mvir_p,mvir_m = ([],[],[])
 
-# Filling Data Structures From Worksheet
-for sheet in wb.sheets():
-    if sheet.name == 'Sheet1':
-        for i in range(sheet.nrows):
-            if i != 0:
-                clusters.append("{}".format(sheet.row(i)[0]).split("'")[1])
-                redshifts.append(np.float("{}".format(sheet.row(i)[1]).split(':')[1]))
-                methods.append("{}".format(sheet.row(i)[2]).split("'")[1])
-                refs.append("{}".format(sheet.row(i)[15]).split("'")[1])
-                origdelta.append("{}".format(sheet.row(i)[-3]).split(":")[1])
-                cosmology.append("{}".format(sheet.row(i)[17]).split("'")[1])
-                notes.append("{}".format(sheet.row(i)[-1]).split("'")[1])
-                # c200
-                try:
-                    c200.append(np.float("{}".format(sheet.row(i)[3]).split(':')[1]))
-                except ValueError:
-                    c200.append("{}".format(sheet.row(i)[3]).split(':')[1])
-                try:
-                    c200_p.append(np.float("{}".format(sheet.row(i)[4]).split(':')[1]))
-                except ValueError:
-                    c200_p.append("{}".format(sheet.row(i)[4]).split(':')[1])
-                try:
-                    c200_m.append(np.float("{}".format(sheet.row(i)[5]).split(':')[1]))
-                except ValueError:
-                    c200_m.append("{}".format(sheet.row(i)[5]).split(':')[1])
-                # m200
-                try:
-                    m200.append(np.float("{}".format(sheet.row(i)[6]).split(':')[1]))
-                except ValueError:
-                    m200.append("{}".format(sheet.row(i)[6]).split(':')[1])
-                try:
-                    m200_p.append(np.float("{}".format(sheet.row(i)[7]).split(':')[1]))
-                except ValueError:
-                    m200_p.append("{}".format(sheet.row(i)[7]).split(':')[1])
-                try:
-                    m200_m.append(np.float("{}".format(sheet.row(i)[8]).split(':')[1]))
-                except ValueError:
-                    m200_m.append("{}".format(sheet.row(i)[8]).split(':')[1])
-                # cvir
-                try:
-                    cvir.append(np.float("{}".format(sheet.row(i)[9]).split(':')[1]))
-                except ValueError:
-                    cvir.append("{}".format(sheet.row(i)[9]).split(':')[1])
-                try:
-                    cvir_p.append(np.float("{}".format(sheet.row(i)[10]).split(':')[1]))
-                except ValueError:
-                    cvir_p.append("{}".format(sheet.row(i)[10]).split(':')[1])
-                try:
-                    cvir_m.append(np.float("{}".format(sheet.row(i)[11]).split(':')[1]))
-                except ValueError:
-                    cvir_m.append("{}".format(sheet.row(i)[11]).split(':')[1])
-                # mvir
-                try:
-                    mvir.append(np.float("{}".format(sheet.row(i)[12]).split(':')[1]))
-                except ValueError:
-                    mvir.append("{}".format(sheet.row(i)[12]).split(':')[1])
-                try:
-                    mvir_p.append(np.float("{}".format(sheet.row(i)[13]).split(':')[1]))
-                except ValueError:
-                    mvir_p.append("{}".format(sheet.row(i)[13]).split(':')[1])
-                try:
-                    mvir_m.append(np.float("{}".format(sheet.row(i)[14]).split(':')[1]))
-                except ValueError:
-                    mvir_m.append("{}".format(sheet.row(i)[14]).split(':')[1])
+    # Filling Data Structures From Worksheet
+    for sheet in wb.sheets():
+        if sheet.name == 'Sheet1':
+            for i in range(sheet.nrows):
+                if i != 0:
+                    clusters.append("{}".format(sheet.row(i)[0]).split("'")[1])
+                    redshifts.append(np.float("{}".format(sheet.row(i)[1]).split(':')[1]))
+                    methods.append("{}".format(sheet.row(i)[2]).split("'")[1])
+                    refs.append("{}".format(sheet.row(i)[15]).split("'")[1])
+                    origdelta.append("{}".format(sheet.row(i)[-3]).split(":")[1])
+                    cosmology.append("{}".format(sheet.row(i)[17]).split("'")[1])
+                    notes.append("{}".format(sheet.row(i)[-1]).split("'")[1])
+                    # c200
+                    try:
+                        c200.append(np.float("{}".format(sheet.row(i)[3]).split(':')[1]))
+                    except ValueError:
+                        c200.append("{}".format(sheet.row(i)[3]).split(':')[1])
+                    try:
+                        c200_p.append(np.float("{}".format(sheet.row(i)[4]).split(':')[1]))
+                    except ValueError:
+                        c200_p.append("{}".format(sheet.row(i)[4]).split(':')[1])
+                    try:
+                        c200_m.append(np.float("{}".format(sheet.row(i)[5]).split(':')[1]))
+                    except ValueError:
+                        c200_m.append("{}".format(sheet.row(i)[5]).split(':')[1])
+                    # m200
+                    try:
+                        m200.append(np.float("{}".format(sheet.row(i)[6]).split(':')[1]))
+                    except ValueError:
+                        m200.append("{}".format(sheet.row(i)[6]).split(':')[1])
+                    try:
+                        m200_p.append(np.float("{}".format(sheet.row(i)[7]).split(':')[1]))
+                    except ValueError:
+                        m200_p.append("{}".format(sheet.row(i)[7]).split(':')[1])
+                    try:
+                        m200_m.append(np.float("{}".format(sheet.row(i)[8]).split(':')[1]))
+                    except ValueError:
+                        m200_m.append("{}".format(sheet.row(i)[8]).split(':')[1])
+                    # cvir
+                    try:
+                        cvir.append(np.float("{}".format(sheet.row(i)[9]).split(':')[1]))
+                    except ValueError:
+                        cvir.append("{}".format(sheet.row(i)[9]).split(':')[1])
+                    try:
+                        cvir_p.append(np.float("{}".format(sheet.row(i)[10]).split(':')[1]))
+                    except ValueError:
+                        cvir_p.append("{}".format(sheet.row(i)[10]).split(':')[1])
+                    try:
+                        cvir_m.append(np.float("{}".format(sheet.row(i)[11]).split(':')[1]))
+                    except ValueError:
+                        cvir_m.append("{}".format(sheet.row(i)[11]).split(':')[1])
+                    # mvir
+                    try:
+                        mvir.append(np.float("{}".format(sheet.row(i)[12]).split(':')[1]))
+                    except ValueError:
+                        mvir.append("{}".format(sheet.row(i)[12]).split(':')[1])
+                    try:
+                        mvir_p.append(np.float("{}".format(sheet.row(i)[13]).split(':')[1]))
+                    except ValueError:
+                        mvir_p.append("{}".format(sheet.row(i)[13]).split(':')[1])
+                    try:
+                        mvir_m.append(np.float("{}".format(sheet.row(i)[14]).split(':')[1]))
+                    except ValueError:
+                        mvir_m.append("{}".format(sheet.row(i)[14]).split(':')[1])
                 
                 
-# Converting nans to np.nans, and dealing with infinities
-for i in range(len(c200)):
-    # c200
-    if type(c200[i]) == str:
-        if c200[i].split("'")[1] == 'TBD':
-            #print "To be determined"
-            continue
-        elif c200[i].split("'")[1] == 'nan':
-            c200[i] = np.nan
-    if type(c200_p[i]) == str:
-        if c200_p[i].split("'")[1] == 'TBD':
-            #print "To be determined"
-            continue
-        elif c200_p[i].split("'")[1] == 'nan':
-            c200_p[i] = np.nan
-        elif c200_p[i].split("'")[1] == 'infty':
-            c200_p[i] = 1e6
-            print "Infty in c200_p: {}".format(clusters[i])
-    if type(c200_m[i]) == str:
-        if c200_m[i].split("'")[1] == 'TBD':
-            #print "To be determined"
-            continue
-        elif c200_m[i].split("'")[1] == 'nan':
-            c200_m[i] = np.nan
-        elif c200_m[i].split("'")[1] == 'infty':
-            c200_m[i] = 1e6
-            print "Infty in c200_m: {}".format(clusters[i])
-    # m200
-    if type(m200[i]) == str:
-        if m200[i].split("'")[1] == 'TBD':
-            #print "To be determined"
-            continue
-        elif m200[i].split("'")[1] == 'nan':
-            m200[i] = np.nan
-    if type(m200_p[i]) == str:
-        if m200_p[i].split("'")[1] == 'TBD':
-            #print "To be determined"
-            continue
-        elif m200_p[i].split("'")[1] == 'nan':
-            m200_p[i] = np.nan
-        elif m200_p[i].split("'")[1] == 'infty':
-            m200_p[i] = 1e6
-            print "Infty in m200_p: {}".format(clusters[i])     
-    if type(m200_m[i]) == str:
-        if m200_m[i].split("'")[1] == 'TBD':
-            #print "To be determined"
-            continue
-        elif m200_m[i].split("'")[1] == 'nan':
-            m200_m[i] = np.nan
-        elif m200_m[i].split("'")[1] == 'infty':
-            m200_m[i] = 1e6
-            print "Infty in m200_m: {}".format(clusters[i])     
-    # cvir
-    if type(cvir[i]) == str:
-        if cvir[i].split("'")[1] == 'TBD':
-            #print "To be determined"
-            continue
-        elif cvir[i].split("'")[1] == 'nan':
-            cvir[i] = np.nan
-    if type(cvir_p[i]) == str:
-        if cvir_p[i].split("'")[1] == 'TBD':
-            #print "To be determined"
-            continue
-        elif cvir_p[i].split("'")[1] == 'nan':
-            cvir_p[i] = np.nan
-        elif cvir_p[i].split("'")[1] == 'infty':
-            cvir_p[i] = 1e6
-            print "Infty in cvir_p: {}".format(clusters[i])     
-    if type(cvir_m[i]) == str:
-        if cvir_m[i].split("'")[1] == 'TBD':
-            #print "To be determined"
-            continue
-        elif cvir_m[i].split("'")[1] == 'nan':
-            cvir_m[i] = np.nan
-        elif cvir_m[i].split("'")[1] == 'infty':
-            cvir_m[i] = 1e6
-            print "Infty in cvir_m: {}".format(clusters[i])
-    # mvir
-    if type(mvir[i]) == str:
-        if mvir[i].split("'")[1] == 'TBD':
-            #print "To be determined"
-            continue
-        elif mvir[i].split("'")[1] == 'nan':
-            mvir[i] = np.nan
-    if type(mvir_p[i]) == str:
-        if mvir_p[i].split("'")[1] == 'TBD':
-            #print "To be determined"
-            continue
-        elif mvir_p[i].split("'")[1] == 'nan':
-            mvir_p[i] = np.nan
-        elif mvir_p[i].split("'")[1] == 'infty':
-            mvir_p[i] = 1e6
-            print "Infty mvir_p: {}".format(clusters[i])
-    if type(mvir_m[i]) == str:
-        if mvir_m[i].split("'")[1] == 'TBD':
-            #print "To be determined"
-            continue
-        elif mvir_m[i].split("'")[1] == 'nan':
-            mvir_m[i] = np.nan
-        elif mvir_m[i].split("'")[1] == 'infty':
-            mvir_m[i] = 1e6
-            print "Infty in mvir_m: {}".format(clusters[i])
-            
+    # Converting nans to np.nans, and dealing with infinities
+    for i in range(len(c200)):
+        # c200
+        if type(c200[i]) == str:
+            if c200[i].split("'")[1] == 'TBD':
+                #print "To be determined"
+                continue
+            elif c200[i].split("'")[1] == 'nan':
+                c200[i] = np.nan
+        if type(c200_p[i]) == str:
+            if c200_p[i].split("'")[1] == 'TBD':
+                #print "To be determined"
+                continue
+            elif c200_p[i].split("'")[1] == 'nan':
+                c200_p[i] = np.nan
+            elif c200_p[i].split("'")[1] == 'infty':
+                c200_p[i] = 1e6
+                print "Infty in c200_p: {}".format(clusters[i])
+        if type(c200_m[i]) == str:
+            if c200_m[i].split("'")[1] == 'TBD':
+                #print "To be determined"
+                continue
+            elif c200_m[i].split("'")[1] == 'nan':
+                c200_m[i] = np.nan
+            elif c200_m[i].split("'")[1] == 'infty':
+                c200_m[i] = 1e6
+                print "Infty in c200_m: {}".format(clusters[i])
+        # m200
+        if type(m200[i]) == str:
+            if m200[i].split("'")[1] == 'TBD':
+                #print "To be determined"
+                continue
+            elif m200[i].split("'")[1] == 'nan':
+                m200[i] = np.nan
+        if type(m200_p[i]) == str:
+            if m200_p[i].split("'")[1] == 'TBD':
+                #print "To be determined"
+                continue
+            elif m200_p[i].split("'")[1] == 'nan':
+                m200_p[i] = np.nan
+            elif m200_p[i].split("'")[1] == 'infty':
+                m200_p[i] = 1e6
+                print "Infty in m200_p: {}".format(clusters[i])     
+        if type(m200_m[i]) == str:
+            if m200_m[i].split("'")[1] == 'TBD':
+                #print "To be determined"
+                continue
+            elif m200_m[i].split("'")[1] == 'nan':
+                m200_m[i] = np.nan
+            elif m200_m[i].split("'")[1] == 'infty':
+                m200_m[i] = 1e6
+                print "Infty in m200_m: {}".format(clusters[i])     
+        # cvir
+        if type(cvir[i]) == str:
+            if cvir[i].split("'")[1] == 'TBD':
+                #print "To be determined"
+                continue
+            elif cvir[i].split("'")[1] == 'nan':
+                cvir[i] = np.nan
+        if type(cvir_p[i]) == str:
+            if cvir_p[i].split("'")[1] == 'TBD':
+                #print "To be determined"
+                continue
+            elif cvir_p[i].split("'")[1] == 'nan':
+                cvir_p[i] = np.nan
+            elif cvir_p[i].split("'")[1] == 'infty':
+                cvir_p[i] = 1e6
+                print "Infty in cvir_p: {}".format(clusters[i])     
+        if type(cvir_m[i]) == str:
+            if cvir_m[i].split("'")[1] == 'TBD':
+                #print "To be determined"
+                continue
+            elif cvir_m[i].split("'")[1] == 'nan':
+                cvir_m[i] = np.nan
+            elif cvir_m[i].split("'")[1] == 'infty':
+                cvir_m[i] = 1e6
+                print "Infty in cvir_m: {}".format(clusters[i])
+        # mvir
+        if type(mvir[i]) == str:
+            if mvir[i].split("'")[1] == 'TBD':
+                #print "To be determined"
+                continue
+            elif mvir[i].split("'")[1] == 'nan':
+                mvir[i] = np.nan
+        if type(mvir_p[i]) == str:
+            if mvir_p[i].split("'")[1] == 'TBD':
+                #print "To be determined"
+                continue
+            elif mvir_p[i].split("'")[1] == 'nan':
+                mvir_p[i] = np.nan
+            elif mvir_p[i].split("'")[1] == 'infty':
+                mvir_p[i] = 1e6
+                print "Infty mvir_p: {}".format(clusters[i])
+        if type(mvir_m[i]) == str:
+            if mvir_m[i].split("'")[1] == 'TBD':
+                #print "To be determined"
+                continue
+            elif mvir_m[i].split("'")[1] == 'nan':
+                mvir_m[i] = np.nan
+            elif mvir_m[i].split("'")[1] == 'infty':
+                mvir_m[i] = 1e6
+                print "Infty in mvir_m: {}".format(clusters[i])
+                
 def scatter_flag(index,tmp_m,tmp_m_p,tmp_m_m,tmp_c,tmp_c_p,tmp_c_m):
+    # nans may be passed in a string. convert to np.nan.
+    if tmp_m_p[index] == u'nan':
+        tmp_m_p[index] = np.nan
+    if tmp_m_m[index] == u'nan':
+        tmp_m_m[index] = np.nan
+    if tmp_c_p[index] == u'nan':
+        tmp_c_p[index] = np.nan
+    if tmp_c_m[index] == u'nan':
+        tmp_c_m[index] = np.nan
+    
     # check first that m and c are present and floating point numbers
     if type(tmp_m[index])!=str and type(tmp_c[index]):
         # 1 means it's a np.nan, 0 means it's not
@@ -224,7 +235,7 @@ def scatter_flag(index,tmp_m,tmp_m_p,tmp_m_m,tmp_c,tmp_c_p,tmp_c_m):
     else:
         print "Bad conc or mass value."
 
-def plotwithflag(ax,flag,col,witherrors,tmp_m,tmp_m_p,tmp_m_m,tmp_c,tmp_c_p,tmp_c_m,tmp_z):
+def plotwithflag(ax,flag,col,tmp_m,tmp_m_p,tmp_m_m,tmp_c,tmp_c_p,tmp_c_m,tmp_z,witherrors):
     if flag == 0:
         if witherrors == True:
             #ipdb.set_trace()
@@ -780,6 +791,22 @@ def check_cosmology():
         else:
             print cosmology[i]
     return method_list,cosmo_list
+
+def cmrelation_co07_1(mvir_min,mvir_max,z,c0=14.8,alpha=-0.14,mstar=1.3e13/0.7):
+    mlist = np.linspace(mvir_min,mvir_max,1000)
+    clist = [(c0/(1+z)) * ((mlist[i]/mstar)**(alpha)) for i in range(len(mlist))]
+    return mlist, clist, z
+
+def cmrelation_bu01_1(mvir_min,mvir_max,z,c0=9.0,alpha=-0.13,mstar=1.3e13/0.7):
+    mlist = np.linspace(mvir_min,mvir_max,1000)
+    clist = [(c0/(1+z)) * ((mlist[i]/mstar)**(alpha)) for i in range(len(mlist))]
+    return mlist, clist, z
+
+def cmrelation_he07_1(mvir_min,mvir_max,z,c0=12.3,alpha=-0.13,mstar=1.3e13/0.7):
+    mlist = np.linspace(mvir_min,mvir_max,1000)
+    clist = [(c0/(1+z)) * ((mlist[i]/mstar)**(alpha)) for i in range(len(mlist))]
+    return mlist, clist, z
+
                         
 if __name__ == '__main__':
     scatter_full_sample(delta='vir',witherrors=True,coloredmethods=True,method='all')
