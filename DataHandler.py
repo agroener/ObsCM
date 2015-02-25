@@ -2,6 +2,7 @@ from xlrd import open_workbook
 
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.integrate import quad
 
 import sys
 import copy
@@ -814,12 +815,40 @@ def cmrelation_he07_1(mvir_min,mvir_max,z,c0=12.3,alpha=-0.13,mstar=1.3e13/0.7):
     clist = [(c0/(1+z)) * ((mlist[i]/mstar)**(alpha)) for i in range(len(mlist))]
     return mlist, clist, z
 
+def cmrelation_pr11_1(mvir_min,mvir_max,z,omega_m_0=0.3,omega_l_0=0.7):
+    def cmin(x):
+        return 3.681+(5.033-3.681)*( (1./np.pi)*np.arctan(6.948*(x-0.424)) + 0.5 )
+    def siginvmin(x):
+        return 1.047 + (1.646-1.047)*( (1./np.pi)*np.arctan(7.386*(x-0.526)) + 0.5 )
+    # some preliminary things
+    a = 1./(1+z)
+    x = (omega_l_0/omega_m_0)**(1./3) * a
+    integral = quad(lambda xp: xp**(3./2)/((1+xp**3)**(3./2)),0,x)[0]
+    D = (5./2.) * (omega_m_0/omega_l_0)**(1./3) * ((np.sqrt(1+x**3))/(x**(3./2))) * integral
+    B0 = cmin(x)/cmin(1.393)
+    B1 = siginvmin(x)/siginvmin(1.393)
+    # mass dependent quantities
+    mlist = np.linspace(mvir_min,mvir_max,1000)
+    y = [mlist[i]/1e12/0.7 for i in range(len(mlist))]
+    sigma = [D * ((16.9*(y[i]**0.41))/(1+1.102*(y[i]**0.20)+6.22*(y[i]**0.333))) for i in range(len(y))]
+    sigmap = [B1 * sigma[i] for i in range(len(sigma))]
+    C = [2.881*((sigmap[i]/1.257)**1.022+1)*np.exp(0.060/(sigmap[i]**2)) for i in range(len(sigmap))]
+    clist = [B0*C[i] for i in range(len(C))]
+    return mlist,clist,z
+    
                         
 if __name__ == '__main__':
-    scatter_full_sample(delta='vir',witherrors=True,coloredmethods=True,method='all')
+    #scatter_full_sample(delta='vir',witherrors=True,coloredmethods=True,method='all')
     #explore_data()
     #uncertainty_summary(redshift_plot = True)
     #scatter_uncertainty_sample(delta='vir')
     #methods_notLCDM,nonstandard_cosmologies = check_cosmology()
     #ipdb.set_trace()
 
+    mlistPR11_1_1689,clistPR11_1_1689,zPR11_1_1689 = cmrelation_pr11_1(1e14,2e16,0)
+    mlistPR11_1_2137,clistPR11_1_2137,zPR11_1_2137 = cmrelation_pr11_1(1e14,2e16,0.2)
+    mlistPR11_1_1835,clistPR11_1_1835,zPR11_1_1835 = cmrelation_pr11_1(1e14,2e16,0.4)
+    plt.plot(mlistPR11_1_1689,clistPR11_1_1689)
+    plt.plot(mlistPR11_1_2137,clistPR11_1_2137)
+    plt.plot(mlistPR11_1_1835,clistPR11_1_1835)
+    plt.show()

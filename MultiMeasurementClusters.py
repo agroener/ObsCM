@@ -145,33 +145,52 @@ axes[1][1].set_xlim(1e14,2e16)
 axes[1][1].set_ylim(1,30)
 
 # over-plot cm relations
-# first CO07_1
-mlistCO07_1,clistCO07_1,zCO07_1 = DH.cmrelation_co07_1(1e14,2e16,0)
-mlistCO07_1_p,clistCO07_1_p,zCO07_1 = DH.cmrelation_co07_1(1e14,2e16,0,c0=20.9,alpha=-0.02)
-mlistCO07_1_m,clistCO07_1_m,zCO07_1 = DH.cmrelation_co07_1(1e14,2e16,0,c0=8.7,alpha=-0.26)
+# CO07_1
+mlistCO07_1_1689,clistCO07_1_1689,zCO07_1_1689 = DH.cmrelation_co07_1(1e14,2e16,z_out[0][0])
+mlistCO07_1_p_1689,clistCO07_1_p_1689,zCO07_1_1689 = DH.cmrelation_co07_1(1e14,2e16,z_out[0][0],c0=20.9,alpha=-0.02)
+mlistCO07_1_m_1689,clistCO07_1_m_1689,zCO07_1_1689 = DH.cmrelation_co07_1(1e14,2e16,z_out[0][0],c0=8.7,alpha=-0.26)
+mlistCO07_1_2137,clistCO07_1_2137,zCO07_1_2137 = DH.cmrelation_co07_1(1e14,2e16,z_out[1][0])
+mlistCO07_1_p_2137,clistCO07_1_p_2137,zCO07_1_2137 = DH.cmrelation_co07_1(1e14,2e16,z_out[1][0],c0=20.9,alpha=-0.02)
+mlistCO07_1_m_2137,clistCO07_1_m_2137,zCO07_1_2137 = DH.cmrelation_co07_1(1e14,2e16,z_out[1][0],c0=8.7,alpha=-0.26)
+mlistCO07_1_1835,clistCO07_1_1835,zCO07_1_1835 = DH.cmrelation_co07_1(1e14,2e16,z_out[2][0])
+mlistCO07_1_p_1835,clistCO07_1_p_1835,zCO07_1_1835 = DH.cmrelation_co07_1(1e14,2e16,z_out[2][0],c0=20.9,alpha=-0.02)
+mlistCO07_1_m_1835,clistCO07_1_m_1835,zCO07_1_1835 = DH.cmrelation_co07_1(1e14,2e16,z_out[2][0],c0=8.7,alpha=-0.26)
+# BU01_1
+mlistBU01_1_1689,clistBU01_1_1689,zBU01_1_1689 = DH.cmrelation_bu01_1(1e14,2e16,z_out[0][0])
+mlistBU01_1_2137,clistBU01_1_2137,zBU01_1_2137 = DH.cmrelation_bu01_1(1e14,2e16,z_out[1][0])
+mlistBU01_1_1835,clistBU01_1_1835,zBU01_1_1835 = DH.cmrelation_bu01_1(1e14,2e16,z_out[2][0])
+# HE07_1
+mlistHE07_1_1689,clistHE07_1_1689,zHE07_1_1689 = DH.cmrelation_he07_1(1e14,2e16,z_out[0][0])
+mlistHE07_1_2137,clistHE07_1_2137,zHE07_1_2137 = DH.cmrelation_he07_1(1e14,2e16,z_out[1][0])
+mlistHE07_1_1835,clistHE07_1_1835,zHE07_1_1835 = DH.cmrelation_he07_1(1e14,2e16,z_out[2][0])
+# PR11_1
+#mlistPR11_1_1689,clistPR11_1_1689,zPR11_1_1689 = DH.cmrelation_pr11_1(1e14,2e16,z_out[0][0])
+#mlistPR11_1_2137,clistPR11_1_2137,zPR11_1_2137 = DH.cmrelation_pr11_1(1e14,2e16,z_out[1][0])
+#mlistPR11_1_1835,clistPR11_1_1835,zPR11_1_1835 = DH.cmrelation_pr11_1(1e14,2e16,z_out[2][0])
 
-mlistBU01_1,clistBU01_1,zBU01_1 = DH.cmrelation_bu01_1(1e14,2e16,0)
-
-mlistHE07_1,clistHE07_1,zHE07_1 = DH.cmrelation_he07_1(1e14,2e16,0)
-
-axes[0][0].plot(mlistCO07_1,clistCO07_1,color='b',linewidth=2,linestyle='--')
-axes[0][0].plot(mlistBU01_1,clistBU01_1,color='y',linewidth=2,linestyle='--')
-axes[0][0].plot(mlistHE07_1,clistHE07_1,color='orange',linewidth=2,linestyle='--')
-axes[0][0].fill_between(mlistCO07_1,clistCO07_1_p,clistCO07_1_m,alpha=0.25)
-
-axes[0][1].plot(mlistCO07_1,clistCO07_1,color='b',linewidth=2,linestyle='--')
-axes[0][1].plot(mlistBU01_1,clistBU01_1,color='y',linewidth=2,linestyle='--')
-axes[0][1].plot(mlistHE07_1,clistHE07_1,color='orange',linewidth=2,linestyle='--')
-axes[0][1].fill_between(mlistCO07_1,clistCO07_1_p,clistCO07_1_m,alpha=0.25)
-
-axes[1][0].plot(mlistCO07_1,clistCO07_1,color='b',linewidth=2,linestyle='--')
-axes[1][0].plot(mlistBU01_1,clistBU01_1,color='y',linewidth=2,linestyle='--')
-axes[1][0].plot(mlistHE07_1,clistHE07_1,color='orange',linewidth=2,linestyle='--')
-axes[1][0].fill_between(mlistCO07_1,clistCO07_1_p,clistCO07_1_m,alpha=0.25)
+# Abell 1689
+axes[0][0].plot(mlistCO07_1_1689,clistCO07_1_1689,color='b',linewidth=2,linestyle='--')
+axes[0][0].plot(mlistBU01_1_1689,clistBU01_1_1689,color='y',linewidth=2,linestyle='--')
+axes[0][0].plot(mlistHE07_1_1689,clistHE07_1_1689,color='orange',linewidth=2,linestyle='--')
+#axes[0][0].plot(mlistPR11_1_1689,clistPR11_1_1689,color='green',linewidth=2,linestyle='--')
+axes[0][0].fill_between(mlistCO07_1_1689,clistCO07_1_p_1689,clistCO07_1_m_1689,alpha=0.25)
+# MS 2137
+axes[0][1].plot(mlistCO07_1_2137,clistCO07_1_2137,color='b',linewidth=2,linestyle='--')
+axes[0][1].plot(mlistBU01_1_2137,clistBU01_1_2137,color='y',linewidth=2,linestyle='--')
+axes[0][1].plot(mlistHE07_1_2137,clistHE07_1_2137,color='orange',linewidth=2,linestyle='--')
+#axes[0][1].plot(mlistPR11_1_2137,clistPR11_1_2137,color='green',linewidth=2,linestyle='--')
+axes[0][1].fill_between(mlistCO07_1_2137,clistCO07_1_p_2137,clistCO07_1_m_2137,alpha=0.25)
+# Abell 1835
+axes[1][0].plot(mlistCO07_1_1835,clistCO07_1_1835,color='b',linewidth=2,linestyle='--')
+axes[1][0].plot(mlistBU01_1_1835,clistBU01_1_1835,color='y',linewidth=2,linestyle='--')
+axes[1][0].plot(mlistHE07_1_1835,clistHE07_1_1835,color='orange',linewidth=2,linestyle='--')
+#axes[1][0].plot(mlistPR11_1_1835,clistPR11_1_1835,color='green',linewidth=2,linestyle='--')
+axes[1][0].fill_between(mlistCO07_1_1835,clistCO07_1_p_1835,clistCO07_1_m_1835,alpha=0.25)
 
 axes[1][1].plot(1e6,1e6,color='b',linewidth=2,linestyle='--',label='CO07')
 axes[1][1].plot(1e6,1e6,color='y',linewidth=2,linestyle='--',label='BU01')
 axes[1][1].plot(1e6,1e6,color='orange',linewidth=2,linestyle='--',label='HE07')
+#axes[1][1].plot(1e6,1e6,color='green',linewidth=2,linestyle='--',label='PR11')
 axes[1][1].set_xscale('log')
 axes[1][1].set_yscale('log')
 
