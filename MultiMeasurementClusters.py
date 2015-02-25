@@ -4,6 +4,7 @@ from astropy.table import Table
 from astropy.io import ascii
 
 import math
+from matplotlib import pyplot
 import matplotlib.pyplot as plt
 import ipdb
 
@@ -108,13 +109,19 @@ f.set_size_inches(7,7,forward=True)
 # loop structure only works for 3 clusters in a 2x2 grid format
 for i,j in enumerate(clusters_gte10):
     if i <= 1:
-        #axes[0][i].set_title('{}'.format(j))
-        axes[0][i].set_xlim(0,175)
-        axes[0][i].set_ylim(0,30)
+        axes[0][i].set_xlim(1e14,2e16)
+        axes[0][i].set_ylim(1,30)
+        axes[0][i].text(3e14,1.5,'{}'.format(j))
+        axes[0][i].text(3e14,1.25,'z={}'.format(z_out[i][0]))
+        axes[0][i].set_xscale('log')
+        axes[0][i].set_yscale('log')
     else:
-        #axes[1][0].set_title('{}'.format(j))
-        axes[1][0].set_xlim(0,175)
-        axes[1][0].set_ylim(0,30)
+        axes[1][0].set_xlim(1e14,2e16)
+        axes[1][0].set_ylim(1,30)
+        axes[1][0].text(3e14,1.5,'{}'.format(j))
+        axes[1][0].text(3e14,1.25,'z={}'.format(z_out[i][0]))
+        axes[1][0].set_xscale('log')
+        axes[1][0].set_yscale('log')
     print j
     for k in range(len(mvir_out[i])):
         print "Measurement number {}".format(k+1)
@@ -122,10 +129,10 @@ for i,j in enumerate(clusters_gte10):
                                cvir_out[i],cvir_p_out[i],cvir_m_out[i])
         col = DH.colorselect(methods_out[i][k])
         if i <= 1:
-            DH.plotwithflag(axes[0][i],flag,col,mvir_out[i][k],mvir_p_out[i][k],mvir_m_out[i][k],
+            DH.plotwithflag(axes[0][i],flag,col,mvir_out[i][k]*1e14,mvir_p_out[i][k]*1e14,mvir_m_out[i][k]*1e14,
                         cvir_out[i][k],cvir_p_out[i][k],cvir_m_out[i][k],z_out[i][k],witherrors=True)
         else:
-            DH.plotwithflag(axes[1][0],flag,col,mvir_out[i][k],mvir_p_out[i][k],mvir_m_out[i][k],
+            DH.plotwithflag(axes[1][0],flag,col,mvir_out[i][k]*1e14,mvir_p_out[i][k]*1e14,mvir_m_out[i][k]*1e14,
                         cvir_out[i][k],cvir_p_out[i][k],cvir_m_out[i][k],z_out[i][k],witherrors=True)
 
 axes[1][1].scatter(1e6,1e6,color=DH.colorselect('X-ray'),label='X-ray')
@@ -134,23 +141,18 @@ axes[1][1].scatter(1e6,1e6,color=DH.colorselect('SL'),label='SL')
 axes[1][1].scatter(1e6,1e6,color=DH.colorselect('WL+SL'),label='WL+SL')
 axes[1][1].scatter(1e6,1e6,color=DH.colorselect('CM'),label='CM')
 axes[1][1].scatter(1e6,1e6,color=DH.colorselect('LOSVD'),label='LOSVD')
-axes[1][1].set_xlim(0,175)
-axes[1][1].set_ylim(0,30)
+axes[1][1].set_xlim(1e14,2e16)
+axes[1][1].set_ylim(1,30)
 
 # over-plot cm relations
 # first CO07_1
-mlistCO07_1,clistCO07_1,zCO07_1 = DH.cmrelation_co07_1(1e13,1e16,0)
-mlistCO07_1 = [mlistCO07_1[i]/1.e13 for i in range(len(mlistCO07_1))]
-mlistCO07_1_p,clistCO07_1_p,zCO07_1 = DH.cmrelation_co07_1(1e13,1e16,0,c0=20.9,alpha=-0.02)
-mlistCO07_1_p = [mlistCO07_1_p[i]/1.e13 for i in range(len(mlistCO07_1_p))]
-mlistCO07_1_m,clistCO07_1_m,zCO07_1 = DH.cmrelation_co07_1(1e13,1e16,0,c0=8.7,alpha=-0.26)
-mlistCO07_1_m = [mlistCO07_1_m[i]/1.e13 for i in range(len(mlistCO07_1_m))]
+mlistCO07_1,clistCO07_1,zCO07_1 = DH.cmrelation_co07_1(1e14,2e16,0)
+mlistCO07_1_p,clistCO07_1_p,zCO07_1 = DH.cmrelation_co07_1(1e14,2e16,0,c0=20.9,alpha=-0.02)
+mlistCO07_1_m,clistCO07_1_m,zCO07_1 = DH.cmrelation_co07_1(1e14,2e16,0,c0=8.7,alpha=-0.26)
 
-mlistBU01_1,clistBU01_1,zBU01_1 = DH.cmrelation_bu01_1(1e13,1e16,0)
-mlistBU01_1 = [mlistBU01_1[i]/1.e13 for i in range(len(mlistBU01_1))]
+mlistBU01_1,clistBU01_1,zBU01_1 = DH.cmrelation_bu01_1(1e14,2e16,0)
 
-mlistHE07_1,clistHE07_1,zHE07_1 = DH.cmrelation_he07_1(1e13,1e16,0)
-mlistHE07_1 = [mlistHE07_1[i]/1.e13 for i in range(len(mlistHE07_1))]
+mlistHE07_1,clistHE07_1,zHE07_1 = DH.cmrelation_he07_1(1e14,2e16,0)
 
 axes[0][0].plot(mlistCO07_1,clistCO07_1,color='b',linewidth=2,linestyle='--')
 axes[0][0].plot(mlistBU01_1,clistBU01_1,color='y',linewidth=2,linestyle='--')
@@ -167,8 +169,17 @@ axes[1][0].plot(mlistBU01_1,clistBU01_1,color='y',linewidth=2,linestyle='--')
 axes[1][0].plot(mlistHE07_1,clistHE07_1,color='orange',linewidth=2,linestyle='--')
 axes[1][0].fill_between(mlistCO07_1,clistCO07_1_p,clistCO07_1_m,alpha=0.25)
 
+axes[1][1].plot(1e6,1e6,color='b',linewidth=2,linestyle='--',label='CO07')
+axes[1][1].plot(1e6,1e6,color='y',linewidth=2,linestyle='--',label='BU01')
+axes[1][1].plot(1e6,1e6,color='orange',linewidth=2,linestyle='--',label='HE07')
+axes[1][1].set_xscale('log')
+axes[1][1].set_yscale('log')
+
+
 f.subplots_adjust(hspace=0)
 f.subplots_adjust(wspace=0)
+f.text(0.5, 0.04, r'$\mathrm{M_{vir} (M_{\odot})}$', ha='center', va='center', fontsize=18)
+f.text(0.06, 0.5, r'$\mathrm{c_{vir} (1+z)}$', ha='center', va='center', rotation='vertical', fontsize=18)
 
-plt.legend(loc=0,scatterpoints=1)
+plt.legend(loc=0,scatterpoints=1,frameon=False)
 plt.show()

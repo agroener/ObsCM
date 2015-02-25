@@ -243,7 +243,8 @@ def plotwithflag(ax,flag,col,tmp_m,tmp_m_p,tmp_m_m,tmp_c,tmp_c_p,tmp_c_m,tmp_z,w
                         (1+tmp_z)*tmp_c,
                         yerr=([abs(tmp_c_m)],[tmp_c_p]),
                         xerr=([abs(tmp_m_m)],[tmp_m_p]),
-                        color=col)
+                        color=col,
+                        elinewidth=2)
             ax.scatter(tmp_m,
                         (1+tmp_z)*tmp_c,
                         color=col,marker='.')            
@@ -260,7 +261,8 @@ def plotwithflag(ax,flag,col,tmp_m,tmp_m_p,tmp_m_m,tmp_c,tmp_c_p,tmp_c_m,tmp_z,w
             ax.errorbar(tmp_m,
                         (1+tmp_z)*tmp_c,
                         xerr=([abs(tmp_m_m)],[tmp_m_p]),
-                        color=col)
+                        color=col,
+                        elinewidth=2)
             ax.scatter(tmp_m,
                         (1+tmp_z)*tmp_c,
                         color=col,marker='.')
@@ -273,7 +275,8 @@ def plotwithflag(ax,flag,col,tmp_m,tmp_m_p,tmp_m_m,tmp_c,tmp_c_p,tmp_c_m,tmp_z,w
             ax.errorbar(tmp_m,
                         (1+tmp_z)*tmp_c,
                         yerr=([abs(tmp_c_m)],[tmp_c_p]),
-                        color=col)
+                        color=col,
+                        elinewidth=2)
             ax.scatter(tmp_m,
                         (1+tmp_z)*tmp_c,
                         color=col,marker='.')
@@ -287,7 +290,8 @@ def plotwithflag(ax,flag,col,tmp_m,tmp_m_p,tmp_m_m,tmp_c,tmp_c_p,tmp_c_m,tmp_z,w
                         (1+tmp_z)*tmp_c,
                         yerr=([0],[tmp_c_p]),
                         xerr=([0],[tmp_m_p]),
-                        color=col)
+                        color=col,
+                        elinewidth=2)
             ax.scatter(tmp_m,
                         (1+tmp_z)*tmp_c,
                         color=col,marker='.')
@@ -301,7 +305,8 @@ def plotwithflag(ax,flag,col,tmp_m,tmp_m_p,tmp_m_m,tmp_c,tmp_c_p,tmp_c_m,tmp_z,w
                         (1+tmp_z)*tmp_c,
                         yerr=([tmp_c_m],[0]),
                         xerr=([tmp_m_m],[0]),
-                        color=col)
+                        color=col,
+                        elinewidth=2)
             ax.scatter(tmp_m,
                         (1+tmp_z)*tmp_c,
                         color=col,marker='.')
@@ -315,7 +320,8 @@ def plotwithflag(ax,flag,col,tmp_m,tmp_m_p,tmp_m_m,tmp_c,tmp_c_p,tmp_c_m,tmp_z,w
                         (1+tmp_z)*tmp_c,
                         yerr=([tmp_c_m],[0]),
                         xerr=([0],[tmp_m_p]),
-                        color=col)
+                        color=col,
+                        elinewidth=2)
             ax.scatter(tmp_m,
                         (1+tmp_z)*tmp_c,
                         color=col,marker='.')
@@ -329,7 +335,8 @@ def plotwithflag(ax,flag,col,tmp_m,tmp_m_p,tmp_m_m,tmp_c,tmp_c_p,tmp_c_m,tmp_z,w
                         (1+tmp_z)*tmp_c,
                         yerr=([0],[tmp_c_p]),
                         xerr=([tmp_m_m],[0]),
-                        color=col)
+                        color=col,
+                        elinewidth=2)
             ax.scatter(tmp_m,
                         (1+tmp_z)*tmp_c,
                         color=col,marker='.')
