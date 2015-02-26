@@ -61,27 +61,27 @@ def DeltaFinder2(Omega_m0,Omega_L0,z): # Hu & Kravtsov
 def Dialog():
     
     #Setup
-    print "Original Halo Mass?"
+    print("Original Halo Mass?")
     Mold = raw_input('--> ')
-    print "Original Concentration (ENTER for default)?"
+    print("Original Concentration (ENTER for default)?")
     ConcentOld = raw_input('--> ')
     if not ConcentOld:
         ConcentOld = concentration_default(float(Mold),1.0)
-        print "Repalcing with c={}".format(ConcentOld)
-    print "Original Spherical Overdensity?"
+        print("Repalcing with c={}".format(ConcentOld))
+    print("Original Spherical Overdensity?")
     DeltaOld = raw_input('--> ')
-    print 'Target Spherical Overdensity? (ENTER for over-density assistance)'
+    print('Target Spherical Overdensity? (ENTER for over-density assistance)')
     DeltaNew = raw_input('--> ')
     if not DeltaNew:
         DeltaNew = Dialog2()
-        print "DeltaNew = {}".format(DeltaNew)
+        print("DeltaNew = {}".format(DeltaNew))
  
     # Calculations and Output
     #pdb.set_trace()
-    print "M_target = {0:.7}".format(Mconvert(float(Mold),float(DeltaOld),float(DeltaNew),float(ConcentOld)))
-    print "c_target = {0:.7}".format(Cconvert(float(Mold),float(DeltaOld),float(DeltaNew),float(ConcentOld)))
+    print("M_target = {0:.7}".format(Mconvert(float(Mold),float(DeltaOld),float(DeltaNew),float(ConcentOld))))
+    print("c_target = {0:.7}".format(Cconvert(float(Mold),float(DeltaOld),float(DeltaNew),float(ConcentOld))))
 
-    print "Repeat (yes/no)?"
+    print("Repeat (yes/no)?")
     response = raw_input('--> ')
     if response == 'yes':
         return True
@@ -89,11 +89,11 @@ def Dialog():
         return False
 
 def Dialog2():
-    print "   Omega_m_0?"
+    print("   Omega_m_0?")
     Omega_m_0 = raw_input('   --> ')
-    print "   Omega_L_0?"
+    print("   Omega_L_0?")
     Omega_L_0 = raw_input('   --> ')
-    print "   Redshift?"
+    print("   Redshift?")
     z = raw_input('   --> ')
     DeltaNew = DeltaFinder(float(Omega_m_0),float(Omega_L_0),float(z)) 
     return DeltaNew

@@ -861,6 +861,12 @@ def cmrelation_he07_1(mvir_min,mvir_max,z,c0=12.3,alpha=-0.13,mstar=1.3e13/0.7):
     clist = [(c0/(1+z)) * ((mlist[i]/mstar)**(alpha)) for i in range(len(mlist))]
     return mlist, clist, z
 
+def cmrelation_gr14_1(mvir_min,mvir_max,z,c0=4.775,alpha=-0.056,mstar=1e14/0.7):
+    mlist = np.linspace(mvir_min,mvir_max,1000)
+    clist = [(c0/(1+z)) * ((mlist[i]/mstar)**(alpha)) for i in range(len(mlist))]
+    return mlist, clist, z
+
+    
 def cmrelation_pr11_1(mvir_min,mvir_max,z,omega_m_0=0.3,omega_l_0=0.7):
     def cmin(x):
         return 3.681+(5.033-3.681)*( (1./np.pi)*np.arctan(6.948*(x-0.424)) + 0.5 )
