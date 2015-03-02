@@ -587,6 +587,7 @@ def explore_data():
     ipdb.set_trace()
 
 def summarize_refs():
+    clusters,redshift,methods,c200,c200_p,c200_m,m200,m200_p,m200_m,cvir,cvir_p,cvir_m,mvir,mvir_p,mvir_m,refs,orig_convention,cosmology = startup()
     unique_refs = [i for i in iter(set(refs))]
     unique_refs_count = [refs.count(i) for i in unique_refs]
     plt.hist(unique_refs_count,bins=range(max(unique_refs_count)+1))
@@ -604,6 +605,7 @@ def summarize_refs():
     plt.show()
 
 def summarize_methods():
+    clusters,redshift,methods,c200,c200_p,c200_m,m200,m200_p,m200_m,cvir,cvir_p,cvir_m,mvir,mvir_p,mvir_m,refs,orig_convention,cosmology = startup()
     unique_methods = [i for i in iter(set(methods))]
     unique_method_count = [methods.count(i) for i in unique_methods]
     t = Table()
@@ -612,6 +614,7 @@ def summarize_methods():
     ascii.write(t,format='latex')
 
 def popular_clusters():
+    clusters,redshift,methods,c200,c200_p,c200_m,m200,m200_p,m200_m,cvir,cvir_p,cvir_m,mvir,mvir_p,mvir_m,refs,orig_convention,cosmology = startup()
     unique_clusters = [i for i in iter(set(clusters))]
     unique_cluster_count = [clusters.count(i) for i in unique_clusters]
     multiple_cl = [unique_clusters[i] for i in range(len(unique_clusters)) if unique_cluster_count[i] > 1]
@@ -626,14 +629,15 @@ def popular_clusters():
     ascii.write(t,format='latex')
 
 def uncertainty_summary(redshift_plot = False):
+    clusters,redshift,methods,c200,c200_p,c200_m,m200,m200_p,m200_m,cvir,cvir_p,cvir_m,mvir,mvir_p,mvir_m,refs,orig_convention,cosmology = startup()
     # c/m measurements first
     # first figure out how many have c/M measurements; gets rid of the TBD entries
     complete_cvir = [i for i in range(len(clusters)) if type(cvir[i]) != str]
     complete_mvir = [i for i in range(len(clusters)) if type(mvir[i]) != str]
     assert complete_cvir == complete_mvir # same TBD entries for c and M
     # filter out nans
-    complete_cvir = [i for i in complete_cvir if not np.isnan(cvir[i])]
-    complete_mvir = [i for i in complete_mvir if not np.isnan(mvir[i])]
+    complete_cvir = [i for i in complete_cvir if cvir[i] not in [u'nan']]
+    complete_mvir = [i for i in complete_mvir if mvir[i] not in [u'nan']]
     match = []
     # pop elements off of complete_cvir if also in complete_mvir; destroys complete_cvir
     for i in complete_mvir:
@@ -658,25 +662,25 @@ def uncertainty_summary(redshift_plot = False):
     complete_mvir_p = [mvir_p[i] for i in match]
     complete_mvir_m = [mvir_m[i] for i in match]
     allfour = [i for i in range(len(match)) if
-               not np.isnan(complete_cvir_p[i]) and
-               not np.isnan(complete_cvir_m[i]) and
-               not np.isnan(complete_mvir_p[i]) and
-               not np.isnan(complete_mvir_m[i])]
+               complete_cvir_p[i] not in [u'nan'] and
+               complete_cvir_m[i] not in [u'nan'] and
+               complete_mvir_p[i] not in [u'nan'] and
+               complete_mvir_m[i] not in [u'nan']]
     none = [i for i in range(len(match)) if
-                np.isnan(complete_cvir_p[i]) and
-                np.isnan(complete_cvir_m[i]) and
-                np.isnan(complete_mvir_p[i]) and
-                np.isnan(complete_mvir_m[i])]
+                complete_cvir_p[i] in [u'nan'] and
+                complete_cvir_m[i] in [u'nan'] and
+                complete_mvir_p[i] in [u'nan'] and
+                complete_mvir_m[i] in [u'nan']]
     justconc = [i for i in range(len(match)) if
-                not np.isnan(complete_cvir_p[i]) and
-                not np.isnan(complete_cvir_m[i]) and
-                np.isnan(complete_mvir_p[i]) and
-                np.isnan(complete_mvir_m[i])]
+                complete_cvir_p[i] not in [u'nan'] and
+                complete_cvir_m[i] not in [u'nan'] and
+                complete_mvir_p[i] in [u'nan'] and
+                complete_mvir_m[i] in [u'nan']]
     justmass = [i for i in range(len(match)) if
-                 np.isnan(complete_cvir_p[i]) and
-                 np.isnan(complete_cvir_m[i]) and
-                not np.isnan(complete_mvir_p[i]) and
-                not np.isnan(complete_mvir_m[i])]
+                complete_cvir_p[i] in [u'nan'] and
+                complete_cvir_m[i] in [u'nan'] and
+                complete_mvir_p[i] not in [u'nan'] and
+                complete_mvir_m[i] not in [u'nan']]
     allfour_sym = [i for i in allfour
                    if abs(complete_cvir_p[i]) == abs(complete_cvir_m[i])
                    and abs(complete_mvir_p[i]) == abs(complete_mvir_m[i])]
@@ -896,7 +900,7 @@ if __name__ == '__main__':
     #scatter_uncertainty_sample(delta='vir')
     #methods_notLCDM,nonstandard_cosmologies = check_cosmology()
     #ipdb.set_trace()
-
+    '''
     mlistPR11_1_1689,clistPR11_1_1689,zPR11_1_1689 = cmrelation_pr11_1(1e14,2e16,0)
     mlistPR11_1_2137,clistPR11_1_2137,zPR11_1_2137 = cmrelation_pr11_1(1e14,2e16,0.2)
     mlistPR11_1_1835,clistPR11_1_1835,zPR11_1_1835 = cmrelation_pr11_1(1e14,2e16,0.4)
@@ -904,3 +908,5 @@ if __name__ == '__main__':
     plt.plot(mlistPR11_1_2137,clistPR11_1_2137)
     plt.plot(mlistPR11_1_1835,clistPR11_1_1835)
     plt.show()
+    '''
+    uncertainty_summary()
