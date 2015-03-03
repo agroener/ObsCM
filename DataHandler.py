@@ -837,7 +837,8 @@ def scatter_uncertainty_sample(delta='200',witherrors=True,coloredmethods=True,m
         plt.ylabel(r'$(1+z)c_{vir}$')
         plt.show()
 
-def check_cosmology():
+def check_cosmology(plot_cosmo=False):
+    clusters,redshift,methods,c200,c200_p,c200_m,m200,m200_p,m200_m,cvir,cvir_p,cvir_m,mvir,mvir_p,mvir_m,refs,orig_convention,cosmology = startup()
     method_list = []
     cosmo_list = []
     for i in range(len(cosmology)):
@@ -848,6 +849,16 @@ def check_cosmology():
                 cosmo_list.append(cosmology[i])
         else:
             print cosmology[i]
+    if plot_cosmo is True:
+        omegam = [i.strip('(').strip(')').split('/')[0] for i in cosmo_list]
+        omegal = [i.strip('(').strip(')').split('/')[1] for i in cosmo_list]
+        for i in range(len(cosmo_list)):
+            plt.scatter(omegam[i],omegal[i])
+        plt.xlabel(r'$\Omega_{m}$')
+        plt.ylabel(r'$\Omega_{\Lambda}$')
+        plt.xlim(0,1)
+        plt.ylim(0,1)
+        plt.show()
     return method_list,cosmo_list
 
 def cmrelation_co07_1(mvir_min,mvir_max,z,c0=14.8,alpha=-0.14,mstar=1.3e13/0.7):
@@ -909,4 +920,6 @@ if __name__ == '__main__':
     plt.plot(mlistPR11_1_1835,clistPR11_1_1835)
     plt.show()
     '''
-    uncertainty_summary()
+    #uncertainty_summary()
+    methods, cosmo = check_cosmology(plot_cosmo=True)
+    ipdb.set_trace()
