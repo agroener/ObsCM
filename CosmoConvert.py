@@ -49,6 +49,12 @@ def R(OM1,OL1,Delta1,OM2,OL2,Delta2,z_lens,h=0.7):
 def f(x):
     return np.log(1+x) - x/(1+x)
 
+# lensing only 
+def normalize_cosmology(m,m_p,m_m,c,c_p,c_m,OM1,OL1,OM2,OL2,z):
+    RHS = (f(c200)*T(z,'inf',OM1,OL1,OM2,OL2)) / (c200**3*R(OM1,OL1,Delta1,OM2,OL2,Delta2,z))
+    
+    
+
 if __name__ == "__main__":
     # Exploring the effect of choosing source redshift on conversion factor calculations
     '''
