@@ -31,7 +31,7 @@ def propagate_conc_uncertainty(m_orig_best,m_orig_err,c_orig_best,c_orig_err,del
     uncertainty = abs(partial_conc*c_orig_err)
     return uncertainty
 
-def normalize(m,m_p,m_m,c,c_p,c_m,lamb=0.75):
+def normalize_uncertainty(m,m_p,m_m,c,c_p,c_m,lamb=0.75):
     # making sure mass anc concentration are there
     assert m not in [u'TBD',u'nan'], "Mass is not present, or has yet to be determined..."
     assert c not in [u'TBD',u'nan'], "Concentration is not present, or has yet to be determined..."
