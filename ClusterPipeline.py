@@ -17,7 +17,7 @@ import Uncertainties as UN
 # Get the data form the excel sheet cm_data.xlsx
 import DataHandler as DH
 clusters,redshift,methods,c200,c200_plus,c200_minus,m200,m200_plus,m200_minus,cvir,cvir_plus,cvir_minus,mvir,mvir_plus,mvir_minus,short_refs,orig_convention,cosmology=DH.startup()
-
+ipdb.set_trace()
 # Take all virial measurements and normalize uncertainties
 mvir_norm,mvir_p_norm,mvir_m_norm,cvir_norm,cvir_p_norm,cvir_m_norm = ([],[],[],[],[],[])
 methods_norm,z_norm = ([],[])
@@ -32,7 +32,11 @@ for i in range(len(clusters)):
         cvir_m_norm.append(tmp[5])
         methods_norm.append(methods[i])
         z_norm.append(redshift[i])
-        
+
+#plt.hist(mvir_norm)
+#plt.show()
+
+ipdb.set_trace()
 # Plotting the results
 plt.figure(figsize=(8,8))
 plt.xscale('log')
