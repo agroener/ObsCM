@@ -4,6 +4,8 @@ import time
 # temporary imports
 import ipdb
 
+## 50 walkers/ 10 steps = 125.3 seconds
+## 
 def lnlike(theta, psi, Mvir, Mvir_err, cvir, cvir_err, redshift):
     t1 = time.time()
     alpha, beta, var = theta

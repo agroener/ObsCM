@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 import emcee
 import triangle
 
-# Temp. imports
+# imports for testing
+import time
 import ipdb
 
 ## The general conversion process will take data in one convention (either 200 or virial), and
@@ -70,13 +71,24 @@ weights,means,covs = GMM(mvir_norm)
 # Perform parameter fitting here
 
 #lnlike([0.1,1,3],(weights,means,covs),mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,z_norm)
-ndim, nwalkers = 3, 500
+ndim, nwalkers = 3, 50
+nsteps = 10
+nbins = 100
+
 pos = [1e-4*np.random.randn(ndim) for i in range(nwalkers)]
 sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob,
                                 args=((weights,means,covs),
                                       mvir_norm, mvir_p_norm,
                                       cvir_norm, cvir_p_norm, z_norm),
                                 threads=2)
-sampler.run_mcmc(pos, 500)
+t1 = time.time()
+sampler.run_mcmc(pos, nsteps)
+t2 = time.time()
+print("Runtime for nwalkers={}/nsteps={}: {}".format(nwalkers,nsteps,str(t2-t1)))
 samples = sampler.chain[:, 50:, :].reshape((-1, ndim))
-ipdb.set_trace()
+
+fig = triangle.corner(samples, labels=["$\\alpha$", "$\\beta$", "$\sigma^{2}$"],
+                          quantiles=[0.16, 0.5, 0.84],
+                          plot_contours=True,plot_datapoints=True, bins=nbins)
+plt.show()
+
