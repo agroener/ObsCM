@@ -65,8 +65,61 @@ for i in range(len(mvir_norm)):
         plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='orange')
 plt.show()
 
+# Temporary Section
+
+xray_x = [np.log10(mvir_norm[i]*1e14) for i in range(len(mvir_norm))
+          if methods_norm[i] == 'X-ray'
+          and mvir_norm[i]-mvir_p_norm[i]>0
+          and cvir_norm[i]-cvir_p_norm[i]>0]
+xray_y = [np.log10(cvir_norm[i]*(1+z_norm[i])) for i in range(len(mvir_norm))
+          if methods_norm[i] == 'X-ray'
+          and mvir_norm[i]-mvir_p_norm[i]>0
+          and cvir_norm[i]-cvir_p_norm[i]>0]
+xray_z = [z_norm[i] for i in range(len(mvir_norm))
+          if methods_norm[i] == 'X-ray'
+          and mvir_norm[i]-mvir_p_norm[i]>0
+          and cvir_norm[i]-cvir_p_norm[i]>0]
+xray_sigx = [0.434*(mvir_p_norm[i]/mvir_norm[i]) for i in range(len(mvir_norm))
+            if methods_norm[i] == 'X-ray'
+            and mvir_norm[i]-mvir_p_norm[i]>0
+            and cvir_norm[i]-cvir_p_norm[i]>0]
+xray_sigy = [0.434*(cvir_p_norm[i]/cvir_norm[i]) for i in range(len(mvir_norm))
+            if methods_norm[i] == 'X-ray'
+            and mvir_norm[i]-mvir_p_norm[i]>0
+            and cvir_norm[i]-cvir_p_norm[i]>0]
+for i in range(len(xray_x)):
+    plt.errorbar(xray_x[i],xray_y[i],yerr=[xray_sigx[i]],xerr=[xray_sigy[i]],color='blue')
+plt.show()
+'''
+xray_FH = open('xray_data.txt', 'w')
+for i in range(len(xray_x)):
+    line = [xray_x[i],xray_y[i],xray_sigx[i],xray_sigy[i]]
+    xray_FH.write(str(line)+"\n")
+xray_FH.close()
+'''
+
 # Find best fit parameters for GMM
 weights,means,covs = GMM(mvir_norm)
+
+# Plot distribution of masses for each method
+plt.figure(figsize=(8,8))
+plt.xlabel(r'$\mathrm{M_{vir}/M_{\odot}}$',fontsize=18)
+plt.ylabel(r'$\mathrm{z}$',fontsize=18)
+plt.xscale('log')
+wl = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'WL']
+sl = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'SL']
+wl_sl = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'WL+SL']
+cm = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'CM']
+xray = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'X-ray']
+losvd = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'LOSVD']
+plt.scatter(wl,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'WL'],color='purple',label='WL')
+plt.scatter(sl,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'SL'],color='red',label='SL')
+plt.scatter(wl_sl,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'WL+SL'],color='black',label='WL+SL')
+plt.scatter(cm,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'CM'],color='blue',label='CM')
+plt.scatter(xray,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'X-ray'],color='green',label='X-ray')
+plt.scatter(losvd,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'LOSVD'],color='orange',label='LOSVD')
+plt.legend(loc=0,scatterpoints=1)
+plt.show()
 
 # Perform parameter fitting here
 
