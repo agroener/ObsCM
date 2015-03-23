@@ -42,6 +42,12 @@ for i in range(len(clusters)):
         methods_norm.append(methods[i])
         z_norm.append(redshift[i])
 
+# Temporary section for outputting data for each method at this point
+# Does not co-add like measurements for clusters together; for the moment
+# it treats them as separate measurements.
+import GenDataForLinearReg as GD
+GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,method='WL',plot=True)
+        
 ### Normalize over cosmology at this point
         
 # Plotting the results
@@ -64,69 +70,6 @@ for i in range(len(mvir_norm)):
     if methods_norm[i] in ['LOSVD']:
         plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='orange')
 plt.show()
-
-# Temporary Section
-wl_x = [np.log10(mvir_norm[i]*1e14) for i in range(len(mvir_norm))
-          if methods_norm[i] == 'WL'
-          and mvir_norm[i]-mvir_p_norm[i]>0
-          and cvir_norm[i]-cvir_p_norm[i]>0]
-wl_y = [np.log10(cvir_norm[i]*(1+z_norm[i])) for i in range(len(mvir_norm))
-          if methods_norm[i] == 'WL'
-          and mvir_norm[i]-mvir_p_norm[i]>0
-          and cvir_norm[i]-cvir_p_norm[i]>0]
-wl_z = [z_norm[i] for i in range(len(mvir_norm))
-          if methods_norm[i] == 'WL'
-          and mvir_norm[i]-mvir_p_norm[i]>0
-          and cvir_norm[i]-cvir_p_norm[i]>0]
-wl_sigx = [0.434*(mvir_p_norm[i]/mvir_norm[i]) for i in range(len(mvir_norm))
-            if methods_norm[i] == 'WL'
-            and mvir_norm[i]-mvir_p_norm[i]>0
-            and cvir_norm[i]-cvir_p_norm[i]>0]
-wl_sigy = [0.434*(cvir_p_norm[i]/cvir_norm[i]) for i in range(len(mvir_norm))
-            if methods_norm[i] == 'WL'
-            and mvir_norm[i]-mvir_p_norm[i]>0
-            and cvir_norm[i]-cvir_p_norm[i]>0]
-for i in range(len(wl_x)):
-    plt.errorbar(wl_x[i],wl_y[i],yerr=[wl_sigx[i]],xerr=[wl_sigy[i]],color='blue')
-plt.show()
-
-wl_FH = open('wl_data.txt', 'w')
-for i in range(len(wl_x)):
-    line = [wl_x[i],wl_y[i],wl_sigx[i],wl_sigy[i]]
-    wl_FH.write(str(line)+"\n")
-wl_FH.close()
-
-'''
-xray_x = [np.log10(mvir_norm[i]*1e14) for i in range(len(mvir_norm))
-          if methods_norm[i] == 'X-ray'
-          and mvir_norm[i]-mvir_p_norm[i]>0
-          and cvir_norm[i]-cvir_p_norm[i]>0]
-xray_y = [np.log10(cvir_norm[i]*(1+z_norm[i])) for i in range(len(mvir_norm))
-          if methods_norm[i] == 'X-ray'
-          and mvir_norm[i]-mvir_p_norm[i]>0
-          and cvir_norm[i]-cvir_p_norm[i]>0]
-xray_z = [z_norm[i] for i in range(len(mvir_norm))
-          if methods_norm[i] == 'X-ray'
-          and mvir_norm[i]-mvir_p_norm[i]>0
-          and cvir_norm[i]-cvir_p_norm[i]>0]
-xray_sigx = [0.434*(mvir_p_norm[i]/mvir_norm[i]) for i in range(len(mvir_norm))
-            if methods_norm[i] == 'X-ray'
-            and mvir_norm[i]-mvir_p_norm[i]>0
-            and cvir_norm[i]-cvir_p_norm[i]>0]
-xray_sigy = [0.434*(cvir_p_norm[i]/cvir_norm[i]) for i in range(len(mvir_norm))
-            if methods_norm[i] == 'X-ray'
-            and mvir_norm[i]-mvir_p_norm[i]>0
-            and cvir_norm[i]-cvir_p_norm[i]>0]
-for i in range(len(xray_x)):
-    plt.errorbar(xray_x[i],xray_y[i],yerr=[xray_sigx[i]],xerr=[xray_sigy[i]],color='blue')
-plt.show()
-
-xray_FH = open('xray_data.txt', 'w')
-for i in range(len(xray_x)):
-    line = [xray_x[i],xray_y[i],xray_sigx[i],xray_sigy[i]]
-    xray_FH.write(str(line)+"\n")
-xray_FH.close()
-'''
 
 # Find best fit parameters for GMM
 weights,means,covs = GMM(mvir_norm)
