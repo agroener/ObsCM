@@ -42,14 +42,19 @@ for i in range(len(clusters)):
         methods_norm.append(methods[i])
         z_norm.append(redshift[i])
 
-# Temporary section for outputting data for each method at this point
-# Does not co-add like measurements for clusters together; for the moment
-# it treats them as separate measurements.
+## Temporary section for outputting data for each method at this point
+## Does not co-add like measurements for clusters together; for the moment
+## it treats them as separate measurements.
+'''
 import GenDataForLinearReg as GD
-GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,method='WL',plot=True)
-        
-### Normalize over cosmology at this point
-        
+GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,method='losvd',plot=True)
+ipdb.set_trace()
+'''
+
+
+## Normalize over cosmology at this point
+
+
 # Plotting the results
 plt.figure(figsize=(8,8))
 plt.xscale('log')
