@@ -275,7 +275,7 @@ def fit_bootstrap(method='X-ray', witherrors=True, nsamples=100):
             Sxx=sum(x_bs*x_bs)
             m1=(N*Sxy-Sx*Sy)/(N*Sxx-Sx*Sx)
             b1=(-Sx*Sxy+Sxx*Sy)/(N*Sxx-Sx*Sx)
-            sig=sqrt(std(y_bs-(m1*x_bs+b1))**2-mean(sigy_bs**2))
+            sig=sqrt(abs(std(y_bs-(m1*x_bs+b1))**2-mean(sigy_bs**2))) #abs needed for cases where second term is larger
             m2,b2 = steepest_decent(x_bs,y_bs,sigx_bs,sigy_bs,sig,m1,b1,N,alpha=0.75,tol=1.e-6)
             m2_list.append(m2)
             b2_list.append(b2)
@@ -321,13 +321,16 @@ def do_bootstrap(method = 'X-ray', nsamples = 1000, witherrors = False, showplot
         m = [m[i] for i in range(len(m)) if not np.isnan(m[i])]
         b = [b[i] for i in range(len(b)) if not np.isnan(b[i])]
         sig = [sig[i] for i in range(len(sig)) if not np.isnan(sig[i])]
+        text_height1 = 35
+        text_height2 = 25
 
     elif witherrors is True:
         err_str = 'witherr'
         m, b = fit_bootstrap(method=method, witherrors=witherrors, nsamples=nsamples)
         m = [m[i] for i in range(len(m)) if not np.isnan(m[i])]
         b = [b[i] for i in range(len(b)) if not np.isnan(b[i])]
-
+        text_height1 = 3.5
+        text_height2 = 2.5
 
 
     plt.figure()
@@ -337,8 +340,8 @@ def do_bootstrap(method = 'X-ray', nsamples = 1000, witherrors = False, showplot
     plt.axvline(x=np.average(m),color='black',linewidth=3)
     plt.axvline(x=np.average(m)+np.std(m),linestyle='--',color='black',linewidth=3)
     plt.axvline(x=np.average(m)-np.std(m),linestyle='--',color='black',linewidth=3)
-    plt.text(np.average(m)-3*np.std(m),35,"mean: {:.4f}".format(np.average(m)))
-    plt.text(np.average(m)-3*np.std(m),25,"std.: {:.4f}".format(np.std(m)))
+    plt.text(np.average(m)-3*np.std(m),text_height1,"mean: {:.4f}".format(np.average(m)))
+    plt.text(np.average(m)-3*np.std(m),text_height2,"std.: {:.4f}".format(np.std(m)))
     plt.savefig(path+"{}_m_bootstrap_{}.png".format(method_title,err_str))
     
     plt.figure()
@@ -348,20 +351,21 @@ def do_bootstrap(method = 'X-ray', nsamples = 1000, witherrors = False, showplot
     plt.axvline(x=np.average(b),color='black',linewidth=3)
     plt.axvline(x=np.average(b)+np.std(b),linestyle='--',color='black',linewidth=3)
     plt.axvline(x=np.average(b)-np.std(b),linestyle='--',color='black',linewidth=3)
-    plt.text(np.average(b)-3*np.std(b),35,"mean: {:.4f}".format(np.average(b)))
-    plt.text(np.average(b)-3*np.std(b),25,"std.: {:.4f}".format(np.std(b)))
+    plt.text(np.average(b)-3*np.std(b),text_height1,"mean: {:.4f}".format(np.average(b)))
+    plt.text(np.average(b)-3*np.std(b),text_height2,"std.: {:.4f}".format(np.std(b)))
     plt.savefig(path+"{}_b_bootstrap_{}.png".format(method_title,err_str))
 
-    plt.figure()
-    plt.hist(sig,bins=30,color=pl_col,histtype='stepfilled',alpha=0.5)
-    plt.title('Number of Bootstrap Samples: {}'.format(nsamples))
-    plt.xlabel(r'$\mathrm{\sigma}$',fontsize=18)
-    plt.axvline(x=np.average(sig),color='black',linewidth=3)
-    plt.axvline(x=np.average(sig)+np.std(sig),linestyle='--',color='black',linewidth=3)
-    plt.axvline(x=np.average(sig)-np.std(sig),linestyle='--',color='black',linewidth=3)
-    plt.text(np.average(sig)-3*np.std(sig),35,"mean: {:.4f}".format(np.average(sig)))
-    plt.text(np.average(sig)-3*np.std(sig),25,"std.: {:.4f}".format(np.std(sig)))
-    plt.savefig(path+"{}_sig_bootstrap_{}.png".format(method_title,err_str))
+    if witherrors is False:
+        plt.figure()
+        plt.hist(sig,bins=30,color=pl_col,histtype='stepfilled',alpha=0.5)
+        plt.title('Number of Bootstrap Samples: {}'.format(nsamples))
+        plt.xlabel(r'$\mathrm{\sigma}$',fontsize=18)
+        plt.axvline(x=np.average(sig),color='black',linewidth=3)
+        plt.axvline(x=np.average(sig)+np.std(sig),linestyle='--',color='black',linewidth=3)
+        plt.axvline(x=np.average(sig)-np.std(sig),linestyle='--',color='black',linewidth=3)
+        plt.text(np.average(sig)-3*np.std(sig),text_height1,"mean: {:.4f}".format(np.average(sig)))
+        plt.text(np.average(sig)-3*np.std(sig),text_height2,"std.: {:.4f}".format(np.std(sig)))
+        plt.savefig(path+"{}_sig_bootstrap_{}.png".format(method_title,err_str))
 
     if showplots is True:
         plt.show()
@@ -481,9 +485,9 @@ if __name__ == "__main__":
     #do_bootstrap(method='WL+SL',witherrors=False, savepath=tmp_path)
     #do_bootstrap(method='LOSVD',witherrors=False, savepath=tmp_path)
     #with error next
-    do_bootstrap(method='X-ray',witherrors=True,savepath=tmp_path,nsamples=100)
-    do_bootstrap(method='CM',witherrors=True,savepath=tmp_path,nsamples=100)
-    do_bootstrap(method='WL',witherrors=True,savepath=tmp_path,nsamples=100)
-    do_bootstrap(method='SL',witherrors=True,savepath=tmp_path,nsamples=100)
+    #do_bootstrap(method='X-ray',witherrors=True,savepath=tmp_path,nsamples=100)
+    #do_bootstrap(method='CM',witherrors=True,savepath=tmp_path,nsamples=100)
+    #do_bootstrap(method='WL',witherrors=True,savepath=tmp_path,nsamples=100)
+    #do_bootstrap(method='SL',witherrors=True,savepath=tmp_path,nsamples=100)
     do_bootstrap(method='WL+SL',witherrors=True,savepath=tmp_path,nsamples=100)
-    do_bootstrap(method='LOSVD',witherrors=True,savepath=tmp_path,nsamples=100)
+    #do_bootstrap(method='LOSVD',witherrors=True,savepath=tmp_path,nsamples=100)
