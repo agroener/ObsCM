@@ -489,5 +489,5 @@ if __name__ == "__main__":
     #do_bootstrap(method='CM',witherrors=True,savepath=tmp_path,nsamples=100)
     #do_bootstrap(method='WL',witherrors=True,savepath=tmp_path,nsamples=100)
     #do_bootstrap(method='SL',witherrors=True,savepath=tmp_path,nsamples=100)
-    do_bootstrap(method='WL+SL',witherrors=True,savepath=tmp_path,nsamples=100)
+    #do_bootstrap(method='WL+SL',witherrors=True,savepath=tmp_path,nsamples=100)
     #do_bootstrap(method='LOSVD',witherrors=True,savepath=tmp_path,nsamples=100)
