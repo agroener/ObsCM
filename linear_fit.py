@@ -627,7 +627,8 @@ if __name__ == "__main__":
     '''
 
     # Performing bootstrap
-    tmp_path = '/Users/groenera/Desktop/Dropbox/Private/Research/GroupMeetings/Meeting#60/'
+    #tmp_path = '/Users/groenera/Desktop/Dropbox/Private/Research/GroupMeetings/Meeting#60/' # on OS X
+    tmp_path = '/home/groenera/Desktop/Dropbox/Private/Research/GroupMeetings/Meeting#60/' # on Ubuntu
     #without error first
     '''
     do_bootstrap(method='X-ray',witherrors=False, savepath=tmp_path)
