@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,method=None,plot=False):
+def writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method=None,plot=False):
 
     if method in ['WL','wl']:
         m = 'WL'
@@ -39,6 +39,10 @@ def writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,me
                if methods_norm[i] == m
                and mvir_norm[i]-mvir_p_norm[i]>0
                and cvir_norm[i]-cvir_p_norm[i]>0]
+    cl = [cl_norm[i] for i in range(len(mvir_norm))
+               if methods_norm[i] == m
+               and mvir_norm[i]-mvir_p_norm[i]>0
+               and cvir_norm[i]-cvir_p_norm[i]>0]
     if plot is True:
         for i in range(len(x)):
             plt.errorbar(x[i],y[i],yerr=[sigx[i]],xerr=[sigy[i]],color='blue')
@@ -46,6 +50,6 @@ def writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,me
 
     FH = open('{}_data.txt'.format(m), 'w')
     for i in range(len(x)):
-        line = "{},{},{},{}".format(x[i],y[i],sigx[i],sigy[i])
+        line = "{},{},{},{},{}".format(cl[i],x[i],y[i],sigx[i],sigy[i])
         FH.write(line+"\n")
     FH.close()
