@@ -29,7 +29,7 @@ clusters,redshift,methods,c200,c200_plus,c200_minus,m200,m200_plus,m200_minus,cv
 
 # Take all virial measurements and normalize uncertainties
 mvir_norm,mvir_p_norm,mvir_m_norm,cvir_norm,cvir_p_norm,cvir_m_norm = ([],[],[],[],[],[])
-methods_norm,z_norm = ([],[])
+methods_norm,z_norm,cl_norm = ([],[],[])
 for i in range(len(clusters)):
     if mvir[i] not in [u'TBD',u'nan']:
         tmp = UN.normalize_uncertainty(mvir[i],mvir_plus[i],mvir_minus[i],cvir[i],cvir_plus[i],cvir_minus[i])
@@ -41,13 +41,19 @@ for i in range(len(clusters)):
         cvir_m_norm.append(tmp[5])
         methods_norm.append(methods[i])
         z_norm.append(redshift[i])
+        cl_norm.append(clusters[i])
 
 ## Temporary section for outputting data for each method at this point
 ## Does not co-add like measurements for clusters together; for the moment
 ## it treats them as separate measurements.
 '''
 import GenDataForLinearReg as GD
-GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,method='losvd',plot=True)
+GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='x-ray',plot=True)
+GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='wl',plot=True)
+GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='sl',plot=True)
+GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='wl+sl',plot=True)
+GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='cm',plot=True)
+GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='losvd',plot=True)
 ipdb.set_trace()
 '''
 
