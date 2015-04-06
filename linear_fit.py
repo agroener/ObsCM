@@ -490,61 +490,73 @@ if __name__ == "__main__":
     '''
     
     # Plotting the fit (and uncertainty regions) over the data
-    '''
-    m_xray,sigm_xray,b_xray,sigb_xray,sig_xray,(a1_xray,b1_xray,theta_xray),(xray_max,xray_min)=fit(method='xray',plot=True, savefig=True)
-    m_wl,sigm_wl,b_wl,sigb_wl,sig_wl,(a1_wl,b1_wl,theta_wl),(wl_max,wl_min)=fit(method='wl',plot=True, savefig=True)
-    m_sl,sigm_sl,b_sl,sigb_sl,sig_sl,(a1_sl,b1_sl,theta_sl),(sl_max,sl_min)=fit(method='sl',plot=True, savefig=True)
-    m_wlsl,sigm_wlsl,b_wlsl,sigb_wlsl,sig_wlsl,(a1_wlsl,b1_wlsl,theta_wlsl),(wlsl_max,wlsl_min)=fit(method='wl+sl',plot=True, savefig=True)
-    m_cm,sigm_cm,b_cm,sigb_cm,sig_cm,(a1_cm,b1_cm,theta_cm),(cm_max,cm_min)=fit(method='cm',plot=True, savefig=True)
-    m_losvd,sigm_losvd,b_losvd,sigb_losvd,sig_losvd,(a1_losvd,b1_losvd,theta_losvd),(losvd_max,losvd_min)=fit(method='losvd',plot=True, savefig=True)
-    ipdb.set_trace()
-    # Plotting all linear fits on the same plot
-    extrap = True
+    #'''
+    m_xray,sigm_xray,b_xray,sigb_xray,sig_xray,(a1_xray,b1_xray,theta_xray),(xray_max,xray_min)=fit(method='xray')#,plot=True, savefig=True)
+    m_wl,sigm_wl,b_wl,sigb_wl,sig_wl,(a1_wl,b1_wl,theta_wl),(wl_max,wl_min)=fit(method='wl')#,plot=True, savefig=True)
+    m_sl,sigm_sl,b_sl,sigb_sl,sig_sl,(a1_sl,b1_sl,theta_sl),(sl_max,sl_min)=fit(method='sl')#,plot=True, savefig=True)
+    m_wlsl,sigm_wlsl,b_wlsl,sigb_wlsl,sig_wlsl,(a1_wlsl,b1_wlsl,theta_wlsl),(wlsl_max,wlsl_min)=fit(method='wl+sl')#,plot=True, savefig=True)
+    m_cm,sigm_cm,b_cm,sigb_cm,sig_cm,(a1_cm,b1_cm,theta_cm),(cm_max,cm_min)=fit(method='cm')#,plot=True, savefig=True)
+    m_losvd,sigm_losvd,b_losvd,sigb_losvd,sig_losvd,(a1_losvd,b1_losvd,theta_losvd),(losvd_max,losvd_min)=fit(method='losvd')#,plot=True, savefig=True)
+    
+    ## Plotting all linear fits on the same plot
+    extrap = False
     
     plt.figure(figsize=(8,8))
-    
+    # setting range for x based upon whether or not I'm using extrapolation
     if extrap is False:
         xlist_xray = np.linspace(xray_min,xray_max,100)
     elif extrap is True:
         xlist_xray = np.linspace(13,17,100)
-    plt.plot(xlist_xray,[m_xray*i+b_xray for i in xlist_xray],color='green',label='X-ray')
-    plt.fill_between(xlist_xray,[(m_xray+sigm_xray)*i+(b_xray+sigb_xray+sig_xray) for i in xlist_xray],[(m_xray-sigm_xray)*i+(b_xray-sigb_xray-sig_xray) for i in xlist_xray],alpha=0.25,color='green')
-
     if extrap is False:
         xlist_wl = np.linspace(wl_min,wl_max,100)
     elif extrap is True:
         xlist_wl = np.linspace(13,17,100)
-    plt.plot(xlist_wl,[m_wl*i+b_wl for i in xlist_wl],color='purple',label='WL')
-    plt.fill_between(xlist_wl,[(m_wl+sigm_wl)*i+(b_wl+sigb_wl+sig_wl) for i in xlist_wl],[(m_wl-sigm_wl)*i+(b_wl-sigb_wl-sig_wl) for i in xlist_wl],alpha=0.25,color='purple')
-
     if extrap is False:
         xlist_sl = np.linspace(sl_min,sl_max,100)
     elif extrap is True:
         xlist_sl = np.linspace(13,17,100)
-    plt.plot(xlist_sl,[m_sl*i+b_sl for i in xlist_sl],color='red',label='SL')
-    plt.fill_between(xlist_sl,[(m_sl+sigm_sl)*i+(b_sl+sigb_sl+sig_sl) for i in xlist_sl],[(m_sl-sigm_sl)*i+(b_sl-sigb_sl-sig_sl) for i in xlist_sl],alpha=0.25,color='red')
-
     if extrap is False:
         xlist_wlsl = np.linspace(wlsl_min,wlsl_max,100)
     elif extrap is True:
         xlist_wlsl = np.linspace(13,17,100)
-    plt.plot(xlist_wlsl,[m_wlsl*i+b_wlsl for i in xlist_wlsl],color='black',label='WL+SL')
-    plt.fill_between(xlist_wlsl,[(m_wlsl+sigm_wlsl)*i+(b_wlsl+sigb_wlsl+sig_wlsl) for i in xlist_wlsl],[(m_wlsl-sigm_wlsl)*i+(b_wlsl-sigb_wlsl-sig_wlsl) for i in xlist_wlsl],alpha=0.25,color='black')
-
     if extrap is False:
         xlist_cm = np.linspace(cm_min,cm_max,100)
     elif extrap is True:
         xlist_cm = np.linspace(13,17,100)
-    plt.plot(xlist_cm,[m_cm*i+b_cm for i in xlist_cm],color='blue',label='CM')
-    plt.fill_between(xlist_cm,[(m_cm+sigm_cm)*i+(b_cm+sigb_cm+sig_cm) for i in xlist_cm],[(m_cm-sigm_cm)*i+(b_cm-sigb_cm-sig_cm) for i in xlist_cm],alpha=0.25,color='blue')
-
     if extrap is False:
         xlist_losvd = np.linspace(losvd_min,losvd_max,100)
     elif extrap is True:
         xlist_losvd = np.linspace(13,17,100)
+    # plotting trends and error regions for method of least-squares (w/ errors); do not plot at the same time as bootstrap section below
+    #'''
+    plt.plot(xlist_xray,[m_xray*i+b_xray for i in xlist_xray],color='green',label='X-ray')
+    plt.fill_between(xlist_xray,[(m_xray+sigm_xray)*i+(b_xray+sigb_xray+sig_xray) for i in xlist_xray],[(m_xray-sigm_xray)*i+(b_xray-sigb_xray-sig_xray) for i in xlist_xray],alpha=0.25,color='green')
+    plt.plot(xlist_wl,[m_wl*i+b_wl for i in xlist_wl],color='purple',label='WL')
+    plt.fill_between(xlist_wl,[(m_wl+sigm_wl)*i+(b_wl+sigb_wl+sig_wl) for i in xlist_wl],[(m_wl-sigm_wl)*i+(b_wl-sigb_wl-sig_wl) for i in xlist_wl],alpha=0.25,color='purple')
+    plt.plot(xlist_sl,[m_sl*i+b_sl for i in xlist_sl],color='red',label='SL')
+    plt.fill_between(xlist_sl,[(m_sl+sigm_sl)*i+(b_sl+sigb_sl+sig_sl) for i in xlist_sl],[(m_sl-sigm_sl)*i+(b_sl-sigb_sl-sig_sl) for i in xlist_sl],alpha=0.25,color='red')
+    plt.plot(xlist_wlsl,[m_wlsl*i+b_wlsl for i in xlist_wlsl],color='black',label='WL+SL')
+    plt.fill_between(xlist_wlsl,[(m_wlsl+sigm_wlsl)*i+(b_wlsl+sigb_wlsl+sig_wlsl) for i in xlist_wlsl],[(m_wlsl-sigm_wlsl)*i+(b_wlsl-sigb_wlsl-sig_wlsl) for i in xlist_wlsl],alpha=0.25,color='black')
+    plt.plot(xlist_cm,[m_cm*i+b_cm for i in xlist_cm],color='blue',label='CM')
+    plt.fill_between(xlist_cm,[(m_cm+sigm_cm)*i+(b_cm+sigb_cm+sig_cm) for i in xlist_cm],[(m_cm-sigm_cm)*i+(b_cm-sigb_cm-sig_cm) for i in xlist_cm],alpha=0.25,color='blue')
     plt.plot(xlist_losvd,[m_losvd*i+b_losvd for i in xlist_losvd],color='orange',label='LOSVD')
     plt.fill_between(xlist_losvd,[(m_losvd+sigm_losvd)*i+(b_losvd+sigb_losvd+sig_losvd) for i in xlist_losvd],[(m_losvd-sigm_losvd)*i+(b_losvd-sigb_losvd-sig_losvd) for i in xlist_losvd],alpha=0.25,color='orange')
-    
+    #'''
+    # plotting bootstrap fits and error regions (w/ errors), manually
+    '''
+    plt.plot(xlist_xray,[-0.1627*i+3.3331 for i in xlist_xray],color='green',label='X-ray')
+    plt.fill_between(xlist_xray,[(-0.1627+0.0284)*i+(3.3348+0.4274+0.1994) for i in xlist_xray],[(-0.1627-0.0284)*i+(3.3348-0.4274-0.1994) for i in xlist_xray],alpha=0.25,color='green')
+    plt.plot(xlist_wl,[-0.4917*i+8.2976 for i in xlist_wl],color='purple',label='WL')
+    plt.fill_between(xlist_wl,[(-0.4917+0.0953)*i+(8.2976+1.4125+0.1716) for i in xlist_wl],[(-0.4917-0.0953)*i+(8.2976-1.4125-0.1716) for i in xlist_wl],alpha=0.25,color='purple')
+    plt.plot(xlist_sl,[-0.0003*i+0.9736 for i in xlist_sl],color='red',label='SL')
+    plt.fill_between(xlist_sl,[(-0.0003+0.1693)*i+(0.9736+2.5356+0.1188) for i in xlist_sl],[(-0.0003-0.1693)*i+(0.9736-2.5356-0.1188) for i in xlist_sl],alpha=0.25,color='red')
+    plt.plot(xlist_wlsl,[-0.6043*i+9.9818 for i in xlist_wlsl],color='black',label='WL+SL')
+    plt.fill_between(xlist_wlsl,[(-0.6043+0.1325)*i+(9.9818+1.9602+0.1411) for i in xlist_wlsl],[(-0.6043-0.1325)*i+(9.9818-1.9602-0.1411) for i in xlist_wlsl],alpha=0.25,color='black')
+    plt.plot(xlist_cm,[0.2187*i+-2.2660 for i in xlist_cm],color='blue',label='CM')
+    plt.fill_between(xlist_cm,[(0.2187+0.1196)*i+(-2.2660+1.7296+0.2155) for i in xlist_cm],[(0.2187-0.1196)*i+(-2.2660-1.7296-0.2155) for i in xlist_cm],alpha=0.25,color='blue')
+    plt.plot(xlist_losvd,[0.0379*i+0.2463 for i in xlist_losvd],color='orange',label='LOSVD')
+    plt.fill_between(xlist_losvd,[(0.0379+0.1225)*i+(0.2463+1.8035+0.1797) for i in xlist_losvd],[(0.0379-0.1225)*i+(0.2463-1.8035-0.1797) for i in xlist_losvd],alpha=0.25,color='orange')
+    '''
     plt.legend(loc=0)
     plt.xlabel(r'$\mathrm{\log \, M_{vir}/M_{\odot}}$',fontsize=20)
     plt.ylabel(r'$\mathrm{\log \, c_{vir} (1+z) }$',fontsize=20)
@@ -552,7 +564,7 @@ if __name__ == "__main__":
         plt.savefig('ObsCM_LinearModel_NoExtrap.png')
     elif extrap is True:
         plt.savefig('ObsCM_LinearModel_Extrap.png')
-    '''
+    
     
     # Plotting all of the error ellipses on the same plot
     # Not that informative of a plot...
@@ -639,9 +651,13 @@ if __name__ == "__main__":
     do_bootstrap(method='LOSVD',witherrors=False, savepath=tmp_path)
     '''
     #with error next
+    '''
     do_bootstrap(method='X-ray',witherrors=True,savepath=tmp_path,nsamples=100)
     do_bootstrap(method='CM',witherrors=True,savepath=tmp_path,nsamples=100)
     do_bootstrap(method='WL',witherrors=True,savepath=tmp_path,nsamples=100)
     do_bootstrap(method='SL',witherrors=True,savepath=tmp_path,nsamples=100)
     do_bootstrap(method='WL+SL',witherrors=True,savepath=tmp_path,nsamples=100)
     do_bootstrap(method='LOSVD',witherrors=True,savepath=tmp_path,nsamples=100)
+    '''
+
+    
