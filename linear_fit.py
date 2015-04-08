@@ -2,10 +2,49 @@ from astropy.io.ascii import read
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 from scipy.misc import derivative
+from scipy.optimize import leastsq
 import numpy as np
 import ipdb
 
-# Functions
+# Functions for finding projected concentrations
+def j(p,q,phi,theta):
+    return np.sin(theta)**2/(p**2*q**2) + np.cos(theta)**2*np.cos(phi)**2/q**2 + np.cos(theta)**2*np.sin(phi)**2
+    
+def k(p,q,phi,theta):
+    return (1/q**2 - 1/p**2)*np.sin(phi)*np.cos(phi)*np.cos(theta)
+
+def l(p,q,phi,theta):
+    return np.sin(phi)**2/q**2 + np.cos(phi)**2/p**2
+
+def Q(p,q,phi,theta):
+    return np.sqrt((j(p,q,phi,theta)+l(p,q,phi,theta)-np.sqrt((j(p,q,phi,theta)-l(p,q,phi,theta))**2+4*k(p,q,phi,theta)**2))/(j(p,q,phi,theta)+l(p,q,phi,theta)+np.sqrt((j(p,q,phi,theta)-l(p,q,phi,theta))**2+4*k(p,q,phi,theta)**2)))
+
+def f(p,q,phi,theta):
+    return np.sin(theta)**2*np.sin(phi)**2/q**2 + np.sin(theta)**2*np.cos(phi)**2/p**2 + np.cos(theta)**2
+
+def e_delta(p,q,phi,theta):
+    return np.sqrt(p*q/Q(p,q,phi,theta)) * f(p,q,phi,theta)**(3/4)
+
+def deltaC_deltac_ratio(p,q,phi,theta):
+    return 1/e_delta(p,q,phi,theta)
+
+def delta(c):
+    return (200/3) * (c**3 / (np.log(1+c) - c/(1+c)))
+
+def residuals(C,c,q,thetaval,ProlOrObl):
+    if ProlOrObl == 'prol':
+        return delta(C) - deltaC_deltac_ratio(q,q,0,thetaval) * delta(c)
+    elif ProlOrObl == 'obl':
+        return delta(C) - deltaC_deltac_ratio(1,q,np.pi/2,thetaval) * delta(c)
+
+def conc_finder_pro(c,thetalist,q):
+    outlist = []
+    for theta in thetalist:
+        p0 = [c]
+        outlist.append(leastsq(residuals,p0, args=(c,q,theta,'prol'))[0])
+    return outlist
+
+# All Other Functions
 
 def chi2(x,y,sigx,sigy,sig,m,b,N):
     sigtot2=sigy**2+sig**2
@@ -64,8 +103,36 @@ def startup(fname=None):
         print("Filename must be specified...")
         return
 
-def startup_sims(fname=None):
-    return
+def startup_sims():
+    try:
+        raw_data = read('/Users/groenera/Desktop/Dropbox/Private/Research/GroupMeetings/Meeting#60/concs_m200s_data.txt',delimiter=',',guess=False)
+    except:
+        print("Cannot find datafile...")
+        return
+
+    raw_concs = raw_data['c200']
+    raw_fof = raw_data['mfof']
+    raw_masses = raw_data['m200']
+
+    high_indices = [i for i in range(len(raw_fof)) if raw_fof[i] > 1.2e14]
+    h_concs = [raw_concs[i] for i in range(len(raw_concs)) if i in high_indices]
+    h_masses = [raw_masses[i] for i in range(len(raw_masses)) if i in high_indices]
+
+    low_indices = [i for i in range(len(raw_masses)) if raw_fof[i] < 2.6e13]
+    l_concs = [raw_concs[i] for i in range(len(raw_concs)) if i in low_indices]
+    l_masses = [raw_masses[i] for i in range(len(raw_masses)) if i in low_indices]
+    
+    med_indices = [i for i in range(len(raw_masses)) if i not in high_indices and i not in low_indices]
+    m_concs = [raw_concs[i] for i in range(len(raw_concs)) if i in med_indices]
+    m_masses = [raw_masses[i] for i in range(len(raw_masses)) if i in med_indices]
+
+    #plt.scatter(h_masses,h_concs,color='red')
+    #plt.scatter(m_masses,m_concs,color='green')
+    #plt.scatter(l_masses,l_concs,color='blue')
+    #plt.xscale('log')
+    #plt.show()
+    
+    return l_concs,l_masses,m_concs,m_masses,h_concs,h_masses
 
 def startup_bootstrap(fname=None,handlerepeats=True,method=None):
     # first load in all of the data
@@ -305,6 +372,60 @@ def fit_bootstrap(method=None, witherrors=True, nsamples=100):
             b2_list.append(b2)
         return m2_list, b2_list
 
+def fit_sims(los_angle=None,scale=None):
+    l_concs,l_masses,m_concs,m_masses,h_concs,h_masses = startup_sims()
+    # Fitting with no uncertainties
+    if los_angle is None:
+        l_concs = np.log10(np.array(l_concs))
+        l_masses = np.log10(np.array(l_masses))
+        m_concs = np.log10(np.array(m_concs))
+        m_masses = np.log10(np.array(m_masses))
+        h_concs = np.log10(np.array(h_concs))
+        h_masses = np.log10(np.array(h_masses))
+        x = np.array(list(l_masses)+list(m_masses)+list(h_masses))
+        y = np.array(list(l_concs)+list(m_concs)+list(h_concs))
+    elif los_angle in ['Aligned','aligned']:
+        if scale in ['r200','R200','full']:
+            low_shapes = [np.random.normal(loc=0.64,scale=0.12) for i in range(len(l_concs))]
+            med_shapes = [np.random.normal(loc=0.59,scale=0.115) for i in range(len(m_concs))]
+            high_shapes = [np.random.normal(loc=0.48,scale=0.115) for i in range(len(h_concs))]
+        elif scale in ['half','0.5*r200','0.5*R200']:
+            low_shapes = [np.random.normal(loc=0.60,scale=0.125) for i in range(len(l_concs))]
+            med_shapes = [np.random.normal(loc=0.555,scale=0.125) for i in range(len(m_concs))]
+            high_shapes = [np.random.normal(loc=0.49,scale=0.095) for i in range(len(h_concs))]
+        else:
+            print("Invalid input for variable scale...")
+            return
+        # now recompute concentration as if aligned along the l.o.s.
+        y_low = [conc_finder_pro(l_concs[i],[0],low_shapes[i])[0][0] for i in range(len(l_concs))]
+        y_med = [conc_finder_pro(m_concs[i],[0],med_shapes[i])[0][0] for i in range(len(m_concs))]
+        y_high = [conc_finder_pro(h_concs[i],[0],high_shapes[i])[0][0] for i in range(len(h_concs))]
+        y = np.log10(np.array(y_low+y_med+y_high))
+        x = np.log10(np.array(list(l_masses)+list(m_masses)+list(h_masses)))
+        
+        #f, axarr = plt.subplots(2, sharex=True)
+        #axarr[0].hist(l_concs,bins=30,color='blue',histtype='stepfilled',alpha=0.5,normed=True)
+        #axarr[0].hist(m_concs,bins=25,color='green',histtype='stepfilled',alpha=0.5,normed=True)
+        #axarr[0].hist(m_concs,bins=5,color='red',histtype='stepfilled',alpha=0.5,normed=True)
+        #axarr[1].hist(y_low,bins=30,color='blue',histtype='stepfilled',alpha=0.5,normed=True)
+        #axarr[1].hist(y_med,bins=25,color='green',histtype='stepfilled',alpha=0.5,normed=True)
+        #axarr[1].hist(y_high,bins=5,color='red',histtype='stepfilled',alpha=0.5,normed=True)
+        #plt.show()
+        #ipdb.set_trace()
+        
+    N=len(x)
+    Sxy=sum(x*y)
+    Sx=sum(x)
+    Sy=sum(y)
+    Sxx=sum(x*x)
+    m1=(N*Sxy-Sx*Sy)/(N*Sxx-Sx*Sx)
+    b1=(-Sx*Sxy+Sxx*Sy)/(N*Sxx-Sx*Sx)
+    sig=np.std(y-(m1*x+b1))
+    print("Linear model (assuming no uncertainties): m: {}, b: {}, sig: {} ".format(m1,b1,sig))
+    return m1,b1,sig
+    
+    
+    
 def do_bootstrap(method = 'X-ray', nsamples = 1000, witherrors = False, showplots=False, savepath=None):
     if method in ['X-ray','x-ray','xray']:
         pl_col = 'green'
@@ -502,7 +623,7 @@ if __name__ == "__main__":
     m_losvd,sigm_losvd,b_losvd,sigb_losvd,sig_losvd,(a1_losvd,b1_losvd,theta_losvd),(losvd_max,losvd_min)=fit(method='losvd')#,plot=True, savefig=True)
     
     ## Plotting all linear fits on the same plot
-    extrap = True
+    extrap = False
     
     plt.figure(figsize=(8,8))
     # setting range for x based upon whether or not I'm using extrapolation
@@ -530,20 +651,21 @@ if __name__ == "__main__":
         xlist_losvd = np.linspace(losvd_min,losvd_max,100)
     elif extrap is True:
         xlist_losvd = np.linspace(13,17,100)
+    #'''
     # plotting trends and error regions for method of least-squares (w/ errors); do not plot at the same time as bootstrap section below
     #'''
-    plt.plot(xlist_xray,[m_xray*i+b_xray for i in xlist_xray],color='green',label='X-ray')
-    plt.fill_between(xlist_xray,[(m_xray+sigm_xray)*i+(b_xray+sigb_xray+sig_xray) for i in xlist_xray],[(m_xray-sigm_xray)*i+(b_xray-sigb_xray-sig_xray) for i in xlist_xray],alpha=0.25,color='green')
+    #plt.plot(xlist_xray,[m_xray*i+b_xray for i in xlist_xray],color='green',label='X-ray')
+    #plt.fill_between(xlist_xray,[(m_xray+sigm_xray)*i+(b_xray+sigb_xray+sig_xray) for i in xlist_xray],[(m_xray-sigm_xray)*i+(b_xray-sigb_xray-sig_xray) for i in xlist_xray],alpha=0.25,color='green')
     plt.plot(xlist_wl,[m_wl*i+b_wl for i in xlist_wl],color='purple',label='WL')
     plt.fill_between(xlist_wl,[(m_wl+sigm_wl)*i+(b_wl+sigb_wl+sig_wl) for i in xlist_wl],[(m_wl-sigm_wl)*i+(b_wl-sigb_wl-sig_wl) for i in xlist_wl],alpha=0.25,color='purple')
-    plt.plot(xlist_sl,[m_sl*i+b_sl for i in xlist_sl],color='red',label='SL')
-    plt.fill_between(xlist_sl,[(m_sl+sigm_sl)*i+(b_sl+sigb_sl+sig_sl) for i in xlist_sl],[(m_sl-sigm_sl)*i+(b_sl-sigb_sl-sig_sl) for i in xlist_sl],alpha=0.25,color='red')
+    #plt.plot(xlist_sl,[m_sl*i+b_sl for i in xlist_sl],color='red',label='SL')
+    #plt.fill_between(xlist_sl,[(m_sl+sigm_sl)*i+(b_sl+sigb_sl+sig_sl) for i in xlist_sl],[(m_sl-sigm_sl)*i+(b_sl-sigb_sl-sig_sl) for i in xlist_sl],alpha=0.25,color='red')
     plt.plot(xlist_wlsl,[m_wlsl*i+b_wlsl for i in xlist_wlsl],color='black',label='WL+SL')
     plt.fill_between(xlist_wlsl,[(m_wlsl+sigm_wlsl)*i+(b_wlsl+sigb_wlsl+sig_wlsl) for i in xlist_wlsl],[(m_wlsl-sigm_wlsl)*i+(b_wlsl-sigb_wlsl-sig_wlsl) for i in xlist_wlsl],alpha=0.25,color='black')
-    plt.plot(xlist_cm,[m_cm*i+b_cm for i in xlist_cm],color='blue',label='CM')
-    plt.fill_between(xlist_cm,[(m_cm+sigm_cm)*i+(b_cm+sigb_cm+sig_cm) for i in xlist_cm],[(m_cm-sigm_cm)*i+(b_cm-sigb_cm-sig_cm) for i in xlist_cm],alpha=0.25,color='blue')
-    plt.plot(xlist_losvd,[m_losvd*i+b_losvd for i in xlist_losvd],color='orange',label='LOSVD')
-    plt.fill_between(xlist_losvd,[(m_losvd+sigm_losvd)*i+(b_losvd+sigb_losvd+sig_losvd) for i in xlist_losvd],[(m_losvd-sigm_losvd)*i+(b_losvd-sigb_losvd-sig_losvd) for i in xlist_losvd],alpha=0.25,color='orange')
+    #plt.plot(xlist_cm,[m_cm*i+b_cm for i in xlist_cm],color='blue',label='CM')
+    #plt.fill_between(xlist_cm,[(m_cm+sigm_cm)*i+(b_cm+sigb_cm+sig_cm) for i in xlist_cm],[(m_cm-sigm_cm)*i+(b_cm-sigb_cm-sig_cm) for i in xlist_cm],alpha=0.25,color='blue')
+    #plt.plot(xlist_losvd,[m_losvd*i+b_losvd for i in xlist_losvd],color='orange',label='LOSVD')
+    #plt.fill_between(xlist_losvd,[(m_losvd+sigm_losvd)*i+(b_losvd+sigb_losvd+sig_losvd) for i in xlist_losvd],[(m_losvd-sigm_losvd)*i+(b_losvd-sigb_losvd-sig_losvd) for i in xlist_losvd],alpha=0.25,color='orange')
     #'''
     # plotting bootstrap fits and error regions (w/ errors), manually
     '''
@@ -560,13 +682,21 @@ if __name__ == "__main__":
     plt.plot(xlist_losvd,[0.0379*i+0.2463 for i in xlist_losvd],color='orange',label='LOSVD')
     plt.fill_between(xlist_losvd,[(0.0379+0.1225)*i+(0.2463+1.8035+0.1797) for i in xlist_losvd],[(0.0379-0.1225)*i+(0.2463-1.8035-0.1797) for i in xlist_losvd],alpha=0.25,color='orange')
     '''
+    # plotting sims over-top of data
+    m_sim_los_half,b_sim_los_half,sig_sim_los_half=fit_sims(los_angle='aligned',scale='half')
+    m_sim_los_full,b_sim_los_full,sig_sim_los_full=fit_sims(los_angle='aligned',scale='full')
+    m_sim_intrinsic,b_sim_intrinsic,sig_sim_intrinsic=fit_sims()
+    plt.plot(np.linspace(13,17,100),[m_sim_intrinsic*i+b_sim_intrinsic for i in np.linspace(13,17,100)],color='cyan',label='Intrinsic Simulations')
+    plt.fill_between(np.linspace(13,17,100),[(m_sim_intrinsic)*i+(b_sim_intrinsic+sig_sim_intrinsic) for i in np.linspace(13,17,100)],[(m_sim_intrinsic)*i+(b_sim_intrinsic-sig_sim_intrinsic) for i in np.linspace(13,17,100)],alpha=0.25,color='cyan')
+    #ipdb.set_trace()
+    
     plt.legend(loc=0)
     plt.xlabel(r'$\mathrm{\log \, M_{vir}/M_{\odot}}$',fontsize=20)
     plt.ylabel(r'$\mathrm{\log \, c_{vir} (1+z) }$',fontsize=20)
     if extrap is False:
-        plt.savefig('ObsCM_LinearModel_NoExtrap.png')
+        plt.savefig('ObsCM_LinearModel_NoExtrap_LensingWithSims.png')
     elif extrap is True:
-        plt.savefig('ObsCM_LinearModel_Extrap.png')
+        plt.savefig('ObsCM_LinearModel_Extrap_LensingWithSims.png')
     
     
     # Plotting all of the error ellipses on the same plot
