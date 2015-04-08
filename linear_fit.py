@@ -499,7 +499,7 @@ if __name__ == "__main__":
     m_losvd,sigm_losvd,b_losvd,sigb_losvd,sig_losvd,(a1_losvd,b1_losvd,theta_losvd),(losvd_max,losvd_min)=fit(method='losvd')#,plot=True, savefig=True)
     
     ## Plotting all linear fits on the same plot
-    extrap = False
+    extrap = True
     
     plt.figure(figsize=(8,8))
     # setting range for x based upon whether or not I'm using extrapolation
