@@ -64,6 +64,9 @@ def startup(fname=None):
         print("Filename must be specified...")
         return
 
+def startup_sims(fname=None):
+    return
+
 def startup_bootstrap(fname=None,handlerepeats=True,method=None):
     # first load in all of the data
     if handlerepeats is False:
