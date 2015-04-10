@@ -4,6 +4,7 @@ from matplotlib.patches import Ellipse
 from scipy.misc import derivative
 from scipy.optimize import leastsq
 import numpy as np
+import collections
 import ipdb
 
 # Functions for finding projected concentrations
@@ -424,6 +425,152 @@ def fit_sims(los_angle=None,scale=None):
     print("Linear model (assuming no uncertainties): m: {}, b: {}, sig: {} ".format(m1,b1,sig))
     return m1,b1,sig
     
+def fit_all(plot=False, savefig=False, plotwitherrorbars = False):
+    # Load the data from file
+    pl_col_xray = 'green'
+    filename_xray='{}_data.txt'.format('X-ray')
+    pl_col_wl = 'purple'
+    filename_wl='{}_data.txt'.format('WL')
+    pl_col_sl = 'red'
+    filename_sl='{}_data.txt'.format('SL')
+    pl_col_wlsl = 'black'
+    filename_wlsl='{}_data.txt'.format('WL+SL')
+    pl_col_cm = 'blue'
+    filename_cm='{}_data.txt'.format('CM')
+    pl_col_losvd = 'orange'
+    filename_losvd='{}_data.txt'.format('LOSVD')
+
+    intro = "FITTING METHOD: FULL OBSERVATIONAL SAMPLE"
+    print('*'*len(intro))
+    print(intro)
+    print('*'*len(intro))
+
+    # doesn't take repeat measurements into account; but need it for print the original sample size to the terminal
+    tot = 0
+    for i in [filename_xray,filename_wl,filename_sl,filename_wlsl,filename_cm,filename_losvd]:
+        x_old,y_old,sigx_old,sigy_old,cl_old = startup(fname=i)
+        tot = tot + len(x_old)
+    
+    # new function which discovers repeats of clusters across any and all methods
+    x,y,sigx,sigy,uniques,methods = discover_repeats_all(
+        fname_list=[filename_xray,filename_wl,filename_sl,
+                    filename_wlsl,filename_cm,filename_losvd])
+    x,y,sigx,sigy = (np.array(x),np.array(y),np.array(sigx),np.array(sigy))
+    xmax,xmin = max(x),min(x) 
+
+    print("Number of measurements used: {}".format(tot))
+    print("Number of unique clusters: {}".format(len(x)))
+    
+    # Fitting as if there are no uncertainties
+    N=len(x)
+    Sxy=sum(x*y)
+    Sx=sum(x)
+    Sy=sum(y)
+    Sxx=sum(x*x)
+    m1=(N*Sxy-Sx*Sy)/(N*Sxx-Sx*Sx)
+    b1=(-Sx*Sxy+Sxx*Sy)/(N*Sxx-Sx*Sx)
+    sig=np.sqrt(np.std(y-(m1*x+b1))**2-np.mean(sigy**2))
+    print("Linear model (assuming no uncertainties): m: {}, b: {}, sig: {} ".format(m1,b1,sig))
+
+    # Using chi-squared fitting routine
+    ## (not completely the correct thing to do,
+    ##  but a back of the envelope method)
+    m2,b2 = steepest_decent(x,y,sigx,sigy,sig,m1,b1,N,alpha=0.75,tol=1.e-6)
+
+    # Calculating second order partial derivatives for error of the fit
+    F11 = second_partial_derivative(chi2,var=5,point=[x,y,sigx,sigy,sig,m2,b2,N])
+    F22 = second_partial_derivative(chi2,var=6,point=[x,y,sigx,sigy,sig,m2,b2,N])
+    F12 = second_partial_derivative_mixed(chi2,var=[5,6],point=(x,y,sigx,sigy,sig,m2,b2,N))
+    F21 = F12
+    # Error in fit
+    sigm=1./np.sqrt(F11)
+    sigb=1./np.sqrt(F22)
+
+    print("Linear model (with uncertainties): m: {} +/- {}, b: {} +/- {}".format(m2,sigm,b2,sigb))
+    
+    # Plotting the best fit line over the data
+    if plot is True:
+        color_list = []
+        plt.figure(figsize=(8,8))
+        plt.title("All Methods")
+        for i in range(len(x)):
+            if methods[i] == 'X-ray':
+                tmp_col = 'green'
+            elif methods[i] == 'WL':
+                tmp_col = 'purple'
+            elif methods[i] == 'SL':
+                tmp_col = 'red'
+            elif methods[i] == 'WL+SL':
+                tmp_col = 'black'
+            elif methods[i] == 'CM':
+                tmp_col = 'blue'
+            elif methods[i] == 'LOSVD':
+                tmp_col = 'orange'
+            elif methods[i] == 'COMB':
+                tmp_col = 'cyan'
+            else:
+                print("Undefined method found...")
+                return
+            if plotwitherrorbars is True:
+                plt.errorbar(x[i],y[i],xerr=sigx[i],yerr=sigy[i],fmt='o',color=tmp_col)
+            elif plotwitherrorbars is False:
+                plt.scatter(x[i],y[i],color=tmp_col)
+        x0 = np.array([13.0,17.5])
+        y0=m2*x0+b2
+        plt.plot(x0,y0,linewidth=3,color='yellow')
+        plt.fill_between(x0,[(m2+sigm)*i+(b2+sigb+sig) for i in x0],[(m2-sigm)*i+(b2-sigb-sig) for i in x0],alpha=0.5,color='yellow')
+        l_concs,l_masses,m_concs,m_masses,h_concs,h_masses = startup_sims()
+        plt.errorbar(np.log10(np.average(l_masses)),np.log10(np.average(l_concs)),yerr=np.log10(np.std(l_concs)),
+                     fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,label='Groener and Goldberg (2014)',zorder=20)
+        plt.scatter(np.log10(np.average(l_masses)),np.log10(np.average(l_concs)),
+                    marker='*',s=500,zorder=21,color='magenta',edgecolor='k')
+        plt.errorbar(np.log10(np.average(m_masses)),np.log10(np.average(m_concs)),yerr=np.log10(np.std(m_concs)),
+                     fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,zorder=20)
+        plt.scatter(np.log10(np.average(m_masses)),np.log10(np.average(m_concs)),
+                    marker='*',s=500,zorder=21,color='magenta',edgecolor='k')
+        plt.errorbar(np.log10(np.average(h_masses)),np.log10(np.average(h_concs)),yerr=np.log10(np.std(h_concs)),
+                     fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,zorder=20)
+        plt.scatter(np.log10(np.average(h_masses)),np.log10(np.average(h_concs)),
+                    marker='*',s=500,zorder=21,color='magenta',edgecolor='k')
+        plt.xlabel(r'$\mathrm{\log{ M_{vir}/M_{\odot}}}$',fontsize=18)
+        plt.ylabel(r'$\mathrm{\log{ \, c_{vir} \cdot (1+z) }}$',fontsize=18)
+        plt.xlim(13.0,17.0)
+        plt.ylim(-0.5,2.0)
+        plt.legend(loc=0,numpoints=1,frameon=False,fontsize=11)
+        if savefig is True:
+            plt.savefig('AllMethodsWithSims_linearmodel_witherror.png')
+
+    # Calculating and plotting error ellipse
+    detF=F11*F22-F12*F12
+    Qxx=F22/detF
+    Qyy=F11/detF
+    Qxy=-F12/detF
+    
+    theta=np.arctan(2*Qxy/(Qxx-Qyy+1e-9))/2.
+    a1=np.sqrt(Qxx*pow(np.cos(theta),2)+Qyy*pow(np.sin(theta),2)+2*Qxy*np.sin(theta)*np.cos(theta))
+    b1=np.sqrt(Qxx*pow(np.sin(theta),2)+Qyy*pow(np.cos(theta),2)-2*Qxy*np.sin(theta)*np.cos(theta))    
+
+    if plot is True:
+        fig = plt.figure(figsize=(8,8))
+        plt.title("All Methods")
+        ax = fig.add_subplot(111)
+        ell=Ellipse([m2,b2],width=2*a1,height=2*b1,angle=theta*57.3)
+        ell2=Ellipse([m2,b2],width=a1,height=b1,angle=theta*57.3)
+        ax.add_artist(ell)
+        ell.set_facecolor('g')
+        ax.add_artist(ell2)
+        ell2.set_facecolor('y')
+        ax.plot(m2,b2,'+')
+        plt.xlabel('m')
+        plt.ylabel('b')
+        ax.set_xlim(m2-30*a1,m2+30*a1)
+        ax.set_ylim(b2-300*a1,b2+300*a1)
+        if savefig is True:
+            plt.savefig('AllMethods_errorellipse.png')
+        plt.show()
+
+    return m2,sigm,b2,sigb,sig,(a1,b1,theta),(xmax,xmin)
+
     
     
 def do_bootstrap(method = 'X-ray', nsamples = 1000, witherrors = False, showplots=False, savepath=None):
@@ -597,13 +744,102 @@ def discover_repeats(method=None, plotrepeats=False, plotdiff=False):
     else:
         return xout,yout,sigxout,sigyout,uniques
 
+def discover_repeats_all(fname_list = None, plotrepeats=False, plotdiff=False):
+    
+    if type(fname_list) is list and len(fname_list) >0:
+        x,y,sigx,sigy,clusters,methods = ([],[],[],[],[],[])
+        for fh in fname_list:
+            x_tmp,y_tmp,sigx_tmp,sigy_tmp,clusters_tmp = startup(fname=fh)
+            x = x + list(x_tmp)
+            y = y + list(y_tmp)
+            sigx = sigx + list(sigx_tmp)
+            sigy = sigy + list(sigy_tmp)
+            clusters = clusters + clusters_tmp.tolist()
+            if 'X-ray' in fh:
+                methods = methods + ['X-ray' for i in range(len(x_tmp))]
+            elif 'WL' in fh:
+                methods = methods + ['WL' for i in range(len(x_tmp))]
+            elif 'SL' in fh:
+                methods = methods + ['SL' for i in range(len(x_tmp))]
+            elif 'WL+SL' in fh:
+                methods = methods + ['WL+SL' for i in range(len(x_tmp))]
+            elif 'CM' in fh:
+                methods = methods + ['CM' for i in range(len(x_tmp))]
+            elif 'LOSVD' in fh:
+                methods = methods + ['LOSVD' for i in range(len(x_tmp))]
+        assert len(methods) == len(x)
+        uniques = [i for i in set(clusters)]
+        counts = [clusters.count(i) for i in uniques]
 
+        methodnames = ['X-ray','WL','SL','WL+SL','CM','LOSVD']
         
-if __name__ == "__main__":
+        xout = []
+        yout = []
+        sigxout = []
+        sigyout = []
+        methodsout = []
+        for i in range(len(uniques)):
+            if counts[i] == 1:
+                tmp_index = clusters.index(uniques[i])
+                xout.append(x[tmp_index])
+                yout.append(y[tmp_index])
+                sigxout.append(sigx[tmp_index])
+                sigyout.append(sigy[tmp_index])
+                methodsout.append(methods[tmp_index])
+            else:
+                tmp_indices = [j for j in range(len(clusters)) if clusters[j] == uniques[i]]
+                xrep = [x[i] for i in tmp_indices]
+                sigxrep = [sigx[i] for i in tmp_indices]
+                xweights = [(1.0/sigxrep[i]**2) for i in range(len(xrep))]
+                xnew = sum([xrep[i]*xweights[i] for i in range(len(xrep))])/sum(xweights)
+                sigxnew = 1.0/np.sqrt(sum(xweights))
+                xout.append(xnew)
+                sigxout.append(sigxnew)
+                yrep = [y[i] for i in tmp_indices]
+                sigyrep = [sigy[i] for i in tmp_indices]
+                yweights = [(1.0/sigyrep[i]**2) for i in range(len(yrep))]
+                ynew = sum([yrep[i]*yweights[i] for i in range(len(yrep))])/sum(yweights)
+                sigynew = 1.0/np.sqrt(sum(yweights))
+                yout.append(ynew)
+                sigyout.append(sigynew)
+                tmp_methods = [methods[i] for i in tmp_indices]
+                tmp_overlap = list((collections.Counter(methodnames) & collections.Counter(tmp_methods)).elements())
+                if len(tmp_overlap) > 1:
+                    methodsout.append('COMB')
+                elif len(tmp_overlap) == 1:
+                    methodsout.append(tmp_overlap[0])
+                else:
+                    print("No methods in tmp_overlap...")
+                    return 
+                if plotrepeats is True:
+                    plt.title("{}".format(uniques[i]))
+                    plt.xlabel(r"$\mathrm{\log M_{vir}/M_{\odot}}$",fontsize=18)
+                    plt.ylabel(r"$\mathrm{\log c_{vir} (1+z)}$",fontsize=18)
+                    plt.errorbar(xnew,ynew,yerr=[sigynew],xerr=[sigxnew],color='cyan')
+                    for i in range(len(tmp_indices)):
+                        plt.errorbar(xrep[i],yrep[i],yerr=[sigyrep[i]],xerr=[sigxrep[i]],color=pl_col)
+                    plt.show()
+                    ipdb.set_trace()
+        if plotdiff is True:
+            f, axarr = plt.subplots(2, sharex=True)
+            f.text(0.5, 0.01, r"$\mathrm{\log \, M_{vir}/M_{\odot}}$", fontsize=18, ha='center', va='center')
+            f.text(0.06, 0.5, r"$\mathrm{\log \, c_{vir} (1+z)}$", fontsize=18, ha='center', va='center', rotation='vertical')
+            for i in range(len(x)):
+                axarr[0].errorbar(x[i],y[i],yerr=[sigy[i]],xerr=[sigx[i]],color=pl_col)
+            for i in range(len(xout)):
+                axarr[1].errorbar(xout[i],yout[i],yerr=[sigyout[i]],xerr=[sigxout[i]],color='k')
+            plt.show()
+        else:
+            return xout,yout,sigxout,sigyout,uniques,methodsout
 
+# Housing for a bunch of code which runs the routine for finding
+# and coadding repeat measurements of clusters within each individual
+# method. 
+def do_individual_repeat_analyses():
     # Discovering and accounting for ("co-adding") measurements
     # from the same cluster within each method, so they are not
-    # over-represented in the fitting.
+    # over-represented in the fitting. Fitting functions in this
+    # script are now accounting for repeat measurements.
     '''
     discover_repeats(method='x-ray', plotrepeats=True, plotdiff=True)
     discover_repeats(method='wl', plotrepeats=True, plotdiff=True)
@@ -612,7 +848,12 @@ if __name__ == "__main__":
     discover_repeats(method='cm', plotrepeats=True, plotdiff=True)
     discover_repeats(method='losvd', plotrepeats=True, plotdiff=True)
     '''
-    
+
+# Housing for a bunch of code to run individual fitting routines on each method,
+# and also makes plots of the fits (extrapolated/non-extrapolated). Also has capability to
+# plot fits and uncertainties for simulations and bootstraps. Kind of sloppy at the moment,
+# and it requires reading comments about what to plot (and hence uncomment).
+def plot_summary(extrap = False):
     # Plotting the fit (and uncertainty regions) over the data
     #'''
     m_xray,sigm_xray,b_xray,sigb_xray,sig_xray,(a1_xray,b1_xray,theta_xray),(xray_max,xray_min)=fit(method='xray')#,plot=True, savefig=True)
@@ -623,8 +864,6 @@ if __name__ == "__main__":
     m_losvd,sigm_losvd,b_losvd,sigb_losvd,sig_losvd,(a1_losvd,b1_losvd,theta_losvd),(losvd_max,losvd_min)=fit(method='losvd')#,plot=True, savefig=True)
     
     ## Plotting all linear fits on the same plot
-    extrap = False
-    
     plt.figure(figsize=(8,8))
     # setting range for x based upon whether or not I'm using extrapolation
     if extrap is False:
@@ -654,18 +893,18 @@ if __name__ == "__main__":
     #'''
     # plotting trends and error regions for method of least-squares (w/ errors); do not plot at the same time as bootstrap section below
     #'''
-    plt.plot(xlist_xray,[m_xray*i+b_xray for i in xlist_xray],color='green',label='X-ray')
-    plt.fill_between(xlist_xray,[(m_xray+sigm_xray)*i+(b_xray+sigb_xray+sig_xray) for i in xlist_xray],[(m_xray-sigm_xray)*i+(b_xray-sigb_xray-sig_xray) for i in xlist_xray],alpha=0.25,color='green')
+    #plt.plot(xlist_xray,[m_xray*i+b_xray for i in xlist_xray],color='green',label='X-ray')
+    #plt.fill_between(xlist_xray,[(m_xray+sigm_xray)*i+(b_xray+sigb_xray+sig_xray) for i in xlist_xray],[(m_xray-sigm_xray)*i+(b_xray-sigb_xray-sig_xray) for i in xlist_xray],alpha=0.25,color='green')
     plt.plot(xlist_wl,[m_wl*i+b_wl for i in xlist_wl],color='purple',label='WL')
     plt.fill_between(xlist_wl,[(m_wl+sigm_wl)*i+(b_wl+sigb_wl+sig_wl) for i in xlist_wl],[(m_wl-sigm_wl)*i+(b_wl-sigb_wl-sig_wl) for i in xlist_wl],alpha=0.25,color='purple')
-    plt.plot(xlist_sl,[m_sl*i+b_sl for i in xlist_sl],color='red',label='SL')
-    plt.fill_between(xlist_sl,[(m_sl+sigm_sl)*i+(b_sl+sigb_sl+sig_sl) for i in xlist_sl],[(m_sl-sigm_sl)*i+(b_sl-sigb_sl-sig_sl) for i in xlist_sl],alpha=0.25,color='red')
+    #plt.plot(xlist_sl,[m_sl*i+b_sl for i in xlist_sl],color='red',label='SL')
+    #plt.fill_between(xlist_sl,[(m_sl+sigm_sl)*i+(b_sl+sigb_sl+sig_sl) for i in xlist_sl],[(m_sl-sigm_sl)*i+(b_sl-sigb_sl-sig_sl) for i in xlist_sl],alpha=0.25,color='red')
     plt.plot(xlist_wlsl,[m_wlsl*i+b_wlsl for i in xlist_wlsl],color='black',label='WL+SL')
     plt.fill_between(xlist_wlsl,[(m_wlsl+sigm_wlsl)*i+(b_wlsl+sigb_wlsl+sig_wlsl) for i in xlist_wlsl],[(m_wlsl-sigm_wlsl)*i+(b_wlsl-sigb_wlsl-sig_wlsl) for i in xlist_wlsl],alpha=0.25,color='black')
-    plt.plot(xlist_cm,[m_cm*i+b_cm for i in xlist_cm],color='blue',label='CM')
-    plt.fill_between(xlist_cm,[(m_cm+sigm_cm)*i+(b_cm+sigb_cm+sig_cm) for i in xlist_cm],[(m_cm-sigm_cm)*i+(b_cm-sigb_cm-sig_cm) for i in xlist_cm],alpha=0.25,color='blue')
-    plt.plot(xlist_losvd,[m_losvd*i+b_losvd for i in xlist_losvd],color='orange',label='LOSVD')
-    plt.fill_between(xlist_losvd,[(m_losvd+sigm_losvd)*i+(b_losvd+sigb_losvd+sig_losvd) for i in xlist_losvd],[(m_losvd-sigm_losvd)*i+(b_losvd-sigb_losvd-sig_losvd) for i in xlist_losvd],alpha=0.25,color='orange')
+    #plt.plot(xlist_cm,[m_cm*i+b_cm for i in xlist_cm],color='blue',label='CM')
+    #plt.fill_between(xlist_cm,[(m_cm+sigm_cm)*i+(b_cm+sigb_cm+sig_cm) for i in xlist_cm],[(m_cm-sigm_cm)*i+(b_cm-sigb_cm-sig_cm) for i in xlist_cm],alpha=0.25,color='blue')
+    #plt.plot(xlist_losvd,[m_losvd*i+b_losvd for i in xlist_losvd],color='orange',label='LOSVD')
+    #plt.fill_between(xlist_losvd,[(m_losvd+sigm_losvd)*i+(b_losvd+sigb_losvd+sig_losvd) for i in xlist_losvd],[(m_losvd-sigm_losvd)*i+(b_losvd-sigb_losvd-sig_losvd) for i in xlist_losvd],alpha=0.25,color='orange')
     #'''
     # plotting bootstrap fits and error regions (w/ errors), manually
     '''
@@ -683,20 +922,32 @@ if __name__ == "__main__":
     plt.fill_between(xlist_losvd,[(0.0379+0.1225)*i+(0.2463+1.8035+0.1797) for i in xlist_losvd],[(0.0379-0.1225)*i+(0.2463-1.8035-0.1797) for i in xlist_losvd],alpha=0.25,color='orange')
     '''
     # plotting sims over-top of data
-    m_sim_los_half,b_sim_los_half,sig_sim_los_half=fit_sims(los_angle='aligned',scale='half')
-    m_sim_los_full,b_sim_los_full,sig_sim_los_full=fit_sims(los_angle='aligned',scale='full')
-    m_sim_intrinsic,b_sim_intrinsic,sig_sim_intrinsic=fit_sims()
-    plt.plot(np.linspace(13,17,100),[m_sim_intrinsic*i+b_sim_intrinsic for i in np.linspace(13,17,100)],color='cyan',label='Intrinsic Simulations')
-    plt.fill_between(np.linspace(13,17,100),[(m_sim_intrinsic)*i+(b_sim_intrinsic+sig_sim_intrinsic) for i in np.linspace(13,17,100)],[(m_sim_intrinsic)*i+(b_sim_intrinsic-sig_sim_intrinsic) for i in np.linspace(13,17,100)],alpha=0.25,color='cyan')
-    #ipdb.set_trace()
+    #m_sim_los_half,b_sim_los_half,sig_sim_los_half=fit_sims(los_angle='aligned',scale='half')
+    #m_sim_los_full,b_sim_los_full,sig_sim_los_full=fit_sims(los_angle='aligned',scale='full')
+    #m_sim_intrinsic,b_sim_intrinsic,sig_sim_intrinsic=fit_sims()
+    #plt.plot(np.linspace(13,17,100),[m_sim_intrinsic*i+b_sim_intrinsic for i in np.linspace(13,17,100)],color='cyan',label='Intrinsic Simulations')
+    #plt.fill_between(np.linspace(13,17,100),[(m_sim_intrinsic)*i+(b_sim_intrinsic+sig_sim_intrinsic) for i in np.linspace(13,17,100)],[(m_sim_intrinsic)*i+(b_sim_intrinsic-sig_sim_intrinsic) for i in np.linspace(13,17,100)],alpha=0.25,color='cyan')
+    l_concs,l_masses,m_concs,m_masses,h_concs,h_masses = startup_sims()
+    plt.errorbar(np.log10(np.average(l_masses)),np.log10(np.average(l_concs)),yerr=np.log10(np.std(l_concs)),
+                 fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,label='Groener and Goldberg (2014)',zorder=20)
+    plt.scatter(np.log10(np.average(l_masses)),np.log10(np.average(l_concs)),
+                marker='*',s=500,zorder=21,color='magenta',edgecolor='k')
+    plt.errorbar(np.log10(np.average(m_masses)),np.log10(np.average(m_concs)),yerr=np.log10(np.std(m_concs)),
+                 fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,zorder=20)
+    plt.scatter(np.log10(np.average(m_masses)),np.log10(np.average(m_concs)),
+                marker='*',s=500,zorder=21,color='magenta',edgecolor='k')
+    plt.errorbar(np.log10(np.average(h_masses)),np.log10(np.average(h_concs)),yerr=np.log10(np.std(h_concs)),
+                 fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,zorder=20)
+    plt.scatter(np.log10(np.average(h_masses)),np.log10(np.average(h_concs)),
+                marker='*',s=500,zorder=21,color='magenta',edgecolor='k')
     
-    plt.legend(loc=0)
+    plt.legend(loc=0,numpoints=1,frameon=False,fontsize=11)
     plt.xlabel(r'$\mathrm{\log \, M_{vir}/M_{\odot}}$',fontsize=20)
     plt.ylabel(r'$\mathrm{\log \, c_{vir} (1+z) }$',fontsize=20)
     if extrap is False:
-        plt.savefig('ObsCM_LinearModel_NoExtrap_AllWithSims.png')
+        plt.savefig('ObsCM_WLandWLSLandSims_LinearModel_NoExtrap.png')
     elif extrap is True:
-        plt.savefig('ObsCM_LinearModel_Extrap_AllWithSims.png')
+        plt.savefig('ObsCM_WLandWLSLandSims_LinearModel_Extrap.png')
     
     
     # Plotting all of the error ellipses on the same plot
@@ -771,6 +1022,8 @@ if __name__ == "__main__":
     plt.show()
     '''
 
+# Housing for a bunch of code to run bootstrap analyses for each method (with and without errors)
+def boostrap_summary():
     # Performing bootstrap
     #tmp_path = '/Users/groenera/Desktop/Dropbox/Private/Research/GroupMeetings/Meeting#60/' # on OS X
     tmp_path = '/home/groenera/Desktop/Dropbox/Private/Research/GroupMeetings/Meeting#60/' # on Ubuntu
@@ -792,5 +1045,18 @@ if __name__ == "__main__":
     do_bootstrap(method='WL+SL',witherrors=True,savepath=tmp_path,nsamples=100)
     do_bootstrap(method='LOSVD',witherrors=True,savepath=tmp_path,nsamples=100)
     '''
+
+    
+if __name__ == "__main__":
+
+    # Making plot of fit to ALL data (with data plotted, too),
+    # with sims overlaid on top. 
+    #fit_all(plot=True, savefig=True, plotwitherrorbars=True)
+
+    # Making plot of fits to WL and WL+SL individually
+    # (no individual data points plotted here), with sims overlaid
+    # on top
+    plot_summary(extrap = False)
+    
 
     
