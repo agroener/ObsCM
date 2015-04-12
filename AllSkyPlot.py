@@ -9,8 +9,8 @@ from xlrd import open_workbook
 import ipdb
 
 # Opening Excel File
-#wb = open_workbook('/Users/groenera/Desktop/Dropbox/Private/Research/DataFiles/ObservedClusterConcsDB/cm_data.xlsx') # laptop and work machine
-wb = open_workbook('/home/groenera/Desktop/Dropbox/Private/Research/DataFiles/ObservedClusterConcsDB/cm_data.xlsx') # home desktop
+wb = open_workbook('/Users/groenera/Desktop/Dropbox/Private/Research/DataFiles/ObservedClusterConcsDB/cm_data.xlsx') # laptop and work machine
+#wb = open_workbook('/home/groenera/Desktop/Dropbox/Private/Research/DataFiles/ObservedClusterConcsDB/cm_data.xlsx') # home desktop
 
 # Some functions for converting
 def ra_to_deg(ra):
@@ -68,13 +68,29 @@ def color_data(colors,i):
     elif method_raw[i].value == 'WL+SL':
         colors.append('black')
     elif method_raw[i].value == 'LOSVD':
-        colors.append('yellow')
+        colors.append('orange')
     elif method_raw[i].value == 'X-ray':
         colors.append('green')
     elif method_raw[i].value == 'CM':
         colors.append('blue')
     return colors
 
+def scatter_data(scatters,i):
+    if method_raw[i].value == 'WL':
+        scatters.append('d')
+    elif method_raw[i].value == 'SL':
+        scatters.append('s')
+    elif method_raw[i].value == 'WL+SL':
+        scatters.append('o')
+    elif method_raw[i].value == 'LOSVD':
+        scatters.append('^')
+    elif method_raw[i].value == 'X-ray':
+        scatters.append('*')
+    elif method_raw[i].value == 'CM':
+        scatters.append('x')
+    return scatters
+
+    
 # Creating Data Structures
 ra_raw = []
 dec_raw = []
@@ -84,6 +100,7 @@ ra_deg = []
 dec_deg = []
 method_raw = []
 colors = []
+scatters = []
 # Retrieving RA/DEC
 for sheet in wb.sheets():
     if sheet.name == 'Sheet1':
@@ -100,6 +117,7 @@ for i in range(len(ra_raw)):
         ra_hms.append(ra_raw[i].value)
         dec_dms.append(dec_raw[i].value)
         colors = color_data(colors,i)
+        scatters = scatter_data(scatters,i)
                     
 # Covnert to degrees
 for i in range(len(ra_hms)):
@@ -116,17 +134,17 @@ ra_rad = c.ra.radian
 dec_rad = c.dec.radian
 ra_rad[ra_rad > np.pi] -= 2. * np.pi
 
-# Now plot the data in Aitoff projection with a grid.
+# Now plot the data in projection with a grid.
 fig = plt.figure()
-lab.subplot(111,projection="aitoff")
-lab.title(r"Aitoff Projection")
+lab.subplot(111,projection="rectilinear")
 lab.grid(True)
 
+#'''
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-l_list = np.linspace(0,10,1000) # galactic plane
-b_list = np.linspace(0,10,1000) # galactic plane
+l_list = np.linspace(-180,180,150) # galactic plane
+b_list = np.zeros(150) # galactic plane
 ra_mw, dec_mw = ([],[])
 for i in range(len(l_list)):
     coord = SkyCoord(l=l_list[i]*u.degree, b=b_list[i]*u.degree, frame='galactic')
@@ -134,7 +152,37 @@ for i in range(len(l_list)):
     dec_mw.append(coord.icrs.dec.value)
 
 for i in range(len(l_list)):
-    plt.plot(ra_mw[i], dec_mw[i], 'o', color='pink')
-for i in range(len(ra_rad)):
-    plt.plot(ra_rad[i], dec_rad[i], '.', color='{}'.format(colors[i]))
+    plt.scatter(ra_mw[i], dec_mw[i], marker='.', color='pink')
+#'''
+
+
+print("Plotting {} unique clusters on the sky...".format(len(ra_rad)))
+
+first_xray,first_wl,first_sl,first_wlsl,first_cm,first_losvd = (True,True,True,True,True,True)
+for i in range(len(ra_deg)):
+    if scatters[i] == '*' and first_xray is True:
+        plt.plot(ra_deg[i], dec_deg[i], '{}'.format(scatters[i]), color=colors[i], markersize=8,label='X-ray')
+        first_xray = False
+    elif scatters[i] == 'd' and first_wl is True:
+        plt.plot(ra_deg[i], dec_deg[i], '{}'.format(scatters[i]), color=colors[i], markersize=8,label='WL')
+        first_wl = False
+    elif scatters[i] == 's' and first_sl is True:
+        plt.plot(ra_deg[i], dec_deg[i], '{}'.format(scatters[i]), color=colors[i], markersize=8,label='SL')
+        first_sl = False
+    elif scatters[i] == 'o' and first_wlsl is True:
+        plt.plot(ra_deg[i], dec_deg[i], '{}'.format(scatters[i]), color=colors[i], markersize=8,label='WL+SL')
+        first_wlsl = False
+    elif scatters[i] == 'x' and first_cm is True:
+        plt.plot(ra_deg[i], dec_deg[i], '{}'.format(scatters[i]), color=colors[i], markersize=8,label='CM')
+        first_cm = False
+    elif scatters[i] == '^' and first_losvd is True:
+        plt.plot(ra_deg[i], dec_deg[i], '{}'.format(scatters[i]), color=colors[i], markersize=8,label='LOSVD')
+        first_losvd = False
+    else:
+        plt.plot(ra_deg[i], dec_deg[i], '{}'.format(scatters[i]), color=colors[i], markersize=8, alpha=0.75)
+
+plt.ylabel('Dec (deg)',fontsize=18)
+plt.xlabel('RA (deg)',fontsize=18)
+plt.legend(loc=0,numpoints=1,fontsize=9)
+plt.xlim(0,360)
 plt.show()

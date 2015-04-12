@@ -272,7 +272,7 @@ def fit(method='X-ray', plot=False, savefig=False):
         plt.plot(x0,y0,linewidth=3,color=pl_col)
         plt.fill_between(x0,[(m2+sigm)*i+(b2+sigb+sig) for i in x0],[(m2-sigm)*i+(b2-sigb-sig) for i in x0],alpha=0.25,color=pl_col)
         plt.xlabel(r'$\mathrm{\log{ M_{vir}/M_{\odot}}}$',fontsize=18)
-        plt.ylabel(r'$\mathrm{\log{ \, c_{vir} \cdot (1+z) }}$',fontsize=18)
+        plt.ylabel(r'$\mathrm{\log{ \, c_{vir} \, (1+z) }}$',fontsize=18)
         plt.xlim(13.0,17.5)
         plt.ylim(-1.0,2.5)
         if savefig is True:
@@ -533,7 +533,7 @@ def fit_all(plot=False, savefig=False, plotwitherrorbars = False):
         plt.scatter(np.log10(np.average(h_masses)),np.log10(np.average(h_concs)),
                     marker='*',s=500,zorder=21,color='magenta',edgecolor='k')
         plt.xlabel(r'$\mathrm{\log{ M_{vir}/M_{\odot}}}$',fontsize=18)
-        plt.ylabel(r'$\mathrm{\log{ \, c_{vir} \cdot (1+z) }}$',fontsize=18)
+        plt.ylabel(r'$\mathrm{\log{ \, c_{vir} \, (1+z) }}$',fontsize=18)
         plt.xlim(13.0,17.0)
         plt.ylim(-0.5,2.0)
         plt.legend(loc=0,numpoints=1,frameon=False,fontsize=11)
@@ -853,7 +853,7 @@ def do_individual_repeat_analyses():
 # and also makes plots of the fits (extrapolated/non-extrapolated). Also has capability to
 # plot fits and uncertainties for simulations and bootstraps. Kind of sloppy at the moment,
 # and it requires reading comments about what to plot (and hence uncomment).
-def plot_summary(extrap = False):
+def plot_fit_summary(extrap = False):
     # Plotting the fit (and uncertainty regions) over the data
     #'''
     m_xray,sigm_xray,b_xray,sigb_xray,sig_xray,(a1_xray,b1_xray,theta_xray),(xray_max,xray_min)=fit(method='xray')#,plot=True, savefig=True)
@@ -1046,6 +1046,60 @@ def boostrap_summary():
     do_bootstrap(method='LOSVD',witherrors=True,savepath=tmp_path,nsamples=100)
     '''
 
+def plot_sample_summary(plotrepeats=True, savefigure=True):
+    if plotrepeats is False:
+        x_xray,y_xray,sigx_xray,sigy_xray,cl_xray = discover_repeats(method='X-ray')
+        x_wl,y_wl,sigx_wl,sigy_wl,cl_wl = discover_repeats(method='WL')
+        x_sl,y_sl,sigx_sl,sigy_sl,cl_sl = discover_repeats(method='SL')
+        x_wlsl,y_wlsl,sigx_wlsl,sigy_wlsl,cl_wlsl = discover_repeats(method='WL+SL')
+        x_cm,y_cm,sigx_cm,sigy_cm,cl_cm = discover_repeats(method='CM')
+        x_losvd,y_losvd,sigx_losvd,sigy_losvd,cl_losvd = discover_repeats(method='LOSVD')
+    elif plotrepeats is True:
+        x_xray,y_xray,sigx_xray,sigy_xray,cl_xray = startup(fname='X-ray_data.txt')
+        x_wl,y_wl,sigx_wl,sigy_wl,cl_wl = startup(fname='WL_data.txt')
+        x_sl,y_sl,sigx_sl,sigy_sl,cl_sl = startup(fname='SL_data.txt')
+        x_wlsl,y_wlsl,sigx_wlsl,sigy_wlsl,cl_wlsl = startup(fname='WL+SL_data.txt')
+        x_cm,y_cm,sigx_cm,sigy_cm,cl_cm = startup(fname='CM_data.txt')
+        x_losvd,y_losvd,sigx_losvd,sigy_losvd,cl_losvd = startup(fname='LOSVD_data.txt')
+    title = "PLOT SAMPLE SUMMARY"
+    print(len(title)*'*')
+    print(title)
+    print(len(title)*'*')
+    print("Number of unique clusters for X-ray: {}".format(len(x_xray)))
+    print("Number of unique clusters for WL: {}".format(len(x_wl)))
+    print("Number of unique clusters for SL: {}".format(len(x_sl)))
+    print("Number of unique clusters for WL+SL: {}".format(len(x_wlsl)))
+    print("Number of unique clusters for CM: {}".format(len(x_cm)))
+    print("Number of unique clusters for LOSVD: {}".format(len(x_losvd)))
+    print("Number of total unique clusters: {}".format(len(x_xray)+len(x_wl)+len(x_sl)+len(x_wlsl)+len(x_cm)+len(x_losvd)))
+    plt.figure(1,figsize=(7,7))
+    for i in range(len(x_xray)):
+        plt.errorbar(x_xray[i],y_xray[i],yerr=sigy_xray[i],xerr=sigx_xray[i],color='green')
+    for i in range(len(x_wl)):
+        plt.errorbar(x_wl[i],y_wl[i],yerr=sigy_wl[i],xerr=sigx_wl[i],color='purple',zorder=2)
+    for i in range(len(x_sl)):
+        plt.errorbar(x_sl[i],y_sl[i],yerr=sigy_sl[i],xerr=sigx_sl[i],color='red')
+    for i in range(len(x_wlsl)):
+        plt.errorbar(x_wlsl[i],y_wlsl[i],yerr=sigy_wlsl[i],xerr=sigx_wlsl[i],color='black')
+    for i in range(len(x_cm)):
+        plt.errorbar(x_cm[i],y_cm[i],yerr=sigy_cm[i],xerr=sigx_cm[i],color='blue')
+    for i in range(len(x_losvd)):
+        plt.errorbar(x_losvd[i],y_losvd[i],yerr=sigy_losvd[i],xerr=sigx_losvd[i],color='orange')
+    plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='green',label='X-ray')
+    plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='purple',label='WL')
+    plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='red',label='SL')
+    plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='black',label='WL+SL')
+    plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='blue',label='CM')
+    plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='orange',label='LOSVD')
+    plt.xlim(13.0,17.0)
+    plt.ylim(-0.5,2.0)
+    plt.legend(loc=0,numpoints=1,fontsize=12)
+    plt.xlabel(r'$\mathrm{\log{ M_{vir}/M_{\odot}}}$',fontsize=18)
+    plt.ylabel(r'$\mathrm{\log{ \, c_{vir} \, (1+z) }}$',fontsize=18)
+    if savefigure is True:
+        plt.savefig("CMRelation_FullSample_Symmetrized.png")
+    plt.show()
+
     
 if __name__ == "__main__":
 
@@ -1056,7 +1110,9 @@ if __name__ == "__main__":
     # Making plot of fits to WL and WL+SL individually
     # (no individual data points plotted here), with sims overlaid
     # on top
-    plot_summary(extrap = False)
-    
+    #plot_fit_summary(extrap = False)
+
+    # Making plot of the full sample (masses/concs)
+    plot_sample_summary()
 
     
