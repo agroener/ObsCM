@@ -61,52 +61,13 @@ ipdb.set_trace()
 ## Normalize over cosmology at this point
 
 
-# Plotting the results
-plt.figure(figsize=(8,8))
-plt.xscale('log')
-plt.yscale('log')
-plt.xlabel(r'$\mathrm{M_{vir}/M_{\odot}}$')
-plt.ylabel(r'$\mathrm{c_{vir}(1+z)}$')
-for i in range(len(mvir_norm)):
-    if methods_norm[i] in ['WL']:
-        plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='purple')
-    if methods_norm[i] in ['SL']:
-        plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='red')
-    if methods_norm[i] in ['WL+SL']:
-        plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='black')
-    if methods_norm[i] in ['X-ray']:
-        plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='green')
-    if methods_norm[i] in ['CM']:
-        plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='blue')
-    if methods_norm[i] in ['LOSVD']:
-        plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='orange')
-plt.show()
 
 # Find best fit parameters for GMM
 weights,means,covs = GMM(mvir_norm)
 
-# Plot distribution of masses for each method
-plt.figure(figsize=(8,8))
-plt.xlabel(r'$\mathrm{M_{vir}/M_{\odot}}$',fontsize=18)
-plt.ylabel(r'$\mathrm{z}$',fontsize=18)
-plt.xscale('log')
-wl = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'WL']
-sl = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'SL']
-wl_sl = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'WL+SL']
-cm = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'CM']
-xray = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'X-ray']
-losvd = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'LOSVD']
-plt.scatter(wl,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'WL'],color='purple',label='WL')
-plt.scatter(sl,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'SL'],color='red',label='SL')
-plt.scatter(wl_sl,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'WL+SL'],color='black',label='WL+SL')
-plt.scatter(cm,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'CM'],color='blue',label='CM')
-plt.scatter(xray,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'X-ray'],color='green',label='X-ray')
-plt.scatter(losvd,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'LOSVD'],color='orange',label='LOSVD')
-plt.legend(loc=0,scatterpoints=1)
-plt.show()
 
 # Perform parameter fitting here
-
+'''
 #lnlike([0.1,1,3],(weights,means,covs),mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,z_norm)
 ndim, nwalkers = 3, 50
 nsteps = 10
@@ -128,4 +89,60 @@ fig = triangle.corner(samples, labels=["$\\alpha$", "$\\beta$", "$\sigma^{2}$"],
                           quantiles=[0.16, 0.5, 0.84],
                           plot_contours=True,plot_datapoints=True, bins=nbins)
 plt.show()
+'''
 
+
+
+#################################################
+## Some Useful Functions - Mostly For Plotting ##
+#################################################
+def plot_results(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,z_norm):
+    # Plotting the results
+    plt.figure(figsize=(8,8))
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlabel(r'$\mathrm{M_{vir}/M_{\odot}}$')
+    plt.ylabel(r'$\mathrm{c_{vir}(1+z)}$')
+    for i in range(len(mvir_norm)):
+        if methods_norm[i] in ['WL']:
+            plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='purple')
+        if methods_norm[i] in ['SL']:
+            plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='red')
+        if methods_norm[i] in ['WL+SL']:
+            plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='black')
+        if methods_norm[i] in ['X-ray']:
+            plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='green')
+        if methods_norm[i] in ['CM']:
+            plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='blue')
+        if methods_norm[i] in ['LOSVD']:
+            plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='orange')
+    plt.show()
+
+def plot_redshift_mass_distr(mvir_norm,z_norm,methods_norm):
+    # Plot distribution of masses for each method
+    plt.figure(figsize=(8,8))
+    plt.xlabel(r'$\mathrm{M_{vir}/M_{\odot}}$',fontsize=18)
+    plt.ylabel(r'$\mathrm{z}$',fontsize=18)
+    plt.xscale('log')
+    wl = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'WL']
+    sl = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'SL']
+    wl_sl = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'WL+SL']
+    cm = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'CM']
+    xray = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'X-ray']
+    losvd = [mvir_norm[i]*1e14 for i in range(len(mvir_norm)) if methods_norm[i] == 'LOSVD']
+    plt.scatter(wl,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'WL'],color='purple',marker='d',label='WL')
+    plt.scatter(sl,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'SL'],color='red',marker='s',label='SL')
+    plt.scatter(wl_sl,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'WL+SL'],color='black',marker='o',label='WL+SL')
+    plt.scatter(cm,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'CM'],color='blue',marker='x',label='CM')
+    plt.scatter(xray,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'X-ray'],color='green',marker='*',label='X-ray')
+    plt.scatter(losvd,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'LOSVD'],color='orange',marker='^',label='LOSVD')
+    plt.legend(loc=0,scatterpoints=1,fontsize=10)
+    plt.xlim(1e13,3e16)
+    plt.ylim(0,1.5)
+    plt.show()
+
+
+if __name__ == "__main__":
+    
+        
+    plot_redshift_mass_distr(mvir_norm,z_norm,methods_norm)

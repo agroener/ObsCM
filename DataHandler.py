@@ -153,7 +153,7 @@ def startup_old():
                 c200_p[i] = np.nan
             elif c200_p[i].split("'")[1] == 'infty':
                 c200_p[i] = 1e6
-                print "Infty in c200_p: {}".format(clusters[i])
+                print("Infty in c200_p: {}".format(clusters[i]))
         if type(c200_m[i]) == str:
             if c200_m[i].split("'")[1] == 'TBD':
                 #print "To be determined"
@@ -162,7 +162,7 @@ def startup_old():
                 c200_m[i] = np.nan
             elif c200_m[i].split("'")[1] == 'infty':
                 c200_m[i] = 1e6
-                print "Infty in c200_m: {}".format(clusters[i])
+                print("Infty in c200_m: {}".format(clusters[i]))
         # m200
         if type(m200[i]) == str:
             if m200[i].split("'")[1] == 'TBD':
@@ -178,7 +178,7 @@ def startup_old():
                 m200_p[i] = np.nan
             elif m200_p[i].split("'")[1] == 'infty':
                 m200_p[i] = 1e6
-                print "Infty in m200_p: {}".format(clusters[i])     
+                print("Infty in m200_p: {}".format(clusters[i]))
         if type(m200_m[i]) == str:
             if m200_m[i].split("'")[1] == 'TBD':
                 #print "To be determined"
@@ -187,7 +187,7 @@ def startup_old():
                 m200_m[i] = np.nan
             elif m200_m[i].split("'")[1] == 'infty':
                 m200_m[i] = 1e6
-                print "Infty in m200_m: {}".format(clusters[i])     
+                print("Infty in m200_m: {}".format(clusters[i]))
         # cvir
         if type(cvir[i]) == str:
             if cvir[i].split("'")[1] == 'TBD':
@@ -203,7 +203,7 @@ def startup_old():
                 cvir_p[i] = np.nan
             elif cvir_p[i].split("'")[1] == 'infty':
                 cvir_p[i] = 1e6
-                print "Infty in cvir_p: {}".format(clusters[i])     
+                print("Infty in cvir_p: {}".format(clusters[i]))
         if type(cvir_m[i]) == str:
             if cvir_m[i].split("'")[1] == 'TBD':
                 #print "To be determined"
@@ -212,7 +212,7 @@ def startup_old():
                 cvir_m[i] = np.nan
             elif cvir_m[i].split("'")[1] == 'infty':
                 cvir_m[i] = 1e6
-                print "Infty in cvir_m: {}".format(clusters[i])
+                print("Infty in cvir_m: {}".format(clusters[i]))
         # mvir
         if type(mvir[i]) == str:
             if mvir[i].split("'")[1] == 'TBD':
@@ -228,7 +228,7 @@ def startup_old():
                 mvir_p[i] = np.nan
             elif mvir_p[i].split("'")[1] == 'infty':
                 mvir_p[i] = 1e6
-                print "Infty mvir_p: {}".format(clusters[i])
+                print("Infty mvir_p: {}".format(clusters[i]))
         if type(mvir_m[i]) == str:
             if mvir_m[i].split("'")[1] == 'TBD':
                 #print "To be determined"
@@ -237,7 +237,7 @@ def startup_old():
                 mvir_m[i] = np.nan
             elif mvir_m[i].split("'")[1] == 'infty':
                 mvir_m[i] = 1e6
-                print "Infty in mvir_m: {}".format(clusters[i])
+                print("Infty in mvir_m: {}".format(clusters[i]))
                 
 def scatter_flag(index,tmp_m,tmp_m_p,tmp_m_m,tmp_c,tmp_c_p,tmp_c_m):
     # nans may be passed in a string. convert to np.nan.
@@ -280,7 +280,7 @@ def scatter_flag(index,tmp_m,tmp_m_p,tmp_m_m,tmp_c,tmp_c_p,tmp_c_m):
         if check == [1,0,0,1]:
             return 7
     else:
-        print "Bad conc or mass value."
+        print("Bad conc or mass value.")
 
 def plotwithflag(ax,flag,col,tmp_m,tmp_m_p,tmp_m_m,tmp_c,tmp_c_p,tmp_c_m,tmp_z,witherrors):
     if flag == 0:
@@ -575,9 +575,9 @@ def explore_data():
     # get all refs which are now associated with    
     refs_nonan = [refs_nostr[i] for i in range(len(refs_nostr)) if i not in cvir_p_nans]
     uncertainty_diffs = [abs(abs(cvir_p_vals[i])-abs(cvir_m_vals[i])) for i in range(len(cvir_p_vals))]
-    print "Out of a total of {} halos with concentration uncertainties reported, {} of them have symmetric errorbars.".format(len(cvir_p_vals),len([i for i in range(len(cvir_p_vals)) if uncertainty_diffs[i] == 0]))
+    print("Out of a total of {} halos with concentration uncertainties reported, {} of them have symmetric errorbars.".format(len(cvir_p_vals),len([i for i in range(len(cvir_p_vals)) if uncertainty_diffs[i] == 0])))
     asym_refs = [refs_nonan[i] for i in range(len(refs_nonan)) if uncertainty_diffs[i] != 0]
-    print "References which report assymetric concentration uncertainties are:"
+    print("References which report assymetric concentration uncertainties are:")
     reftable = Table()
     unique_refs = [i for i in iter(set(asym_refs))]
     reftable['Ref.'] = unique_refs
@@ -848,7 +848,7 @@ def check_cosmology(plot_cosmo=False):
             if cosmology[i] != 'TBD':
                 cosmo_list.append(cosmology[i])
         else:
-            print cosmology[i]
+            print(cosmology[i])
     if plot_cosmo is True:
         omegam = [i.strip('(').strip(')').split('/')[0] for i in cosmo_list]
         omegal = [i.strip('(').strip(')').split('/')[1] for i in cosmo_list]

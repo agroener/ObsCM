@@ -853,7 +853,7 @@ def do_individual_repeat_analyses():
 # and also makes plots of the fits (extrapolated/non-extrapolated). Also has capability to
 # plot fits and uncertainties for simulations and bootstraps. Kind of sloppy at the moment,
 # and it requires reading comments about what to plot (and hence uncomment).
-def plot_fit_summary(extrap = False):
+def plot_fit_summary(extrap = False, addprojectedhalos = True):
     # Plotting the fit (and uncertainty regions) over the data
     #'''
     m_xray,sigm_xray,b_xray,sigb_xray,sig_xray,(a1_xray,b1_xray,theta_xray),(xray_max,xray_min)=fit(method='xray')#,plot=True, savefig=True)
@@ -929,25 +929,43 @@ def plot_fit_summary(extrap = False):
     #plt.fill_between(np.linspace(13,17,100),[(m_sim_intrinsic)*i+(b_sim_intrinsic+sig_sim_intrinsic) for i in np.linspace(13,17,100)],[(m_sim_intrinsic)*i+(b_sim_intrinsic-sig_sim_intrinsic) for i in np.linspace(13,17,100)],alpha=0.25,color='cyan')
     l_concs,l_masses,m_concs,m_masses,h_concs,h_masses = startup_sims()
     plt.errorbar(np.log10(np.average(l_masses)),np.log10(np.average(l_concs)),yerr=np.log10(np.std(l_concs)),
-                 fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,label='Groener and Goldberg (2014)',zorder=20)
+                 fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,label='Groener and Goldberg (2014)',zorder=20,alpha=1.0)
     plt.scatter(np.log10(np.average(l_masses)),np.log10(np.average(l_concs)),
-                marker='*',s=500,zorder=21,color='magenta',edgecolor='k')
+                marker='*',s=500,zorder=21,color='magenta',edgecolor='k',alpha=1.0)
     plt.errorbar(np.log10(np.average(m_masses)),np.log10(np.average(m_concs)),yerr=np.log10(np.std(m_concs)),
-                 fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,zorder=20)
+                 fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,zorder=20,alpha=1.0)
     plt.scatter(np.log10(np.average(m_masses)),np.log10(np.average(m_concs)),
-                marker='*',s=500,zorder=21,color='magenta',edgecolor='k')
+                marker='*',s=500,zorder=21,color='magenta',edgecolor='k',alpha=1.0)
     plt.errorbar(np.log10(np.average(h_masses)),np.log10(np.average(h_concs)),yerr=np.log10(np.std(h_concs)),
-                 fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,zorder=20)
+                 fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,zorder=20,alpha=1.0)
     plt.scatter(np.log10(np.average(h_masses)),np.log10(np.average(h_concs)),
-                marker='*',s=500,zorder=21,color='magenta',edgecolor='k')
+                marker='*',s=500,zorder=21,color='magenta',edgecolor='k',alpha=1.0)
+
+    # projecting halos
+    if addprojectedhalos is True:
+        l_concs_p = [conc_finder_pro(l_concs[i],[0],0.5) for i in range(len(l_concs))]
+        m_concs_p = [conc_finder_pro(m_concs[i],[0],0.5) for i in range(len(m_concs))]
+        h_concs_p = [conc_finder_pro(h_concs[i],[0],0.5) for i in range(len(h_concs))]
+        plt.errorbar(np.log10(np.average(l_masses)),np.log10(np.average(l_concs_p)),yerr=np.log10(np.std(l_concs_p)),
+                     fmt='*',color='cyan',capsize=10,capthick=3,elinewidth=8,zorder=19,alpha=1.0)
+        plt.scatter(np.log10(np.average(l_masses)),np.log10(np.average(l_concs_p)),
+                    marker='*',s=500,zorder=23,color='cyan',edgecolor='k',alpha=1.0)
+        plt.errorbar(np.log10(np.average(m_masses)),np.log10(np.average(m_concs_p)),yerr=np.log10(np.std(m_concs_p)),
+                     fmt='*',color='cyan',capsize=10,capthick=3,elinewidth=8,zorder=19,alpha=1.0)
+        plt.scatter(np.log10(np.average(m_masses)),np.log10(np.average(m_concs_p)),
+                    marker='*',s=500,zorder=23,color='cyan',edgecolor='k',alpha=1.0)
+        plt.errorbar(np.log10(np.average(h_masses)),np.log10(np.average(h_concs_p)),yerr=np.log10(np.std(h_concs_p)),
+                     fmt='*',color='cyan',capsize=10,capthick=3,elinewidth=8,zorder=19,alpha=1.0)
+        plt.scatter(np.log10(np.average(h_masses)),np.log10(np.average(h_concs_p)),
+                    marker='*',s=500,zorder=23,color='cyan',edgecolor='k',alpha=1.0)
     
     plt.legend(loc=0,numpoints=1,frameon=False,fontsize=11)
     plt.xlabel(r'$\mathrm{\log \, M_{vir}/M_{\odot}}$',fontsize=20)
     plt.ylabel(r'$\mathrm{\log \, c_{vir} (1+z) }$',fontsize=20)
     if extrap is False:
-        plt.savefig('ObsCM_WLandWLSLandSims_LinearModel_NoExtrap.png')
+        plt.savefig('ObsCM_WLandWLSLandSimsWithProj_LinearModel_NoExtrap.png')
     elif extrap is True:
-        plt.savefig('ObsCM_WLandWLSLandSims_LinearModel_Extrap.png')
+        plt.savefig('ObsCM_WLandWLSLandSimsWithoutProj_LinearModel_Extrap.png')
     
     
     # Plotting all of the error ellipses on the same plot
@@ -1110,9 +1128,9 @@ if __name__ == "__main__":
     # Making plot of fits to WL and WL+SL individually
     # (no individual data points plotted here), with sims overlaid
     # on top
-    #plot_fit_summary(extrap = False)
+    plot_fit_summary(extrap = False)
 
     # Making plot of the full sample (masses/concs)
-    plot_sample_summary()
+    #plot_sample_summary()
 
     
