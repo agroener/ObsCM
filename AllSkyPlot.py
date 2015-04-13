@@ -136,8 +136,14 @@ ra_rad[ra_rad > np.pi] -= 2. * np.pi
 
 # Now plot the data in projection with a grid.
 fig = plt.figure()
-lab.subplot(111,projection="rectilinear")
+allsky = lab.subplot(111,projection="rectilinear")
 lab.grid(True)
+lab.xticks(range(0,375,15))
+for label in allsky.axes.xaxis.get_ticklabels()[::2]:
+    label.set_visible(False)
+lab.yticks(range(-90,105,15))
+#for label in allsky.axes.yaxis.get_ticklabels()[::2]:
+#    label.set_visible(False)
 
 #'''
 from astropy import units as u
@@ -185,4 +191,5 @@ plt.ylabel('Dec (deg)',fontsize=18)
 plt.xlabel('RA (deg)',fontsize=18)
 plt.legend(loc=0,numpoints=1,fontsize=9)
 plt.xlim(0,360)
+plt.ylim(-90,90)
 plt.show()
