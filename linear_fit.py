@@ -571,7 +571,152 @@ def fit_all(plot=False, savefig=False, plotwitherrorbars = False):
 
     return m2,sigm,b2,sigb,sig,(a1,b1,theta),(xmax,xmin)
 
+def fit_multimeas_clusters(metho1=None, method2=None):
+    # Load the data from file
+    pl_col_xray = 'green'
+    filename_xray='{}_data.txt'.format('X-ray')
+    pl_col_wl = 'purple'
+    filename_wl='{}_data.txt'.format('WL')
+    pl_col_sl = 'red'
+    filename_sl='{}_data.txt'.format('SL')
+    pl_col_wlsl = 'black'
+    filename_wlsl='{}_data.txt'.format('WL+SL')
+    pl_col_cm = 'blue'
+    filename_cm='{}_data.txt'.format('CM')
+    pl_col_losvd = 'orange'
+    filename_losvd='{}_data.txt'.format('LOSVD')
+
+    intro = "FITTING METHOD: FULL OBSERVATIONAL SAMPLE"
+    print('*'*len(intro))
+    print(intro)
+    print('*'*len(intro))
+
+    # doesn't take repeat measurements into account; but need it for print the original sample size to the terminal
+    tot = 0
+    for i in [filename_xray,filename_wl,filename_sl,filename_wlsl,filename_cm,filename_losvd]:
+        x_old,y_old,sigx_old,sigy_old,cl_old = startup(fname=i)
+        tot = tot + len(x_old)
     
+    # new function which discovers repeats of clusters across any and all methods
+    x,y,sigx,sigy,uniques,methods = discover_repeats_all(
+        fname_list=[filename_xray,filename_wl,filename_sl,
+                    filename_wlsl,filename_cm,filename_losvd])
+    x,y,sigx,sigy = (np.array(x),np.array(y),np.array(sigx),np.array(sigy))
+    xmax,xmin = max(x),min(x) 
+
+    print("Number of measurements used: {}".format(tot))
+    print("Number of unique clusters: {}".format(len(x)))
+    
+    # Fitting as if there are no uncertainties
+    N=len(x)
+    Sxy=sum(x*y)
+    Sx=sum(x)
+    Sy=sum(y)
+    Sxx=sum(x*x)
+    m1=(N*Sxy-Sx*Sy)/(N*Sxx-Sx*Sx)
+    b1=(-Sx*Sxy+Sxx*Sy)/(N*Sxx-Sx*Sx)
+    sig=np.sqrt(np.std(y-(m1*x+b1))**2-np.mean(sigy**2))
+    print("Linear model (assuming no uncertainties): m: {}, b: {}, sig: {} ".format(m1,b1,sig))
+
+    # Using chi-squared fitting routine
+    ## (not completely the correct thing to do,
+    ##  but a back of the envelope method)
+    m2,b2 = steepest_decent(x,y,sigx,sigy,sig,m1,b1,N,alpha=0.75,tol=1.e-6)
+
+    # Calculating second order partial derivatives for error of the fit
+    F11 = second_partial_derivative(chi2,var=5,point=[x,y,sigx,sigy,sig,m2,b2,N])
+    F22 = second_partial_derivative(chi2,var=6,point=[x,y,sigx,sigy,sig,m2,b2,N])
+    F12 = second_partial_derivative_mixed(chi2,var=[5,6],point=(x,y,sigx,sigy,sig,m2,b2,N))
+    F21 = F12
+    # Error in fit
+    sigm=1./np.sqrt(F11)
+    sigb=1./np.sqrt(F22)
+
+    print("Linear model (with uncertainties): m: {} +/- {}, b: {} +/- {}".format(m2,sigm,b2,sigb))
+    
+    # Plotting the best fit line over the data
+    if plot is True:
+        color_list = []
+        plt.figure(figsize=(8,8))
+        plt.title("All Methods")
+        for i in range(len(x)):
+            if methods[i] == 'X-ray':
+                tmp_col = 'green'
+            elif methods[i] == 'WL':
+                tmp_col = 'purple'
+            elif methods[i] == 'SL':
+                tmp_col = 'red'
+            elif methods[i] == 'WL+SL':
+                tmp_col = 'black'
+            elif methods[i] == 'CM':
+                tmp_col = 'blue'
+            elif methods[i] == 'LOSVD':
+                tmp_col = 'orange'
+            elif methods[i] == 'COMB':
+                tmp_col = 'cyan'
+            else:
+                print("Undefined method found...")
+                return
+            if plotwitherrorbars is True:
+                plt.errorbar(x[i],y[i],xerr=sigx[i],yerr=sigy[i],fmt='o',color=tmp_col)
+            elif plotwitherrorbars is False:
+                plt.scatter(x[i],y[i],color=tmp_col)
+        x0 = np.array([13.0,17.5])
+        y0=m2*x0+b2
+        plt.plot(x0,y0,linewidth=3,color='yellow')
+        plt.fill_between(x0,[(m2+sigm)*i+(b2+sigb+sig) for i in x0],[(m2-sigm)*i+(b2-sigb-sig) for i in x0],alpha=0.5,color='yellow')
+        l_concs,l_masses,m_concs,m_masses,h_concs,h_masses = startup_sims()
+        plt.errorbar(np.log10(np.average(l_masses)),np.log10(np.average(l_concs)),yerr=np.log10(np.std(l_concs)),
+                     fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,label='Groener and Goldberg (2014)',zorder=20)
+        plt.scatter(np.log10(np.average(l_masses)),np.log10(np.average(l_concs)),
+                    marker='*',s=500,zorder=21,color='magenta',edgecolor='k')
+        plt.errorbar(np.log10(np.average(m_masses)),np.log10(np.average(m_concs)),yerr=np.log10(np.std(m_concs)),
+                     fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,zorder=20)
+        plt.scatter(np.log10(np.average(m_masses)),np.log10(np.average(m_concs)),
+                    marker='*',s=500,zorder=21,color='magenta',edgecolor='k')
+        plt.errorbar(np.log10(np.average(h_masses)),np.log10(np.average(h_concs)),yerr=np.log10(np.std(h_concs)),
+                     fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,zorder=20)
+        plt.scatter(np.log10(np.average(h_masses)),np.log10(np.average(h_concs)),
+                    marker='*',s=500,zorder=21,color='magenta',edgecolor='k')
+        plt.xlabel(r'$\mathrm{\log{ M_{vir}/M_{\odot}}}$',fontsize=18)
+        plt.ylabel(r'$\mathrm{\log{ \, c_{vir} \, (1+z) }}$',fontsize=18)
+        plt.xlim(13.0,17.0)
+        plt.ylim(-0.5,2.0)
+        plt.legend(loc=0,numpoints=1,frameon=False,fontsize=11)
+        if savefig is True:
+            plt.savefig('AllMethodsWithSims_linearmodel_witherror.png')
+
+    # Calculating and plotting error ellipse
+    detF=F11*F22-F12*F12
+    Qxx=F22/detF
+    Qyy=F11/detF
+    Qxy=-F12/detF
+    
+    theta=np.arctan(2*Qxy/(Qxx-Qyy+1e-9))/2.
+    a1=np.sqrt(Qxx*pow(np.cos(theta),2)+Qyy*pow(np.sin(theta),2)+2*Qxy*np.sin(theta)*np.cos(theta))
+    b1=np.sqrt(Qxx*pow(np.sin(theta),2)+Qyy*pow(np.cos(theta),2)-2*Qxy*np.sin(theta)*np.cos(theta))    
+
+    if plot is True:
+        fig = plt.figure(figsize=(8,8))
+        plt.title("All Methods")
+        ax = fig.add_subplot(111)
+        ell=Ellipse([m2,b2],width=2*a1,height=2*b1,angle=theta*57.3)
+        ell2=Ellipse([m2,b2],width=a1,height=b1,angle=theta*57.3)
+        ax.add_artist(ell)
+        ell.set_facecolor('g')
+        ax.add_artist(ell2)
+        ell2.set_facecolor('y')
+        ax.plot(m2,b2,'+')
+        plt.xlabel('m')
+        plt.ylabel('b')
+        ax.set_xlim(m2-30*a1,m2+30*a1)
+        ax.set_ylim(b2-300*a1,b2+300*a1)
+        if savefig is True:
+            plt.savefig('AllMethods_errorellipse.png')
+        plt.show()
+
+    return m2,sigm,b2,sigb,sig,(a1,b1,theta),(xmax,xmin)
+
     
 def do_bootstrap(method = 'X-ray', nsamples = 1000, witherrors = False, showplots=False, savepath=None):
     if method in ['X-ray','x-ray','xray']:
