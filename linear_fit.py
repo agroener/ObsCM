@@ -10,7 +10,7 @@ import ipdb
 # Functions for finding projected concentrations
 def j(p,q,phi,theta):
     return np.sin(theta)**2/(p**2*q**2) + np.cos(theta)**2*np.cos(phi)**2/q**2 + np.cos(theta)**2*np.sin(phi)**2
-    
+
 def k(p,q,phi,theta):
     return (1/q**2 - 1/p**2)*np.sin(phi)*np.cos(phi)*np.cos(theta)
 
@@ -76,7 +76,7 @@ def second_partial_derivative(func, var=0, point=[]):
 def second_partial_derivative_mixed(func, var=[5,6], point=()):
     '''
     Somewhat specific to this problem, this function computes the
-    second order mixed partial derivatives (between m, and b). 
+    second order mixed partial derivatives (between m, and b).
     '''
     delta = 1.e-1
     if var == [5,6]:
@@ -122,7 +122,7 @@ def startup_sims():
     low_indices = [i for i in range(len(raw_masses)) if raw_fof[i] < 2.6e13]
     l_concs = [raw_concs[i] for i in range(len(raw_concs)) if i in low_indices]
     l_masses = [raw_masses[i] for i in range(len(raw_masses)) if i in low_indices]
-    
+
     med_indices = [i for i in range(len(raw_masses)) if i not in high_indices and i not in low_indices]
     m_concs = [raw_concs[i] for i in range(len(raw_concs)) if i in med_indices]
     m_masses = [raw_masses[i] for i in range(len(raw_masses)) if i in med_indices]
@@ -132,7 +132,7 @@ def startup_sims():
     #plt.scatter(l_masses,l_concs,color='blue')
     #plt.xscale('log')
     #plt.show()
-    
+
     return l_concs,l_masses,m_concs,m_masses,h_concs,h_masses
 
 def startup_bootstrap(fname=None,handlerepeats=True,method=None):
@@ -161,13 +161,13 @@ def startup_bootstrap(fname=None,handlerepeats=True,method=None):
     sigy_bs = np.array([sigy[i] for i in bs_indices])
     cl_bs = np.array([cl[i] for i in bs_indices])
     return x_bs,y_bs,sigx_bs,sigy_bs,cl
-        
+
 def steepest_decent(x,y,sigx,sigy,sig,m,b,N,alpha=0.8,tol=1e-6):
-       
+
     converged = False
 
     while converged is False:
-        
+
         # Calculate the chi2 of the current point
         chi0 = chi2(x,y,sigx,sigy,sig,m,b,N)
         # Calculate first derivatives at point
@@ -188,7 +188,7 @@ def steepest_decent(x,y,sigx,sigy,sig,m,b,N,alpha=0.8,tol=1e-6):
         else:
             b = b + delta_b
             m = m + delta_m
-        
+
     return m,b
 
 def fit(method='X-ray', plot=False, savefig=False):
@@ -229,11 +229,11 @@ def fit(method='X-ray', plot=False, savefig=False):
     x_old,y_old,sigx_old,sigy_old,cl_old = startup(fname=filename) # doesn't take repeat measurements into account; but need it for original sample size
     x,y,sigx,sigy,cl=discover_repeats(method=method)
     x,y,sigx,sigy = (np.array(x),np.array(y),np.array(sigx),np.array(sigy))
-    xmax,xmin = max(x),min(x) 
+    xmax,xmin = max(x),min(x)
 
     print("Number of measurements used: {}".format(len(x_old)))
     print("Number of unique clusters: {}".format(len(x)))
-    
+
     # Fitting as if there are no uncertainties
     N=len(x)
     Sxy=sum(x*y)
@@ -261,7 +261,7 @@ def fit(method='X-ray', plot=False, savefig=False):
 
     print("Linear model (with uncertainties): m: {} +/- {}, b: {} +/- {}".format(m2,sigm,b2,sigb))
 
-    
+
     # Plotting the best fit line over the data
     if plot is True:
         plt.figure(figsize=(8,8))
@@ -283,10 +283,10 @@ def fit(method='X-ray', plot=False, savefig=False):
     Qxx=F22/detF
     Qyy=F11/detF
     Qxy=-F12/detF
-    
+
     theta=np.arctan(2*Qxy/(Qxx-Qyy+1e-9))/2.
     a1=np.sqrt(Qxx*pow(np.cos(theta),2)+Qyy*pow(np.sin(theta),2)+2*Qxy*np.sin(theta)*np.cos(theta))
-    b1=np.sqrt(Qxx*pow(np.sin(theta),2)+Qyy*pow(np.cos(theta),2)-2*Qxy*np.sin(theta)*np.cos(theta))    
+    b1=np.sqrt(Qxx*pow(np.sin(theta),2)+Qyy*pow(np.cos(theta),2)-2*Qxy*np.sin(theta)*np.cos(theta))
 
     if plot is True:
         fig = plt.figure(figsize=(8,8))
@@ -403,7 +403,7 @@ def fit_sims(los_angle=None,scale=None):
         y_high = [conc_finder_pro(h_concs[i],[0],high_shapes[i])[0][0] for i in range(len(h_concs))]
         y = np.log10(np.array(y_low+y_med+y_high))
         x = np.log10(np.array(list(l_masses)+list(m_masses)+list(h_masses)))
-        
+
         #f, axarr = plt.subplots(2, sharex=True)
         #axarr[0].hist(l_concs,bins=30,color='blue',histtype='stepfilled',alpha=0.5,normed=True)
         #axarr[0].hist(m_concs,bins=25,color='green',histtype='stepfilled',alpha=0.5,normed=True)
@@ -413,7 +413,7 @@ def fit_sims(los_angle=None,scale=None):
         #axarr[1].hist(y_high,bins=5,color='red',histtype='stepfilled',alpha=0.5,normed=True)
         #plt.show()
         #ipdb.set_trace()
-        
+
     N=len(x)
     Sxy=sum(x*y)
     Sx=sum(x)
@@ -424,7 +424,7 @@ def fit_sims(los_angle=None,scale=None):
     sig=np.std(y-(m1*x+b1))
     print("Linear model (assuming no uncertainties): m: {}, b: {}, sig: {} ".format(m1,b1,sig))
     return m1,b1,sig
-    
+
 def fit_all(plot=False, savefig=False, plotwitherrorbars = False):
     # Load the data from file
     pl_col_xray = 'green'
@@ -450,17 +450,17 @@ def fit_all(plot=False, savefig=False, plotwitherrorbars = False):
     for i in [filename_xray,filename_wl,filename_sl,filename_wlsl,filename_cm,filename_losvd]:
         x_old,y_old,sigx_old,sigy_old,cl_old = startup(fname=i)
         tot = tot + len(x_old)
-    
+
     # new function which discovers repeats of clusters across any and all methods
     x,y,sigx,sigy,uniques,methods = discover_repeats_all(
         fname_list=[filename_xray,filename_wl,filename_sl,
                     filename_wlsl,filename_cm,filename_losvd])
     x,y,sigx,sigy = (np.array(x),np.array(y),np.array(sigx),np.array(sigy))
-    xmax,xmin = max(x),min(x) 
+    xmax,xmin = max(x),min(x)
 
     print("Number of measurements used: {}".format(tot))
     print("Number of unique clusters: {}".format(len(x)))
-    
+
     # Fitting as if there are no uncertainties
     N=len(x)
     Sxy=sum(x*y)
@@ -487,7 +487,7 @@ def fit_all(plot=False, savefig=False, plotwitherrorbars = False):
     sigb=1./np.sqrt(F22)
 
     print("Linear model (with uncertainties): m: {} +/- {}, b: {} +/- {}".format(m2,sigm,b2,sigb))
-    
+
     # Plotting the best fit line over the data
     if plot is True:
         color_list = []
@@ -545,10 +545,10 @@ def fit_all(plot=False, savefig=False, plotwitherrorbars = False):
     Qxx=F22/detF
     Qyy=F11/detF
     Qxy=-F12/detF
-    
+
     theta=np.arctan(2*Qxy/(Qxx-Qyy+1e-9))/2.
     a1=np.sqrt(Qxx*pow(np.cos(theta),2)+Qyy*pow(np.sin(theta),2)+2*Qxy*np.sin(theta)*np.cos(theta))
-    b1=np.sqrt(Qxx*pow(np.sin(theta),2)+Qyy*pow(np.cos(theta),2)-2*Qxy*np.sin(theta)*np.cos(theta))    
+    b1=np.sqrt(Qxx*pow(np.sin(theta),2)+Qyy*pow(np.cos(theta),2)-2*Qxy*np.sin(theta)*np.cos(theta))
 
     if plot is True:
         fig = plt.figure(figsize=(8,8))
@@ -596,17 +596,17 @@ def fit_multimeas_clusters(metho1=None, method2=None):
     for i in [filename_xray,filename_wl,filename_sl,filename_wlsl,filename_cm,filename_losvd]:
         x_old,y_old,sigx_old,sigy_old,cl_old = startup(fname=i)
         tot = tot + len(x_old)
-    
+
     # new function which discovers repeats of clusters across any and all methods
     x,y,sigx,sigy,uniques,methods = discover_repeats_all(
         fname_list=[filename_xray,filename_wl,filename_sl,
                     filename_wlsl,filename_cm,filename_losvd])
     x,y,sigx,sigy = (np.array(x),np.array(y),np.array(sigx),np.array(sigy))
-    xmax,xmin = max(x),min(x) 
+    xmax,xmin = max(x),min(x)
 
     print("Number of measurements used: {}".format(tot))
     print("Number of unique clusters: {}".format(len(x)))
-    
+
     # Fitting as if there are no uncertainties
     N=len(x)
     Sxy=sum(x*y)
@@ -633,7 +633,7 @@ def fit_multimeas_clusters(metho1=None, method2=None):
     sigb=1./np.sqrt(F22)
 
     print("Linear model (with uncertainties): m: {} +/- {}, b: {} +/- {}".format(m2,sigm,b2,sigb))
-    
+
     # Plotting the best fit line over the data
     if plot is True:
         color_list = []
@@ -691,10 +691,10 @@ def fit_multimeas_clusters(metho1=None, method2=None):
     Qxx=F22/detF
     Qyy=F11/detF
     Qxy=-F12/detF
-    
+
     theta=np.arctan(2*Qxy/(Qxx-Qyy+1e-9))/2.
     a1=np.sqrt(Qxx*pow(np.cos(theta),2)+Qyy*pow(np.sin(theta),2)+2*Qxy*np.sin(theta)*np.cos(theta))
-    b1=np.sqrt(Qxx*pow(np.sin(theta),2)+Qyy*pow(np.cos(theta),2)-2*Qxy*np.sin(theta)*np.cos(theta))    
+    b1=np.sqrt(Qxx*pow(np.sin(theta),2)+Qyy*pow(np.cos(theta),2)-2*Qxy*np.sin(theta)*np.cos(theta))
 
     if plot is True:
         fig = plt.figure(figsize=(8,8))
@@ -717,7 +717,7 @@ def fit_multimeas_clusters(metho1=None, method2=None):
 
     return m2,sigm,b2,sigb,sig,(a1,b1,theta),(xmax,xmin)
 
-    
+
 def do_bootstrap(method = 'X-ray', nsamples = 1000, witherrors = False, showplots=False, savepath=None):
     if method in ['X-ray','x-ray','xray']:
         pl_col = 'green'
@@ -780,7 +780,7 @@ def do_bootstrap(method = 'X-ray', nsamples = 1000, witherrors = False, showplot
     plt.text(np.average(m)-3*np.std(m),text_height1,"mean: {:.4f}".format(np.average(m)))
     plt.text(np.average(m)-3*np.std(m),text_height2,"std.: {:.4f}".format(np.std(m)))
     plt.savefig(path+"{}_m_bootstrap_{}.png".format(method_title,err_str))
-    
+
     plt.figure()
     plt.hist(b,bins=30,color=pl_col,histtype='stepfilled',alpha=0.5)
     plt.title('Number of Bootstrap Samples: {}'.format(nsamples))
@@ -890,7 +890,7 @@ def discover_repeats(method=None, plotrepeats=False, plotdiff=False):
         return xout,yout,sigxout,sigyout,uniques
 
 def discover_repeats_all(fname_list = None, plotrepeats=False, plotdiff=False):
-    
+
     if type(fname_list) is list and len(fname_list) >0:
         x,y,sigx,sigy,clusters,methods = ([],[],[],[],[],[])
         for fh in fname_list:
@@ -917,7 +917,7 @@ def discover_repeats_all(fname_list = None, plotrepeats=False, plotdiff=False):
         counts = [clusters.count(i) for i in uniques]
 
         methodnames = ['X-ray','WL','SL','WL+SL','CM','LOSVD']
-        
+
         xout = []
         yout = []
         sigxout = []
@@ -955,7 +955,7 @@ def discover_repeats_all(fname_list = None, plotrepeats=False, plotdiff=False):
                     methodsout.append(tmp_overlap[0])
                 else:
                     print("No methods in tmp_overlap...")
-                    return 
+                    return
                 if plotrepeats is True:
                     plt.title("{}".format(uniques[i]))
                     plt.xlabel(r"$\mathrm{\log M_{vir}/M_{\odot}}$",fontsize=18)
@@ -979,7 +979,7 @@ def discover_repeats_all(fname_list = None, plotrepeats=False, plotdiff=False):
 
 # Housing for a bunch of code which runs the routine for finding
 # and coadding repeat measurements of clusters within each individual
-# method. 
+# method.
 def do_individual_repeat_analyses():
     # Discovering and accounting for ("co-adding") measurements
     # from the same cluster within each method, so they are not
@@ -1007,7 +1007,7 @@ def plot_fit_summary(extrap = False, addprojectedhalos = True):
     m_wlsl,sigm_wlsl,b_wlsl,sigb_wlsl,sig_wlsl,(a1_wlsl,b1_wlsl,theta_wlsl),(wlsl_max,wlsl_min)=fit(method='wl+sl')#,plot=True, savefig=True)
     m_cm,sigm_cm,b_cm,sigb_cm,sig_cm,(a1_cm,b1_cm,theta_cm),(cm_max,cm_min)=fit(method='cm')#,plot=True, savefig=True)
     m_losvd,sigm_losvd,b_losvd,sigb_losvd,sig_losvd,(a1_losvd,b1_losvd,theta_losvd),(losvd_max,losvd_min)=fit(method='losvd')#,plot=True, savefig=True)
-    
+
     ## Plotting all linear fits on the same plot
     plt.figure(figsize=(8,8))
     # setting range for x based upon whether or not I'm using extrapolation
@@ -1104,7 +1104,7 @@ def plot_fit_summary(extrap = False, addprojectedhalos = True):
                      fmt='*',color='cyan',capsize=10,capthick=3,elinewidth=8,zorder=19,alpha=1.0)
         plt.scatter(np.log10(np.average(h_masses)),np.log10(np.average(h_concs_p)),
                     marker='*',s=500,zorder=23,color='cyan',edgecolor='k',alpha=1.0)
-    
+
     plt.legend(loc=0,numpoints=1,frameon=False,fontsize=11)
     plt.xlabel(r'$\mathrm{\log \, M_{vir}/M_{\odot}}$',fontsize=20)
     plt.ylabel(r'$\mathrm{\log \, c_{vir} (1+z) }$',fontsize=20)
@@ -1112,14 +1112,14 @@ def plot_fit_summary(extrap = False, addprojectedhalos = True):
         plt.savefig('ObsCM_WLandWLSLandSimsWithProj_LinearModel_NoExtrap.png')
     elif extrap is True:
         plt.savefig('ObsCM_WLandWLSLandSimsWithoutProj_LinearModel_Extrap.png')
-    
-    
+
+
     # Plotting all of the error ellipses on the same plot
     # Not that informative of a plot...
     '''
     fig = plt.figure(figsize=(8,8))
     ax = fig.add_subplot(111)
-    
+
     ell_xray=Ellipse([m_xray,b_xray],width=2*a1_xray,height=2*b1_xray,angle=theta_xray*57.3)
     ell2_xray=Ellipse([m_xray,b_xray],width=a1_xray,height=b1_xray,angle=theta_xray*57.3)
     ax.add_artist(ell_xray)
@@ -1169,7 +1169,7 @@ def plot_fit_summary(extrap = False, addprojectedhalos = True):
     ell2_cm.set_facecolor('white')
     ell2_cm.set_edgecolor('blue')
     ax.plot(m_cm,b_cm,'+',color='blue')
-    
+
     ell_losvd=Ellipse([m_losvd,b_losvd],width=2*a1_losvd,height=2*b1_losvd,angle=theta_losvd*57.3)
     ell2_losvd=Ellipse([m_losvd,b_losvd],width=a1_losvd,height=b1_losvd,angle=theta_losvd*57.3)
     ax.add_artist(ell_losvd)
@@ -1264,7 +1264,7 @@ def plot_sample_summary(plotrepeats=True, savefigure=True):
         plt.savefig("CMRelation_FullSample_Symmetrized.png")
     plt.show()
 
-    
+
 if __name__ == "__main__":
 
     # Doing fits to individual fits to each method sub-population
@@ -1273,7 +1273,7 @@ if __name__ == "__main__":
     #fit(method='WL', plot=True, savefig=True)
     #for strong lensing, use bootstrap plot instead
     #fit(method='SL', plot=True, savefig=True)
-    #'''
+    '''
     m_list, b_list, sig = fit_bootstrap(method='sl', witherrors=True, nsamples=100)
     m_ave,m_std = (np.average(m_list),np.std(m_list))
     b_ave,b_std = (np.average(b_list),np.std(b_list))
@@ -1290,14 +1290,14 @@ if __name__ == "__main__":
     plt.xlim(13.0,17.5)
     plt.ylim(-1.0,2.5)
     plt.show()
-    #'''
+    '''
     #fit(method='WL+SL', plot=True, savefig=True)
     #fit(method='CM', plot=True, savefig=True)
     #fit(method='LOSVD', plot=True, savefig=True)
-    
+
 
     # Making plot of fit to ALL data (with data plotted, too),
-    # with sims overlaid on top. 
+    # with sims overlaid on top.
     #fit_all(plot=True, savefig=True, plotwitherrorbars=True)
 
     # Making plot of fits to WL and WL+SL individually
@@ -1307,5 +1307,3 @@ if __name__ == "__main__":
 
     # Making plot of the full sample (masses/concs)
     #plot_sample_summary()
-
-    
