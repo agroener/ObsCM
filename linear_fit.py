@@ -445,7 +445,7 @@ def fit_all(plot=False, savefig=False, plotwitherrorbars = False):
     print(intro)
     print('*'*len(intro))
 
-    # doesn't take repeat measurements into account; but need it for print the original sample size to the terminal
+    # doesn't take repeat measurements into account; but need it to print the original sample size to the terminal
     tot = 0
     for i in [filename_xray,filename_wl,filename_sl,filename_wlsl,filename_cm,filename_losvd]:
         x_old,y_old,sigx_old,sigy_old,cl_old = startup(fname=i)
@@ -1266,6 +1266,9 @@ def plot_sample_summary(plotrepeats=True, savefigure=True):
     
 if __name__ == "__main__":
 
+    # Making plots of individual fits to each method
+    fit(method='x-ray')
+
     # Making plot of fit to ALL data (with data plotted, too),
     # with sims overlaid on top. 
     #fit_all(plot=True, savefig=True, plotwitherrorbars=True)
@@ -1273,7 +1276,7 @@ if __name__ == "__main__":
     # Making plot of fits to WL and WL+SL individually
     # (no individual data points plotted here), with sims overlaid
     # on top
-    plot_fit_summary(extrap = False)
+    #plot_fit_summary(extrap = False)
 
     # Making plot of the full sample (masses/concs)
     #plot_sample_summary()
