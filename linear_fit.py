@@ -354,7 +354,7 @@ def fit_bootstrap(method=None, witherrors=True, nsamples=100):
             m1_list.append(m1)
             b1_list.append(b1)
             sig_list.append(sig)
-        return m1_list, b1_list, sig_list
+        return m1_list, b1_list, sig_list, sig
 
     if witherrors is True:
         m2_list, b2_list = ([],[])
@@ -371,7 +371,7 @@ def fit_bootstrap(method=None, witherrors=True, nsamples=100):
             m2,b2 = steepest_decent(x_bs,y_bs,sigx_bs,sigy_bs,sig,m1,b1,N,alpha=0.75,tol=1.e-6)
             m2_list.append(m2)
             b2_list.append(b2)
-        return m2_list, b2_list
+        return m2_list, b2_list, sig
 
 def fit_sims(los_angle=None,scale=None):
     l_concs,l_masses,m_concs,m_masses,h_concs,h_masses = startup_sims()
@@ -1072,6 +1072,7 @@ def plot_fit_summary(extrap = False, addprojectedhalos = True):
     #m_sim_intrinsic,b_sim_intrinsic,sig_sim_intrinsic=fit_sims()
     #plt.plot(np.linspace(13,17,100),[m_sim_intrinsic*i+b_sim_intrinsic for i in np.linspace(13,17,100)],color='cyan',label='Intrinsic Simulations')
     #plt.fill_between(np.linspace(13,17,100),[(m_sim_intrinsic)*i+(b_sim_intrinsic+sig_sim_intrinsic) for i in np.linspace(13,17,100)],[(m_sim_intrinsic)*i+(b_sim_intrinsic-sig_sim_intrinsic) for i in np.linspace(13,17,100)],alpha=0.25,color='cyan')
+    #'''
     l_concs,l_masses,m_concs,m_masses,h_concs,h_masses = startup_sims()
     plt.errorbar(np.log10(np.average(l_masses)),np.log10(np.average(l_concs)),yerr=np.log10(np.std(l_concs)),
                  fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,label='Groener and Goldberg (2014)',zorder=20,alpha=1.0)
@@ -1085,7 +1086,7 @@ def plot_fit_summary(extrap = False, addprojectedhalos = True):
                  fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,zorder=20,alpha=1.0)
     plt.scatter(np.log10(np.average(h_masses)),np.log10(np.average(h_concs)),
                 marker='*',s=500,zorder=21,color='magenta',edgecolor='k',alpha=1.0)
-
+    #'''
     # projecting halos
     if addprojectedhalos is True:
         l_concs_p = [conc_finder_pro(l_concs[i],[0],0.5) for i in range(len(l_concs))]
@@ -1266,8 +1267,34 @@ def plot_sample_summary(plotrepeats=True, savefigure=True):
     
 if __name__ == "__main__":
 
-    # Making plots of individual fits to each method
-    fit(method='x-ray')
+    # Doing fits to individual fits to each method sub-population
+    # If plot=True and savefig=True, figures are saved in the current directory
+    #fit(method='X-ray', plot=True, savefig=True)
+    #fit(method='WL', plot=True, savefig=True)
+    #for strong lensing, use bootstrap plot instead
+    #fit(method='SL', plot=True, savefig=True)
+    #'''
+    m_list, b_list, sig = fit_bootstrap(method='sl', witherrors=True, nsamples=100)
+    m_ave,m_std = (np.average(m_list),np.std(m_list))
+    b_ave,b_std = (np.average(b_list),np.std(b_list))
+    x,y,sigx,sigy,cl=discover_repeats(method='sl')
+    plt.figure(figsize=(8,8))
+    plt.title('SL')
+    plt.errorbar(x,y,xerr=sigx,yerr=sigy,fmt='o',color='red')
+    x0 = np.array([13.0,17.5])
+    y0=m_ave*x0+b_ave
+    plt.plot(x0,y0,linewidth=3,color='red')
+    plt.fill_between(x0,[(m_ave+m_std)*i+(b_ave+b_std+sig) for i in x0],[(m_ave-m_std)*i+(b_ave-b_std-sig) for i in x0],alpha=0.25,color='red')
+    plt.xlabel(r'$\mathrm{\log{ M_{vir}/M_{\odot}}}$',fontsize=18)
+    plt.ylabel(r'$\mathrm{\log{ \, c_{vir} \, (1+z) }}$',fontsize=18)
+    plt.xlim(13.0,17.5)
+    plt.ylim(-1.0,2.5)
+    plt.show()
+    #'''
+    #fit(method='WL+SL', plot=True, savefig=True)
+    #fit(method='CM', plot=True, savefig=True)
+    #fit(method='LOSVD', plot=True, savefig=True)
+    
 
     # Making plot of fit to ALL data (with data plotted, too),
     # with sims overlaid on top. 
