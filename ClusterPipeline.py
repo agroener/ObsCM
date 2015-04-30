@@ -197,15 +197,18 @@ def compare_method_concs(method1, method2):
 
     # Finding repeat clusters with measurements which appear in method 1 and method 2
     both_cl = [i for i in set(m1_cl).intersection(m2_cl)]
-
+    both_z1 = [m1_z_n[i] for i in range(len(m1_cl_n)) if m1_cl_n[i] in both_cl]
+    both_z2 = [m2_z_n[i] for i in range(len(m2_cl_n)) if m2_cl_n[i] in both_cl]
+    both_z = [i for i in set(both_z1 + both_z2)]
+    
     # Plotting the results
     plt.figure()
     plt.xlabel(r'$\mathrm{c_{vir}}$' + " ({})".format(method1),fontsize=18)
     plt.ylabel(r'$\mathrm{c_{vir}}$' + " ({})".format(method2),fontsize=18)
-    plt.xlim(0,20)
-    plt.ylim(0,20)
-    plt.plot([0,20],[0,20],color='black',linestyle='--')
-    maxz = max(m2_z_n + m1_z_n)
+    plt.xlim(0,30)
+    plt.ylim(0,30)
+    plt.plot([0,50],[0,50],color='black',linestyle='--')
+    maxz = max(both_z)
     cm = plt.cm.get_cmap('RdYlBu')
     for it, vals in enumerate(both_cl):
         m1_index = m1_cl_n.index(vals)
@@ -221,4 +224,13 @@ if __name__ == "__main__":
     
         
     #plot_redshift_mass_distr(mvir_norm,z_norm,methods_norm)
-    compare_method_concs('X-ray', 'WL')
+
+    ## Plotting concentration comparisons
+    #compare_method_concs('X-ray', 'WL')
+    #compare_method_concs('WL', 'WL+SL')
+    #compare_method_concs('CM', 'LOSVD')
+    #compare_method_concs('CM', 'WL') # not super useful
+    #compare_method_concs('CM', 'WL+SL') # not super useful
+    #compare_method_concs('CM', 'X-ray')
+
+    ## Plotting mass comparisons
