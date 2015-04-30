@@ -1264,10 +1264,7 @@ def plot_sample_summary(plotrepeats=True, savefigure=True):
         plt.savefig("CMRelation_FullSample_Symmetrized.png")
     plt.show()
 
-
-def compare_method_concs(method1, method2):
     
-
 if __name__ == "__main__":
 
     # Doing fits to individual fits to each method sub-population

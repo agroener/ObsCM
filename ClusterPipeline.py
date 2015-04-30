@@ -141,8 +141,84 @@ def plot_redshift_mass_distr(mvir_norm,z_norm,methods_norm):
     plt.ylim(0,1.5)
     plt.show()
 
+def compare_method_concs(method1, method2):
 
+    # Setting up method 1 data
+    m1_cl = [cl_norm[i] for i in range(len(cl_norm)) if methods_norm[i] == method1]
+    m1_concs = [cvir_norm[i] for i in range(len(cl_norm)) if methods_norm[i] == method1]
+    m1_concs_err = [cvir_p_norm[i] for i in range(len(cl_norm)) if methods_norm[i] == method1]
+    m1_z = [z_norm[i] for i in range(len(cl_norm)) if methods_norm[i] == method1]
+    m1_cl_n, m1_concs_n, m1_concs_err_n, m1_z_n = ([],[],[],[])
+    for i in set(m1_cl):
+        # handling co-adding measurements together from repeat clusters
+        if m1_cl.count(i) > 1:
+            tmp_indices = [j for j in range(len(m1_cl)) if m1_cl[j] == i]
+            c_rep = [m1_concs[j] for j in tmp_indices]
+            c_err_rep = [m1_concs_err[j] for j in tmp_indices]
+            c_weights = [(1.0/c_err_rep[j]**2) for j in range(len(c_rep))]
+            c_new = sum([c_rep[j]*c_weights[j] for j in range(len(c_rep))])/sum(c_weights)
+            c_err_new = 1.0/np.sqrt(sum(c_weights))
+            m1_cl_n.append(i)
+            m1_concs_n.append(c_new)
+            m1_concs_err_n.append(c_err_new)
+            m1_z_n.append(m1_z[m1_cl.index(i)])
+        else:
+            tmp_index = m1_cl.index(i)
+            m1_cl_n.append(i)
+            m1_concs_n.append(m1_concs[tmp_index])
+            m1_concs_err_n.append(m1_concs_err[tmp_index])
+            m1_z_n.append(m1_z[tmp_index])
+
+    # Setting up method 2 data
+    m2_cl = [cl_norm[i] for i in range(len(cl_norm)) if methods_norm[i] == method2]
+    m2_concs = [cvir_norm[i] for i in range(len(cl_norm)) if methods_norm[i] == method2]
+    m2_concs_err = [cvir_p_norm[i] for i in range(len(cl_norm)) if methods_norm[i] == method2]
+    m2_z = [z_norm[i] for i in range(len(cl_norm)) if methods_norm[i] == method2]
+    m2_cl_n, m2_concs_n, m2_concs_err_n, m2_z_n = ([],[],[],[])
+    for i in set(m2_cl):
+        # handling co-adding measurements together from repeat clusters
+        if m2_cl.count(i) > 1:
+            tmp_indices = [j for j in range(len(m2_cl)) if m2_cl[j] == i]
+            c_rep = [m2_concs[j] for j in tmp_indices]
+            c_err_rep = [m2_concs_err[j] for j in tmp_indices]
+            c_weights = [(1.0/c_err_rep[j]**2) for j in range(len(c_rep))]
+            c_new = sum([c_rep[j]*c_weights[j] for j in range(len(c_rep))])/sum(c_weights)
+            c_err_new = 1.0/np.sqrt(sum(c_weights))
+            m2_cl_n.append(i)
+            m2_concs_n.append(c_new)
+            m2_concs_err_n.append(c_err_new)
+            m2_z_n.append(m2_z[m2_cl.index(i)])
+        else:
+            tmp_index = m2_cl.index(i)
+            m2_cl_n.append(i)
+            m2_concs_n.append(m2_concs[tmp_index])
+            m2_concs_err_n.append(m2_concs_err[tmp_index])
+            m2_z_n.append(m2_z[tmp_index])
+
+    # Finding repeat clusters with measurements which appear in method 1 and method 2
+    both_cl = [i for i in set(m1_cl).intersection(m2_cl)]
+
+    # Plotting the results
+    plt.figure()
+    plt.xlabel(r'$\mathrm{c_{vir}}$' + " ({})".format(method1),fontsize=18)
+    plt.ylabel(r'$\mathrm{c_{vir}}$' + " ({})".format(method2),fontsize=18)
+    plt.xlim(0,20)
+    plt.ylim(0,20)
+    plt.plot([0,20],[0,20],color='black',linestyle='--')
+    maxz = max(m2_z_n + m1_z_n)
+    cm = plt.cm.get_cmap('RdYlBu')
+    for it, vals in enumerate(both_cl):
+        m1_index = m1_cl_n.index(vals)
+        m2_index = m2_cl_n.index(vals)
+        plt.errorbar(m1_concs_n[m1_index],m2_concs_n[m2_index],yerr=m2_concs_err_n[m2_index],xerr=m1_concs_err_n[m1_index], zorder=1, color='black')
+        sc = plt.scatter(m1_concs_n[m1_index], m2_concs_n[m2_index], c=m1_z_n[m1_index], vmin=0, vmax=maxz, s=43, cmap=cm, zorder=2)
+    plt.colorbar(sc)
+    plt.show()
+
+    
+            
 if __name__ == "__main__":
     
         
-    plot_redshift_mass_distr(mvir_norm,z_norm,methods_norm)
+    #plot_redshift_mass_distr(mvir_norm,z_norm,methods_norm)
+    compare_method_concs('X-ray', 'WL')

@@ -219,8 +219,9 @@ def clustersgte10():
 
     plt.legend(loc=0,scatterpoints=1,frameon=False)
     plt.show()
-
-
+    
+    
 if __name__ == '__main__':
     
-    clustersgte10()
+    #clustersgte10()
+    compare_method_concs('X-ray', 'WL')
