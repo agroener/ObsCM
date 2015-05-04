@@ -4,6 +4,10 @@ from scipy.integrate import *
 import numpy as np
 import ipdb
 
+# For changing plotting parameters 
+from matplotlib import rcParams
+rcParams.update({'figure.autolayout': True})
+
 #######################
 ### Constants (mks) ###
 #######################
@@ -34,7 +38,7 @@ def AngularDiameterDistance(z_low,z_high,Omega_M=0.3,Omega_L=0.7):
 
 def SigmaCrit(z_lens,z_source,Omega_M=0.3,Omega_L=0.7):
     if z_source == 'inf': # source at infinity
-        return 3e8 * 3e8 / (4 * np.pi * G * AngularDiameterDistance(0,z_lens,Omega_M=0.3,Omega_L=0.7) )
+        return 3e8 * 3e8 / (4 * np.pi * G * AngularDiameterDistance(0,z_lens,Omega_M=Omega_M,Omega_L=Omega_L) )
     else:
         return c**2 * AngularDiameterDistance(0,z_source,Omega_M,Omega_L) / (4 * np.pi * G * AngularDiameterDistance(0,z_lens,Omega_M,Omega_L) * AngularDiameterDistance(z_lens,z_source,Omega_M,Omega_L) )
 
@@ -88,7 +92,7 @@ if __name__ == "__main__":
     '''
 
     # Calculating RHS of equation for example in pdf
-    
+    '''
     z = 0.1
     z_source = 20
     c200 = 2.5
@@ -106,5 +110,62 @@ if __name__ == "__main__":
     LHS = [abs((f(i)/i**3)-RHS) for i in clist]
     c200_new = clist[LHS.index(min(LHS))]
     M200_new = (f(c200_new)*M200) / (f(c200)*T(z,'inf',OM1,OL1,OM2,OL2))
-    
-    ipdb.set_trace()
+    '''
+
+    # Plotting the cosmology correction for a range of cosmologies
+    z = 0.1
+    z_source = 20
+    # testing this out with different concentrations/masses
+    c200 = [1.0,5.0,9.0]
+    M200 = 1.0e14
+    # fiducial cosmology
+    OM1 = 0.3
+    OL1 = 0.7
+    # new cosmologies
+    OM2 = np.linspace(0.0,1.0,40)
+    OL2 = [1.0-OM2[i] for i in range(len(OM2))]
+    # same definition of overdensity
+    Delta1 = 200
+    Delta2 = 200
+    # doing concentrations first
+    #'''
+    fig, axarr = plt.subplots(2, sharex=True)
+    fig.subplots_adjust(hspace=0)
+    m200_static = 1.0e14
+    for i,val in enumerate(c200):
+        c200_new_list = []
+        print("Iteration: {}".format(i+1))
+        for j in range(len(OM2)):
+            RHS = (f(val)*T(z,z_source,OM1,OL1,OM2[j],OL2[j])) / (val**3*R(OM1,OL1,Delta1,OM2[j],OL2[j],Delta2,z))
+            clist = np.linspace(0.1,20,1e5)
+            LHS = [abs((f(i)/i**3)-RHS) for i in clist]
+            c200_new = clist[LHS.index(min(LHS))]
+            c200_new_list.append(c200_new)
+        c200_new_rat = [c200_new_list[i]/val for i in range(len(c200_new_list))]
+        axarr[0].plot(OM2,c200_new_rat,label=r"$\mathrm{c_{200}}$"+" = {}".format(int(val)))
+    axarr[0].set_ylabel(r"$\mathrm{\frac{c_{200}(\Omega_{m})}{c_{200}(\Omega_{m}=0.3)}}$",fontsize=20)
+    axarr[0].axvline(x=0.3,color='black',linestyle='--',linewidth=2)
+    axarr[0].axhline(y=1.0,color='black',linestyle='--',linewidth=2)
+    #'''
+    # doing mass second (but it's still plotted for a few different values of concentrations)
+    #'''
+    for i,val in enumerate(c200):
+        M200_new_list = []
+        print("Iteration: {}".format(i+1))
+        for j in range(len(OM2)):
+            RHS = (f(val)*T(z,z_source,OM1,OL1,OM2[j],OL2[j])) / (val**3*R(OM1,OL1,Delta1,OM2[j],OL2[j],Delta2,z))
+            clist = np.linspace(0.1,20,1e5)
+            LHS = [abs((f(k)/k**3)-RHS) for k in clist]
+            c200_new = clist[LHS.index(min(LHS))]
+            M200_new = (f(c200_new)*M200) / (f(val)*T(z,z_source,OM1,OL1,OM2[j],OL2[j]))
+            M200_new_list.append(M200_new)
+        M200_new_rat = [M200_new_list[i]/M200 for i in range(len(M200_new_list))]
+        axarr[1].plot(OM2,M200_new_rat,label=r"$\mathrm{c_{200}}$"+" = {}".format(val))
+    axarr[1].set_ylabel(r"$\mathrm{\frac{M_{200}(\Omega_{m})}{M_{200}(\Omega_{m}=0.3)}}$",fontsize=20)
+    axarr[1].set_xlabel(r"$\mathrm{\Omega_{m} = 1 - \Omega_{\Lambda}}$",fontsize=18)
+    axarr[1].axvline(x=0.3,color='black',linestyle='--',linewidth=2)
+    axarr[1].axhline(y=1.0,color='black',linestyle='--',linewidth=2)
+    axarr[1].legend(loc=0)
+    plt.tight_layout()
+    plt.show()
+    #'''
