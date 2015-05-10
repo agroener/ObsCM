@@ -2,23 +2,75 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Simulation relation functions
-def bullock():
-    return
+def bullock(Mvir,z,Mstar=1.3e13):
+    '''
+    Title: Profiles of dark haloes: evolution, scatter, and environment
+    ADS Link: http://adsabs.harvard.edu/cgi-bin/bib_query?arXiv:astro-ph/9908159
+    Comments: 
+    '''
+    return (9.0/(1+z)) * (Mvir/Mstar)**(-0.13)
+def hannawi(Mvir,z,Mstar=1.3e13):
+    '''
+    Title: 
+    ADS Link: 
+    Comments: 
+    '''
+    return (12.3/(1+z)) * (Mvir/Mstar)**(-0.13)    
 def prada():
+    '''
+    Title: 
+    ADS Link: 
+    Comments: 
+    '''
     return
 def zhao():
+    '''
+    Title: 
+    ADS Link: 
+    Comments: 
+    '''
     return
 def ludlow():
+    '''
+    Title: 
+    ADS Link: 
+    Comments: 
+    '''
     return
 def dutton():
+    '''
+    Title: 
+    ADS Link: 
+    Comments: 
+    '''
     return
 def battacharya():
+    '''
+    Title: 
+    ADS Link: 
+    Comments: 
+    '''
     return
 def correa():
+    '''
+    Title: 
+    ADS Link: 
+    Comments: 
+    '''
     return
 def diemer():
+    '''
+    Title: 
+    ADS Link: 
+    Comments: 
+    '''
     return
 def vandenbosch():
+    '''
+    Title: 
+    ADS Link: 
+    Comments: 
+    '''
     return
 
 # Function for finding Groener and Goldberg data
