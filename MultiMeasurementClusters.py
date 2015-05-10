@@ -224,4 +224,3 @@ def clustersgte10():
 if __name__ == '__main__':
     
     #clustersgte10()
-    compare_method_concs('X-ray', 'WL')
