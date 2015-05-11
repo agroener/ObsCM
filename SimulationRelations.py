@@ -6,7 +6,7 @@ def bullock(Mvir,z,Mstar=1.3e13):
     '''
     Title: Profiles of dark haloes: evolution, scatter, and environment
     ADS Link: http://adsabs.harvard.edu/cgi-bin/bib_query?arXiv:astro-ph/9908159
-    Comments: 
+    Comments: scatter of 0.18 in log(c_vir)
     '''
     return (9.0/(1+z)) * (Mvir/Mstar)**(-0.13)
 def hannawi(Mvir,z,Mstar=1.3e13):
