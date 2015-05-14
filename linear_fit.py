@@ -1272,7 +1272,7 @@ if __name__ == "__main__":
     #fit(method='X-ray', plot=True, savefig=True)
     #fit(method='WL', plot=True, savefig=True)
     #for strong lensing, use bootstrap plot instead
-    #fit(method='SL', plot=True, savefig=True)
+    fit(method='SL', plot=True, savefig=True)
     '''
     m_list, b_list, sig = fit_bootstrap(method='sl', witherrors=True, nsamples=100)
     m_ave,m_std = (np.average(m_list),np.std(m_list))

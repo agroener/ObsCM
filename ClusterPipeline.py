@@ -29,11 +29,13 @@ from LogLikelihood import lnprob
 
 # Get the data form the excel sheet cm_data.xlsx
 import DataHandler as DH
+print("Importing data...")
 clusters,redshift,methods,c200,c200_plus,c200_minus,m200,m200_plus,m200_minus,cvir,cvir_plus,cvir_minus,mvir,mvir_plus,mvir_minus,short_refs,orig_convention,cosmology=DH.startup()
 
 # Take all virial measurements and normalize uncertainties
 mvir_norm,mvir_p_norm,mvir_m_norm,cvir_norm,cvir_p_norm,cvir_m_norm = ([],[],[],[],[],[])
 methods_norm,z_norm,cl_norm = ([],[],[])
+print("Normalizing uncertainties...")
 for i in range(len(clusters)):
     if mvir[i] not in [u'TBD',u'nan']:
         tmp = UN.normalize_uncertainty(mvir[i],mvir_plus[i],mvir_minus[i],cvir[i],cvir_plus[i],cvir_minus[i])
@@ -50,16 +52,22 @@ for i in range(len(clusters)):
 ## Temporary section for outputting data for each method at this point
 ## Does not co-add like measurements for clusters together; for the moment
 ## it treats them as separate measurements.
-'''
+#'''
 import GenDataForLinearReg as GD
+print("Outputting X-ray data...")
 GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='x-ray',plot=True)
+print("Outputting WL data...")
 GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='wl',plot=True)
+print("Outputting SL data...")
 GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='sl',plot=True)
+print("Outputting WL+SL data...")
 GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='wl+sl',plot=True)
+print("Outputting CM data...")
 GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='cm',plot=True)
+print("Outputting LOSVD data...")
 GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='losvd',plot=True)
 ipdb.set_trace()
-'''
+#'''
 
 
 ## Normalize over cosmology at this point
@@ -264,7 +272,7 @@ def compare_methods(method1, method2, scaleaxes = True, scaleto = None):
             
 if __name__ == "__main__":
     
-        
+    print()
     #plot_redshift_mass_distr(mvir_norm,z_norm,methods_norm)
 
     ## Plotting concentration/mass comparisons of clusters which are measured in both
