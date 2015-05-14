@@ -127,7 +127,16 @@ def normalize_uncertainty(m,m_p,m_m,c,c_p,c_m,lamb=0.75):
     if mass_bounds is False and conc_bounds is False:
         return m,0.5*m,-0.5*m,c,0.5*c,-0.5*c
 
-    
+def propagate_A_uncertainty(m,m_err,b,b_err,M_star=1.3e13):
+    '''
+    A function which propagates uncertainty through the relation for the normalization of the c-M model.
+    '''
+    A_best = 10**(b+m*np.log10(M_star))
+    dAdb = np.log(10)*np.exp(np.log(10)*(b+m*np.log10(M_star)))
+    dAdm = np.log10(M_star)*np.log(10)*np.exp(np.log(10)*(b+m*np.log10(M_star)))
+    A_err = abs(dAdm)*m_err + abs(dAdb)*b_err
+    return A_best,A_err
+
 if __name__ == "__main__":
 
     '''

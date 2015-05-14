@@ -450,14 +450,14 @@ def fit_all(plot=False, savefig=False, plotwitherrorbars = False):
     for i in [filename_xray,filename_wl,filename_sl,filename_wlsl,filename_cm,filename_losvd]:
         x_old,y_old,sigx_old,sigy_old,cl_old = startup(fname=i)
         tot = tot + len(x_old)
-
+    
     # new function which discovers repeats of clusters across any and all methods
     x,y,sigx,sigy,uniques,methods = discover_repeats_all(
         fname_list=[filename_xray,filename_wl,filename_sl,
                     filename_wlsl,filename_cm,filename_losvd])
     x,y,sigx,sigy = (np.array(x),np.array(y),np.array(sigx),np.array(sigy))
     xmax,xmin = max(x),min(x)
-
+    
     print("Number of measurements used: {}".format(tot))
     print("Number of unique clusters: {}".format(len(x)))
 
@@ -487,8 +487,9 @@ def fit_all(plot=False, savefig=False, plotwitherrorbars = False):
     sigb=1./np.sqrt(F22)
 
     print("Linear model (with uncertainties): m: {} +/- {}, b: {} +/- {}".format(m2,sigm,b2,sigb))
-
+    
     # Plotting the best fit line over the data
+    ipdb.set_trace()
     if plot is True:
         color_list = []
         plt.figure(figsize=(8,8))
@@ -1272,7 +1273,7 @@ if __name__ == "__main__":
     #fit(method='X-ray', plot=True, savefig=True)
     #fit(method='WL', plot=True, savefig=True)
     #for strong lensing, use bootstrap plot instead
-    fit(method='SL', plot=True, savefig=True)
+    #fit(method='SL', plot=True, savefig=True)
     '''
     m_list, b_list, sig = fit_bootstrap(method='sl', witherrors=True, nsamples=100)
     m_ave,m_std = (np.average(m_list),np.std(m_list))
@@ -1298,7 +1299,7 @@ if __name__ == "__main__":
 
     # Making plot of fit to ALL data (with data plotted, too),
     # with sims overlaid on top.
-    #fit_all(plot=True, savefig=True, plotwitherrorbars=True)
+    fit_all(plot=True, savefig=True, plotwitherrorbars=True)
 
     # Making plot of fits to WL and WL+SL individually
     # (no individual data points plotted here), with sims overlaid
