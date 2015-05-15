@@ -127,7 +127,7 @@ def normalize_uncertainty(m,m_p,m_m,c,c_p,c_m,lamb=0.75):
     if mass_bounds is False and conc_bounds is False:
         return m,0.5*m,-0.5*m,c,0.5*c,-0.5*c
 
-def propagate_A_uncertainty(m,m_err,b,b_err,M_star=1.3e13):
+def propagate_A_uncertainty(m,m_err,b,b_err,M_star=1.3e13/0.7):
     '''
     A function which propagates uncertainty through the relation for the normalization of the c-M model.
     '''

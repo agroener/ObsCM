@@ -764,7 +764,7 @@ def do_bootstrap(method = 'X-ray', nsamples = 1000, witherrors = False, showplot
 
     elif witherrors is True:
         err_str = 'witherr'
-        m, b = fit_bootstrap(method=method, witherrors=witherrors, nsamples=nsamples)
+        m, b, sig = fit_bootstrap(method=method, witherrors=witherrors, nsamples=nsamples)
         m = [m[i] for i in range(len(m)) if not np.isnan(m[i])]
         b = [b[i] for i in range(len(b)) if not np.isnan(b[i])]
         text_height1 = 3.5
@@ -1202,14 +1202,14 @@ def boostrap_summary():
     do_bootstrap(method='LOSVD',witherrors=False, savepath=tmp_path)
     '''
     #with error next
-    '''
-    do_bootstrap(method='X-ray',witherrors=True,savepath=tmp_path,nsamples=100)
-    do_bootstrap(method='CM',witherrors=True,savepath=tmp_path,nsamples=100)
-    do_bootstrap(method='WL',witherrors=True,savepath=tmp_path,nsamples=100)
-    do_bootstrap(method='SL',witherrors=True,savepath=tmp_path,nsamples=100)
-    do_bootstrap(method='WL+SL',witherrors=True,savepath=tmp_path,nsamples=100)
-    do_bootstrap(method='LOSVD',witherrors=True,savepath=tmp_path,nsamples=100)
-    '''
+    #'''
+    #do_bootstrap(method='X-ray',witherrors=True,savepath=tmp_path,nsamples=100)
+    #do_bootstrap(method='CM',witherrors=True,savepath=tmp_path,nsamples=200)
+    #do_bootstrap(method='WL',witherrors=True,savepath=tmp_path,nsamples=100)
+    #do_bootstrap(method='SL',witherrors=True,savepath=tmp_path,nsamples=100)
+    do_bootstrap(method='WL+SL',witherrors=True,savepath=tmp_path,nsamples=200)
+    #do_bootstrap(method='LOSVD',witherrors=True,savepath=tmp_path,nsamples=100)
+    #'''
 
 def plot_sample_summary(plotrepeats=True, savefigure=True):
     if plotrepeats is False:
@@ -1299,7 +1299,7 @@ if __name__ == "__main__":
 
     # Making plot of fit to ALL data (with data plotted, too),
     # with sims overlaid on top.
-    fit_all(plot=True, savefig=True, plotwitherrorbars=True)
+    #fit_all(plot=True, savefig=True, plotwitherrorbars=True)
 
     # Making plot of fits to WL and WL+SL individually
     # (no individual data points plotted here), with sims overlaid
@@ -1308,3 +1308,6 @@ if __name__ == "__main__":
 
     # Making plot of the full sample (masses/concs)
     #plot_sample_summary()
+
+    # Doing full bootstrap analysis on all methods
+    boostrap_summary()

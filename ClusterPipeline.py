@@ -32,13 +32,19 @@ import DataHandler as DH
 print("Importing data...")
 clusters,redshift,methods,c200,c200_plus,c200_minus,m200,m200_plus,m200_minus,cvir,cvir_plus,cvir_minus,mvir,mvir_plus,mvir_minus,short_refs,orig_convention,cosmology=DH.startup()
 
+# Printing out number of total measurements, number of unique clusters, and number of studies drawn from
+print("There are a total of {} measurements in the database.".format(len(clusters)))
+print("There are a total of {} unique cluster objects.".format(len(set(clusters))))
+print("There are a total of {} studies.".format(len(set(short_refs))))
+ipdb.set_trace()
 # Take all virial measurements and normalize uncertainties
 mvir_norm,mvir_p_norm,mvir_m_norm,cvir_norm,cvir_p_norm,cvir_m_norm = ([],[],[],[],[],[])
 methods_norm,z_norm,cl_norm = ([],[],[])
+lamb = 0.75 # the multiplicative factor which controls how much to shift the mean in the procedure for adjusting
 print("Normalizing uncertainties...")
 for i in range(len(clusters)):
     if mvir[i] not in [u'TBD',u'nan']:
-        tmp = UN.normalize_uncertainty(mvir[i],mvir_plus[i],mvir_minus[i],cvir[i],cvir_plus[i],cvir_minus[i])
+        tmp = UN.normalize_uncertainty(mvir[i],mvir_plus[i],mvir_minus[i],cvir[i],cvir_plus[i],cvir_minus[i],lamb=lamb)
         mvir_norm.append(tmp[0])
         mvir_p_norm.append(tmp[1])
         mvir_m_norm.append(tmp[2])
