@@ -36,7 +36,7 @@ clusters,redshift,methods,c200,c200_plus,c200_minus,m200,m200_plus,m200_minus,cv
 print("There are a total of {} measurements in the database.".format(len(clusters)))
 print("There are a total of {} unique cluster objects.".format(len(set(clusters))))
 print("There are a total of {} studies.".format(len(set(short_refs))))
-ipdb.set_trace()
+
 # Take all virial measurements and normalize uncertainties
 mvir_norm,mvir_p_norm,mvir_m_norm,cvir_norm,cvir_p_norm,cvir_m_norm = ([],[],[],[],[],[])
 methods_norm,z_norm,cl_norm = ([],[],[])
@@ -58,7 +58,7 @@ for i in range(len(clusters)):
 ## Temporary section for outputting data for each method at this point
 ## Does not co-add like measurements for clusters together; for the moment
 ## it treats them as separate measurements.
-#'''
+'''
 import GenDataForLinearReg as GD
 print("Outputting X-ray data...")
 GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='x-ray',plot=True)
@@ -73,7 +73,7 @@ GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_
 print("Outputting LOSVD data...")
 GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='losvd',plot=True)
 ipdb.set_trace()
-#'''
+'''
 
 
 ## Normalize over cosmology at this point

@@ -372,7 +372,49 @@ def fit_bootstrap(method=None, witherrors=True, nsamples=100):
             m2_list.append(m2)
             b2_list.append(b2)
         return m2_list, b2_list, sig
+    
+## This function is not yet complete
+## Need to create a function which does
+## bootstrap startup but for all methods.
+## Make sure that it takes repeat measurements
+## into account (look at 'fit_all' and
+## 'discover_repeats_all' for this).
+def fit_bootstrap_allmethods(witherrors=True, nsamples=100):
+   
+    if witherrors is False:
+        m1_list, b1_list, sig_list = ([],[],[])
+        for i in range(nsamples):
+            x_bs,y_bs,sigx_bs,sigy_bs,cl = startup_bootstrap(fname=filename,method=method)
+            N=len(x_bs)
+            Sxy=sum(x_bs*y_bs)
+            Sx=sum(x_bs)
+            Sy=sum(y_bs)
+            Sxx=sum(x_bs*x_bs)
+            m1=(N*Sxy-Sx*Sy)/(N*Sxx-Sx*Sx)
+            b1=(-Sx*Sxy+Sxx*Sy)/(N*Sxx-Sx*Sx)
+            sig=np.sqrt(abs(np.std(y_bs-(m1*x_bs+b1))**2-np.mean(sigy_bs**2)))
+            m1_list.append(m1)
+            b1_list.append(b1)
+            sig_list.append(sig)
+        return m1_list, b1_list, sig_list, sig
 
+    if witherrors is True:
+        m2_list, b2_list = ([],[])
+        for i in range(nsamples):
+            x_bs,y_bs,sigx_bs,sigy_bs,cl = startup_bootstrap(fname=filename,method=method)
+            N=len(x_bs)
+            Sxy=sum(x_bs*y_bs)
+            Sx=sum(x_bs)
+            Sy=sum(y_bs)
+            Sxx=sum(x_bs*x_bs)
+            m1=(N*Sxy-Sx*Sy)/(N*Sxx-Sx*Sx)
+            b1=(-Sx*Sxy+Sxx*Sy)/(N*Sxx-Sx*Sx)
+            sig=np.sqrt(abs(np.std(y_bs-(m1*x_bs+b1))**2-np.mean(sigy_bs**2))) #abs needed for cases where second term is larger
+            m2,b2 = steepest_decent(x_bs,y_bs,sigx_bs,sigy_bs,sig,m1,b1,N,alpha=0.75,tol=1.e-6)
+            m2_list.append(m2)
+            b2_list.append(b2)
+        return m2_list, b2_list, sig
+    
 def fit_sims(los_angle=None,scale=None):
     l_concs,l_masses,m_concs,m_masses,h_concs,h_masses = startup_sims()
     # Fitting with no uncertainties
