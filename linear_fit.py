@@ -162,6 +162,30 @@ def startup_bootstrap(fname=None,handlerepeats=True,method=None):
     cl_bs = np.array([cl[i] for i in bs_indices])
     return x_bs,y_bs,sigx_bs,sigy_bs,cl
 
+def startup_bootstrap_all(handlerepeats=True):
+    # first load in all of the data
+    fname_list = ['CM_data.txt','LOSVD_data.txt','X-ray_data.txt',
+                      'WL_data.txt','WL+SL_data.txt','SL_data.txt']
+    if handlerepeats is False:
+        cl,x,y,sigx,sigy = ([],[],[],[],[])
+        if f in fname_list:
+            data=read(f,delimiter=',')
+            cl.append(data['col1'].data)
+            x.append(data['col2'].data)
+            y.append(data['col3'].data)
+            sigx.append(data['col4'].data)
+            sigy.append(data['col5'].data)
+    elif handlerepeats is True:
+        x,y,sigx,sigy,cl,methods=discover_repeats_all(fname_list=fname_list)
+    # now sample with replacement
+    x_bs = np.random.choice(x,replace=True,size=len(x))
+    bs_indices = [np.where(x == x_bs[i])[0][0] for i in range(len(x_bs))]
+    y_bs = np.array([y[i] for i in bs_indices])
+    sigx_bs = np.array([sigx[i] for i in bs_indices])
+    sigy_bs = np.array([sigy[i] for i in bs_indices])
+    cl_bs = np.array([cl[i] for i in bs_indices])
+    return x_bs,y_bs,sigx_bs,sigy_bs,cl
+
 def steepest_decent(x,y,sigx,sigy,sig,m,b,N,alpha=0.8,tol=1e-6):
 
     converged = False
@@ -373,18 +397,13 @@ def fit_bootstrap(method=None, witherrors=True, nsamples=100):
             b2_list.append(b2)
         return m2_list, b2_list, sig
     
-## This function is not yet complete
-## Need to create a function which does
-## bootstrap startup but for all methods.
-## Make sure that it takes repeat measurements
-## into account (look at 'fit_all' and
-## 'discover_repeats_all' for this).
+
+## Consider doing a bootstrap estimate of intrinsic scatter
 def fit_bootstrap_allmethods(witherrors=True, nsamples=100):
-   
     if witherrors is False:
         m1_list, b1_list, sig_list = ([],[],[])
         for i in range(nsamples):
-            x_bs,y_bs,sigx_bs,sigy_bs,cl = startup_bootstrap(fname=filename,method=method)
+            x_bs,y_bs,sigx_bs,sigy_bs,cl = startup_bootstrap_all(handlerepeats=True)
             N=len(x_bs)
             Sxy=sum(x_bs*y_bs)
             Sx=sum(x_bs)
@@ -401,7 +420,7 @@ def fit_bootstrap_allmethods(witherrors=True, nsamples=100):
     if witherrors is True:
         m2_list, b2_list = ([],[])
         for i in range(nsamples):
-            x_bs,y_bs,sigx_bs,sigy_bs,cl = startup_bootstrap(fname=filename,method=method)
+            x_bs,y_bs,sigx_bs,sigy_bs,cl = startup_bootstrap_all(handlerepeats=True)
             N=len(x_bs)
             Sxy=sum(x_bs*y_bs)
             Sx=sum(x_bs)
@@ -1351,5 +1370,9 @@ if __name__ == "__main__":
     # Making plot of the full sample (masses/concs)
     #plot_sample_summary()
 
-    # Doing full bootstrap analysis on all methods
-    boostrap_summary()
+    # Doing full bootstrap analysis on all methods (for each method individually)
+    #boostrap_summary()
+
+    # Doing full bootstrap analysis on the full sample at once
+    m2_list, b2_list, sig = fit_bootstrap_allmethods(witherrors=True, nsamples=100)
+    ipdb.set_trace()
