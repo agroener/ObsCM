@@ -143,7 +143,7 @@ if __name__ == "__main__":
             c200_new_list.append(c200_new)
         c200_new_rat = [c200_new_list[i]/val for i in range(len(c200_new_list))]
         axarr[0].plot(OM2,c200_new_rat,label=r"$\mathrm{c_{200}}$"+" = {}".format(int(val)))
-    axarr[0].set_ylabel(r"$\mathrm{\frac{c_{200}(\Omega_{m})}{c_{200}(\Omega_{m}=0.3)}}$",fontsize=20)
+    axarr[0].set_ylabel(r"$\mathrm{\frac{c_{200}(\Omega_{m})}{c_{200}(\Omega_{m}=0.3)}}$",fontsize=30)
     axarr[0].axvline(x=0.3,color='black',linestyle='--',linewidth=2)
     axarr[0].axhline(y=1.0,color='black',linestyle='--',linewidth=2)
     #'''
@@ -161,10 +161,12 @@ if __name__ == "__main__":
             M200_new_list.append(M200_new)
         M200_new_rat = [M200_new_list[i]/M200 for i in range(len(M200_new_list))]
         axarr[1].plot(OM2,M200_new_rat,label=r"$\mathrm{c_{200}}$"+" = {}".format(val))
-    axarr[1].set_ylabel(r"$\mathrm{\frac{M_{200}(\Omega_{m})}{M_{200}(\Omega_{m}=0.3)}}$",fontsize=20)
-    axarr[1].set_xlabel(r"$\mathrm{\Omega_{m} = 1 - \Omega_{\Lambda}}$",fontsize=18)
+    axarr[1].set_ylabel(r"$\mathrm{\frac{M_{200}(\Omega_{m})}{M_{200}(\Omega_{m}=0.3)}}$",fontsize=30)
+    axarr[1].set_xlabel(r"$\mathrm{\Omega_{m} = 1 - \Omega_{\Lambda}}$",fontsize=27)
     axarr[1].axvline(x=0.3,color='black',linestyle='--',linewidth=2)
     axarr[1].axhline(y=1.0,color='black',linestyle='--',linewidth=2)
+    axarr[1].yaxis.set_tick_params(width=5)
+    axarr[1].xaxis.set_tick_params(width=5)
     axarr[1].legend(loc=0)
     plt.tight_layout()
     plt.show()
