@@ -6,7 +6,7 @@ import ipdb
 
 # For changing plotting parameters 
 from matplotlib import rcParams
-rcParams.update({'figure.autolayout': True})
+#rcParams.update({'figure.autolayout': True})
 
 #######################
 ### Constants (mks) ###
@@ -131,6 +131,7 @@ if __name__ == "__main__":
     #'''
     fig, axarr = plt.subplots(2, sharex=True)
     fig.subplots_adjust(hspace=0)
+    fig.set_dpi(120)
     m200_static = 1.0e14
     for i,val in enumerate(c200):
         c200_new_list = []
@@ -165,8 +166,6 @@ if __name__ == "__main__":
     axarr[1].set_xlabel(r"$\mathrm{\Omega_{m} = 1 - \Omega_{\Lambda}}$",fontsize=27)
     axarr[1].axvline(x=0.3,color='black',linestyle='--',linewidth=2)
     axarr[1].axhline(y=1.0,color='black',linestyle='--',linewidth=2)
-    axarr[1].yaxis.set_tick_params(width=5)
-    axarr[1].xaxis.set_tick_params(width=5)
     axarr[1].legend(loc=0)
     plt.tight_layout()
     plt.show()
