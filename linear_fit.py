@@ -550,10 +550,9 @@ def fit_all(plot=False, savefig=False, plotwitherrorbars = False):
     print("Linear model (with uncertainties): m: {} +/- {}, b: {} +/- {}".format(m2,sigm,b2,sigb))
     
     # Plotting the best fit line over the data
-    ipdb.set_trace()
     if plot is True:
         color_list = []
-        plt.figure(figsize=(8,8))
+        plt.figure(figsize=(8,8),dpi=120)
         plt.title("All Methods")
         for i in range(len(x)):
             if methods[i] == 'X-ray':
@@ -594,11 +593,11 @@ def fit_all(plot=False, savefig=False, plotwitherrorbars = False):
                      fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,zorder=20)
         plt.scatter(np.log10(np.average(h_masses)),np.log10(np.average(h_concs)),
                     marker='*',s=500,zorder=21,color='magenta',edgecolor='k')
-        plt.xlabel(r'$\mathrm{\log{ M_{vir}/M_{\odot}}}$',fontsize=18)
-        plt.ylabel(r'$\mathrm{\log{ \, c_{vir} \, (1+z) }}$',fontsize=18)
+        plt.xlabel(r'$\mathrm{\log{ M_{vir}/M_{\odot}}}$',fontsize=25)
+        plt.ylabel(r'$\mathrm{\log{ \, c_{vir} \, (1+z) }}$',fontsize=25)
         plt.xlim(13.0,17.0)
         plt.ylim(-0.5,2.0)
-        plt.legend(loc=0,numpoints=1,frameon=False,fontsize=11)
+        plt.legend(loc=0,numpoints=1,frameon=False,fontsize=12)
         if savefig is True:
             plt.savefig('AllMethodsWithSims_linearmodel_witherror.png')
 
@@ -1060,58 +1059,70 @@ def do_individual_repeat_analyses():
 # and also makes plots of the fits (extrapolated/non-extrapolated). Also has capability to
 # plot fits and uncertainties for simulations and bootstraps. Kind of sloppy at the moment,
 # and it requires reading comments about what to plot (and hence uncomment).
-def plot_fit_summary(extrap = False, addprojectedhalos = True):
+def plot_fit_summary(extrap = False, regularsimdata = False, projectedsimdata = False, justlensing=False):
     # Plotting the fit (and uncertainty regions) over the data
     #'''
-    m_xray,sigm_xray,b_xray,sigb_xray,sig_xray,(a1_xray,b1_xray,theta_xray),(xray_max,xray_min)=fit(method='xray')#,plot=True, savefig=True)
+    fname = 'ObsCM_'
+    if justlensing is False:
+        m_xray,sigm_xray,b_xray,sigb_xray,sig_xray,(a1_xray,b1_xray,theta_xray),(xray_max,xray_min)=fit(method='xray')#,plot=True, savefig=True)
+        m_sl,sigm_sl,b_sl,sigb_sl,sig_sl,(a1_sl,b1_sl,theta_sl),(sl_max,sl_min)=fit(method='sl')#,plot=True, savefig=True)
+        m_cm,sigm_cm,b_cm,sigb_cm,sig_cm,(a1_cm,b1_cm,theta_cm),(cm_max,cm_min)=fit(method='cm')#,plot=True, savefig=True)
+        m_losvd,sigm_losvd,b_losvd,sigb_losvd,sig_losvd,(a1_losvd,b1_losvd,theta_losvd),(losvd_max,losvd_min)=fit(method='losvd')#,plot=True, savefig=True)
+        fname = fname + "All"
+    else:
+        fname = fname + "WLandWLSL"
+
     m_wl,sigm_wl,b_wl,sigb_wl,sig_wl,(a1_wl,b1_wl,theta_wl),(wl_max,wl_min)=fit(method='wl')#,plot=True, savefig=True)
-    m_sl,sigm_sl,b_sl,sigb_sl,sig_sl,(a1_sl,b1_sl,theta_sl),(sl_max,sl_min)=fit(method='sl')#,plot=True, savefig=True)
     m_wlsl,sigm_wlsl,b_wlsl,sigb_wlsl,sig_wlsl,(a1_wlsl,b1_wlsl,theta_wlsl),(wlsl_max,wlsl_min)=fit(method='wl+sl')#,plot=True, savefig=True)
-    m_cm,sigm_cm,b_cm,sigb_cm,sig_cm,(a1_cm,b1_cm,theta_cm),(cm_max,cm_min)=fit(method='cm')#,plot=True, savefig=True)
-    m_losvd,sigm_losvd,b_losvd,sigb_losvd,sig_losvd,(a1_losvd,b1_losvd,theta_losvd),(losvd_max,losvd_min)=fit(method='losvd')#,plot=True, savefig=True)
 
     ## Plotting all linear fits on the same plot
-    plt.figure(figsize=(8,8))
+    plt.figure(figsize=(8,8),dpi=120)
     # setting range for x based upon whether or not I'm using extrapolation
+    if justlensing is False:
+        if extrap is False:
+            xlist_xray = np.linspace(xray_min,xray_max,100)
+        elif extrap is True:
+            xlist_xray = np.linspace(13,17,100)
+        if extrap is False:
+            xlist_sl = np.linspace(sl_min,sl_max,100)
+        elif extrap is True:
+            xlist_sl = np.linspace(13,17,100)
+        if extrap is False:
+            xlist_cm = np.linspace(cm_min,cm_max,100)
+        elif extrap is True:
+            xlist_cm = np.linspace(13,17,100)
+        if extrap is False:
+            xlist_losvd = np.linspace(losvd_min,losvd_max,100)
+        elif extrap is True:
+            xlist_losvd = np.linspace(13,17,100)
     if extrap is False:
-        xlist_xray = np.linspace(xray_min,xray_max,100)
-    elif extrap is True:
-        xlist_xray = np.linspace(13,17,100)
-    if extrap is False:
+        fname = fname + "_NoExtrap"
         xlist_wl = np.linspace(wl_min,wl_max,100)
     elif extrap is True:
+        fname = fname + "_Extrap"
         xlist_wl = np.linspace(13,17,100)
-    if extrap is False:
-        xlist_sl = np.linspace(sl_min,sl_max,100)
-    elif extrap is True:
-        xlist_sl = np.linspace(13,17,100)
     if extrap is False:
         xlist_wlsl = np.linspace(wlsl_min,wlsl_max,100)
     elif extrap is True:
         xlist_wlsl = np.linspace(13,17,100)
-    if extrap is False:
-        xlist_cm = np.linspace(cm_min,cm_max,100)
-    elif extrap is True:
-        xlist_cm = np.linspace(13,17,100)
-    if extrap is False:
-        xlist_losvd = np.linspace(losvd_min,losvd_max,100)
-    elif extrap is True:
-        xlist_losvd = np.linspace(13,17,100)
     #'''
     # plotting trends and error regions for method of least-squares (w/ errors); do not plot at the same time as bootstrap section below
     #'''
-    #plt.plot(xlist_xray,[m_xray*i+b_xray for i in xlist_xray],color='green',label='X-ray')
-    #plt.fill_between(xlist_xray,[(m_xray+sigm_xray)*i+(b_xray+sigb_xray+sig_xray) for i in xlist_xray],[(m_xray-sigm_xray)*i+(b_xray-sigb_xray-sig_xray) for i in xlist_xray],alpha=0.25,color='green')
     plt.plot(xlist_wl,[m_wl*i+b_wl for i in xlist_wl],color='purple',label='WL')
     plt.fill_between(xlist_wl,[(m_wl+sigm_wl)*i+(b_wl+sigb_wl+sig_wl) for i in xlist_wl],[(m_wl-sigm_wl)*i+(b_wl-sigb_wl-sig_wl) for i in xlist_wl],alpha=0.25,color='purple')
-    #plt.plot(xlist_sl,[m_sl*i+b_sl for i in xlist_sl],color='red',label='SL')
-    #plt.fill_between(xlist_sl,[(m_sl+sigm_sl)*i+(b_sl+sigb_sl+sig_sl) for i in xlist_sl],[(m_sl-sigm_sl)*i+(b_sl-sigb_sl-sig_sl) for i in xlist_sl],alpha=0.25,color='red')
     plt.plot(xlist_wlsl,[m_wlsl*i+b_wlsl for i in xlist_wlsl],color='black',label='WL+SL')
     plt.fill_between(xlist_wlsl,[(m_wlsl+sigm_wlsl)*i+(b_wlsl+sigb_wlsl+sig_wlsl) for i in xlist_wlsl],[(m_wlsl-sigm_wlsl)*i+(b_wlsl-sigb_wlsl-sig_wlsl) for i in xlist_wlsl],alpha=0.25,color='black')
-    #plt.plot(xlist_cm,[m_cm*i+b_cm for i in xlist_cm],color='blue',label='CM')
-    #plt.fill_between(xlist_cm,[(m_cm+sigm_cm)*i+(b_cm+sigb_cm+sig_cm) for i in xlist_cm],[(m_cm-sigm_cm)*i+(b_cm-sigb_cm-sig_cm) for i in xlist_cm],alpha=0.25,color='blue')
-    #plt.plot(xlist_losvd,[m_losvd*i+b_losvd for i in xlist_losvd],color='orange',label='LOSVD')
-    #plt.fill_between(xlist_losvd,[(m_losvd+sigm_losvd)*i+(b_losvd+sigb_losvd+sig_losvd) for i in xlist_losvd],[(m_losvd-sigm_losvd)*i+(b_losvd-sigb_losvd-sig_losvd) for i in xlist_losvd],alpha=0.25,color='orange')
+    
+    if justlensing is False:
+        
+        plt.plot(xlist_sl,[m_sl*i+b_sl for i in xlist_sl],color='red',label='SL')
+        plt.fill_between(xlist_sl,[(m_sl+sigm_sl)*i+(b_sl+sigb_sl+sig_sl) for i in xlist_sl],[(m_sl-sigm_sl)*i+(b_sl-sigb_sl-sig_sl) for i in xlist_sl],alpha=0.25,color='red')
+        plt.plot(xlist_xray,[m_xray*i+b_xray for i in xlist_xray],color='green',label='X-ray')
+        plt.fill_between(xlist_xray,[(m_xray+sigm_xray)*i+(b_xray+sigb_xray+sig_xray) for i in xlist_xray],[(m_xray-sigm_xray)*i+(b_xray-sigb_xray-sig_xray) for i in xlist_xray],alpha=0.25,color='green')
+        plt.plot(xlist_cm,[m_cm*i+b_cm for i in xlist_cm],color='blue',label='CM')
+        plt.fill_between(xlist_cm,[(m_cm+sigm_cm)*i+(b_cm+sigb_cm+sig_cm) for i in xlist_cm],[(m_cm-sigm_cm)*i+(b_cm-sigb_cm-sig_cm) for i in xlist_cm],alpha=0.25,color='blue')
+        plt.plot(xlist_losvd,[m_losvd*i+b_losvd for i in xlist_losvd],color='orange',label='LOSVD')
+        plt.fill_between(xlist_losvd,[(m_losvd+sigm_losvd)*i+(b_losvd+sigb_losvd+sig_losvd) for i in xlist_losvd],[(m_losvd-sigm_losvd)*i+(b_losvd-sigb_losvd-sig_losvd) for i in xlist_losvd],alpha=0.25,color='orange')
     #'''
     # plotting bootstrap fits and error regions (w/ errors), manually
     '''
@@ -1128,29 +1139,33 @@ def plot_fit_summary(extrap = False, addprojectedhalos = True):
     plt.plot(xlist_losvd,[0.0379*i+0.2463 for i in xlist_losvd],color='orange',label='LOSVD')
     plt.fill_between(xlist_losvd,[(0.0379+0.1225)*i+(0.2463+1.8035+0.1797) for i in xlist_losvd],[(0.0379-0.1225)*i+(0.2463-1.8035-0.1797) for i in xlist_losvd],alpha=0.25,color='orange')
     '''
-    # plotting sims over-top of data
+    ## plotting sim fits over-top of data
     #m_sim_los_half,b_sim_los_half,sig_sim_los_half=fit_sims(los_angle='aligned',scale='half')
     #m_sim_los_full,b_sim_los_full,sig_sim_los_full=fit_sims(los_angle='aligned',scale='full')
     #m_sim_intrinsic,b_sim_intrinsic,sig_sim_intrinsic=fit_sims()
     #plt.plot(np.linspace(13,17,100),[m_sim_intrinsic*i+b_sim_intrinsic for i in np.linspace(13,17,100)],color='cyan',label='Intrinsic Simulations')
     #plt.fill_between(np.linspace(13,17,100),[(m_sim_intrinsic)*i+(b_sim_intrinsic+sig_sim_intrinsic) for i in np.linspace(13,17,100)],[(m_sim_intrinsic)*i+(b_sim_intrinsic-sig_sim_intrinsic) for i in np.linspace(13,17,100)],alpha=0.25,color='cyan')
+
+    ## Plotting sim data over-top of observations
     #'''
-    l_concs,l_masses,m_concs,m_masses,h_concs,h_masses = startup_sims()
-    plt.errorbar(np.log10(np.average(l_masses)),np.log10(np.average(l_concs)),yerr=np.log10(np.std(l_concs)),
-                 fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,label='Groener and Goldberg (2014)',zorder=20,alpha=1.0)
-    plt.scatter(np.log10(np.average(l_masses)),np.log10(np.average(l_concs)),
-                marker='*',s=500,zorder=21,color='magenta',edgecolor='k',alpha=1.0)
-    plt.errorbar(np.log10(np.average(m_masses)),np.log10(np.average(m_concs)),yerr=np.log10(np.std(m_concs)),
-                 fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,zorder=20,alpha=1.0)
-    plt.scatter(np.log10(np.average(m_masses)),np.log10(np.average(m_concs)),
-                marker='*',s=500,zorder=21,color='magenta',edgecolor='k',alpha=1.0)
-    plt.errorbar(np.log10(np.average(h_masses)),np.log10(np.average(h_concs)),yerr=np.log10(np.std(h_concs)),
-                 fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,zorder=20,alpha=1.0)
-    plt.scatter(np.log10(np.average(h_masses)),np.log10(np.average(h_concs)),
-                marker='*',s=500,zorder=21,color='magenta',edgecolor='k',alpha=1.0)
+    if regularsimdata is True:
+        l_concs,l_masses,m_concs,m_masses,h_concs,h_masses = startup_sims()
+        plt.errorbar(np.log10(np.average(l_masses)),np.log10(np.average(l_concs)),yerr=np.log10(np.std(l_concs)),
+                     fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,label='Groener and Goldberg (2014)',zorder=20,alpha=1.0)
+        plt.scatter(np.log10(np.average(l_masses)),np.log10(np.average(l_concs)),
+                    marker='*',s=500,zorder=21,color='magenta',edgecolor='k',alpha=1.0)
+        plt.errorbar(np.log10(np.average(m_masses)),np.log10(np.average(m_concs)),yerr=np.log10(np.std(m_concs)),
+                     fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,zorder=20,alpha=1.0)
+        plt.scatter(np.log10(np.average(m_masses)),np.log10(np.average(m_concs)),
+                    marker='*',s=500,zorder=21,color='magenta',edgecolor='k',alpha=1.0)
+        plt.errorbar(np.log10(np.average(h_masses)),np.log10(np.average(h_concs)),yerr=np.log10(np.std(h_concs)),
+                     fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,zorder=20,alpha=1.0)
+        plt.scatter(np.log10(np.average(h_masses)),np.log10(np.average(h_concs)),
+                    marker='*',s=500,zorder=21,color='magenta',edgecolor='k',alpha=1.0)
+        fname = fname + "andSims"
     #'''
     # projecting halos
-    if addprojectedhalos is True:
+    if projectedsimdata is True:
         l_concs_p = [conc_finder_pro(l_concs[i],[0],0.5) for i in range(len(l_concs))]
         m_concs_p = [conc_finder_pro(m_concs[i],[0],0.5) for i in range(len(m_concs))]
         h_concs_p = [conc_finder_pro(h_concs[i],[0],0.5) for i in range(len(h_concs))]
@@ -1166,16 +1181,17 @@ def plot_fit_summary(extrap = False, addprojectedhalos = True):
                      fmt='*',color='cyan',capsize=10,capthick=3,elinewidth=8,zorder=19,alpha=1.0)
         plt.scatter(np.log10(np.average(h_masses)),np.log10(np.average(h_concs_p)),
                     marker='*',s=500,zorder=23,color='cyan',edgecolor='k',alpha=1.0)
+        fname = fname + "andPSims.png"
+    else:
+        fname = fname + '.png'
 
-    plt.legend(loc=0,numpoints=1,frameon=False,fontsize=11)
-    plt.xlabel(r'$\mathrm{\log \, M_{vir}/M_{\odot}}$',fontsize=20)
-    plt.ylabel(r'$\mathrm{\log \, c_{vir} (1+z) }$',fontsize=20)
-    if extrap is False:
-        plt.savefig('ObsCM_WLandWLSLandSimsWithProj_LinearModel_NoExtrap.png')
-    elif extrap is True:
-        plt.savefig('ObsCM_WLandWLSLandSimsWithoutProj_LinearModel_Extrap.png')
-
-
+    plt.legend(loc=0,numpoints=1,frameon=False,fontsize=12)
+    plt.xlabel(r'$\mathrm{\log \, M_{vir}/M_{\odot}}$',fontsize=25)
+    plt.ylabel(r'$\mathrm{\log \, c_{vir} (1+z) }$',fontsize=25)
+    
+    plt.savefig(fname)
+    
+    
     # Plotting all of the error ellipses on the same plot
     # Not that informative of a plot...
     '''
@@ -1365,8 +1381,9 @@ if __name__ == "__main__":
     # Making plot of fits to WL and WL+SL individually
     # (no individual data points plotted here), with sims overlaid
     # on top
-    #plot_fit_summary(extrap = False)
-
+    plot_fit_summary(extrap=False, regularsimdata=True, projectedsimdata=True, justlensing=True)
+    #plot_fit_summary(extrap=False, regularsimdata=False, projectedsimdata=False, justlensing=False)
+    
     # Making plot of the full sample (masses/concs)
     #plot_sample_summary()
 
@@ -1374,5 +1391,5 @@ if __name__ == "__main__":
     #boostrap_summary()
 
     # Doing full bootstrap analysis on the full sample at once
-    m2_list, b2_list, sig = fit_bootstrap_allmethods(witherrors=True, nsamples=100)
-    ipdb.set_trace()
+    #m2_list, b2_list, sig = fit_bootstrap_allmethods(witherrors=True, nsamples=100)
+    
