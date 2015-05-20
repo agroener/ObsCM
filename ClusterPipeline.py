@@ -278,7 +278,8 @@ def compare_methods(method1, method2, scaleaxes = True, scaleto = None):
             
 if __name__ == "__main__":
     
-    print()
+    #plot_results()
+    
     #plot_redshift_mass_distr(mvir_norm,z_norm,methods_norm)
 
     ## Plotting concentration/mass comparisons of clusters which are measured in both
