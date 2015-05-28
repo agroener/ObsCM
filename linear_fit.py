@@ -1288,7 +1288,7 @@ def boostrap_summary():
     #do_bootstrap(method='LOSVD',witherrors=True,savepath=tmp_path,nsamples=100)
     #'''
 
-def plot_sample_summary(plotrepeats=True, savefigure=True):
+def plot_sample_summary(plotrepeats=True, savefigure=True, witherrors=True):
     if plotrepeats is False:
         x_xray,y_xray,sigx_xray,sigy_xray,cl_xray = discover_repeats(method='X-ray')
         x_wl,y_wl,sigx_wl,sigy_wl,cl_wl = discover_repeats(method='WL')
@@ -1314,32 +1314,59 @@ def plot_sample_summary(plotrepeats=True, savefigure=True):
     print("Number of unique clusters for CM: {}".format(len(x_cm)))
     print("Number of unique clusters for LOSVD: {}".format(len(x_losvd)))
     print("Number of total unique clusters: {}".format(len(x_xray)+len(x_wl)+len(x_sl)+len(x_wlsl)+len(x_cm)+len(x_losvd)))
-    plt.figure(1,figsize=(7,7))
+    plt.figure(1,figsize=(7.5,7.5))
     for i in range(len(x_xray)):
-        plt.errorbar(x_xray[i],y_xray[i],yerr=sigy_xray[i],xerr=sigx_xray[i],color='green')
+        if witherrors is True:
+            plt.errorbar(x_xray[i],y_xray[i],yerr=sigy_xray[i],xerr=sigx_xray[i],color='green')
+        elif witherrors is False:
+            plt.scatter(x_xray[i],y_xray[i],marker='*',color='green')
     for i in range(len(x_wl)):
-        plt.errorbar(x_wl[i],y_wl[i],yerr=sigy_wl[i],xerr=sigx_wl[i],color='purple',zorder=2)
+        if witherrors is True:
+            plt.errorbar(x_wl[i],y_wl[i],yerr=sigy_wl[i],xerr=sigx_wl[i],color='purple',zorder=2)
+        elif witherrors is False:
+            plt.scatter(x_wl[i],y_wl[i],color='purple',marker='d',zorder=2)
     for i in range(len(x_sl)):
-        plt.errorbar(x_sl[i],y_sl[i],yerr=sigy_sl[i],xerr=sigx_sl[i],color='red')
+        if witherrors is True:
+            plt.errorbar(x_sl[i],y_sl[i],yerr=sigy_sl[i],xerr=sigx_sl[i],color='red')
+        elif witherrors is False:
+            plt.scatter(x_sl[i],y_sl[i],marker='s',color='red')
     for i in range(len(x_wlsl)):
-        plt.errorbar(x_wlsl[i],y_wlsl[i],yerr=sigy_wlsl[i],xerr=sigx_wlsl[i],color='black')
+        if witherrors is True:
+            plt.errorbar(x_wlsl[i],y_wlsl[i],yerr=sigy_wlsl[i],xerr=sigx_wlsl[i],color='black')
+        elif witherrors is False:
+            plt.scatter(x_wlsl[i],y_wlsl[i],marker='o',color='black')
     for i in range(len(x_cm)):
-        plt.errorbar(x_cm[i],y_cm[i],yerr=sigy_cm[i],xerr=sigx_cm[i],color='blue')
+        if witherrors is True:
+            plt.errorbar(x_cm[i],y_cm[i],yerr=sigy_cm[i],xerr=sigx_cm[i],color='blue')
+        elif witherrors is False:
+            plt.scatter(x_cm[i],y_cm[i],marker='x',color='blue')
     for i in range(len(x_losvd)):
-        plt.errorbar(x_losvd[i],y_losvd[i],yerr=sigy_losvd[i],xerr=sigx_losvd[i],color='orange')
-    plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='green',label='X-ray')
-    plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='purple',label='WL')
-    plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='red',label='SL')
-    plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='black',label='WL+SL')
-    plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='blue',label='CM')
-    plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='orange',label='LOSVD')
+        if witherrors is True:
+            plt.errorbar(x_losvd[i],y_losvd[i],yerr=sigy_losvd[i],xerr=sigx_losvd[i],color='orange')
+        elif witherrors is False:
+            plt.scatter(x_losvd[i],y_losvd[i],marker='^',color='orange')
+    if witherrors is True:
+        plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='green',label='X-ray')
+        plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='purple',label='WL')
+        plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='red',label='SL')
+        plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='black',label='WL+SL')
+        plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='blue',label='CM')
+        plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='orange',label='LOSVD')
+    elif witherrors is False:
+        plt.scatter(1e16,1e16,color='green',marker='*',label='X-ray')
+        plt.scatter(1e16,1e16,color='purple',marker='d',label='WL')
+        plt.scatter(1e16,1e16,color='red',marker='s',label='SL')
+        plt.scatter(1e16,1e16,color='black',marker='o',label='WL+SL')
+        plt.scatter(1e16,1e16,color='blue',marker='x',label='CM')
+        plt.scatter(1e16,1e16,color='orange',marker='^',label='LOSVD')
     plt.xlim(13.0,17.0)
     plt.ylim(-0.5,2.0)
-    plt.legend(loc=0,numpoints=1,fontsize=12)
-    plt.xlabel(r'$\mathrm{\log{ M_{vir}/M_{\odot}}}$',fontsize=18)
-    plt.ylabel(r'$\mathrm{\log{ \, c_{vir} \, (1+z) }}$',fontsize=18)
+    plt.legend(loc=0,numpoints=1,scatterpoints=1,fontsize=12,frameon=True)
+    plt.xlabel(r'$\mathrm{\log\,{ M_{vir}/M_{\odot}}}$',fontsize=18)
+    plt.ylabel(r'$\mathrm{\log\,{ \, c_{vir} \, (1+z) }}$',fontsize=18)
     if savefigure is True:
         plt.savefig("CMRelation_FullSample_Symmetrized.png")
+    plt.tight_layout()
     plt.show()
 
     
@@ -1381,11 +1408,11 @@ if __name__ == "__main__":
     # Making plot of fits to WL and WL+SL individually
     # (no individual data points plotted here), with sims overlaid
     # on top
-    plot_fit_summary(extrap=False, regularsimdata=True, projectedsimdata=True, justlensing=True)
+    #plot_fit_summary(extrap=False, regularsimdata=True, projectedsimdata=True, justlensing=True)
     #plot_fit_summary(extrap=False, regularsimdata=False, projectedsimdata=False, justlensing=False)
     
     # Making plot of the full sample (masses/concs)
-    #plot_sample_summary()
+    plot_sample_summary(witherrors=False)
 
     # Doing full bootstrap analysis on all methods (for each method individually)
     #boostrap_summary()

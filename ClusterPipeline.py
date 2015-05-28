@@ -114,7 +114,7 @@ plt.show()
 #################################################
 ## Some Useful Functions - Mostly For Plotting ##
 #################################################
-def plot_results(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,z_norm):
+def plot_results(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,z_norm,uncertainties=False):
     # Plotting the results
     plt.figure(figsize=(8,8))
     plt.xscale('log')
@@ -122,18 +122,32 @@ def plot_results(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,z_norm):
     plt.xlabel(r'$\mathrm{M_{vir}/M_{\odot}}$')
     plt.ylabel(r'$\mathrm{c_{vir}(1+z)}$')
     for i in range(len(mvir_norm)):
-        if methods_norm[i] in ['WL']:
-            plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='purple')
-        if methods_norm[i] in ['SL']:
-            plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='red')
-        if methods_norm[i] in ['WL+SL']:
-            plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='black')
-        if methods_norm[i] in ['X-ray']:
-            plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='green')
-        if methods_norm[i] in ['CM']:
-            plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='blue')
-        if methods_norm[i] in ['LOSVD']:
-            plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='orange')
+        if uncertainties is True:
+            if methods_norm[i] in ['WL']:
+                plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='purple')
+            if methods_norm[i] in ['SL']:
+                plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='red')
+            if methods_norm[i] in ['WL+SL']:
+                plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='black')
+            if methods_norm[i] in ['X-ray']:
+                plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='green')
+            if methods_norm[i] in ['CM']:
+                plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='blue')
+            if methods_norm[i] in ['LOSVD']:
+                plt.errorbar(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],yerr=[cvir_p_norm[i]*(1+z_norm[i])],xerr=[mvir_p_norm[i]*1e14],color='orange')        
+        elif uncertainties is False:
+            if methods_norm[i] in ['WL']:
+                plt.scatter(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],color='purple')
+            if methods_norm[i] in ['SL']:
+                plt.scatter(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],color='red')
+            if methods_norm[i] in ['WL+SL']:
+                plt.scatter(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],color='black')
+            if methods_norm[i] in ['X-ray']:
+                plt.scatter(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],color='green')
+            if methods_norm[i] in ['CM']:
+                plt.scatter(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],color='blue')
+            if methods_norm[i] in ['LOSVD']:
+                plt.scatter(mvir_norm[i]*1e14,(1+z_norm[i])*cvir_norm[i],color='orange')
     plt.show()
 
 def plot_redshift_mass_distr(mvir_norm,z_norm,methods_norm):
@@ -278,7 +292,7 @@ def compare_methods(method1, method2, scaleaxes = True, scaleto = None):
             
 if __name__ == "__main__":
     
-    #plot_results()
+    #plot_results(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,z_norm,uncertainties=False)
     
     #plot_redshift_mass_distr(mvir_norm,z_norm,methods_norm)
 
