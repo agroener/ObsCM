@@ -1412,10 +1412,10 @@ if __name__ == "__main__":
     #plot_fit_summary(extrap=False, regularsimdata=False, projectedsimdata=False, justlensing=False)
     
     # Making plot of the full sample (masses/concs)
-    plot_sample_summary(witherrors=False)
+    #plot_sample_summary(witherrors=False)
 
     # Doing full bootstrap analysis on all methods (for each method individually)
-    #boostrap_summary()
+    boostrap_summary()
 
     # Doing full bootstrap analysis on the full sample at once
     #m2_list, b2_list, sig = fit_bootstrap_allmethods(witherrors=True, nsamples=100)
