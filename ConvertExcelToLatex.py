@@ -155,7 +155,6 @@ for i in range(len(clusters)):
     methods[i] = r"{\small "+"{}".format(methods[i])+"}"
        
 t = Table()
-
 t['Clusters'] = clusters
 t['Redshift'] = redshift
 t['Method'] = methods
@@ -180,6 +179,42 @@ t['Orig. Convention'] = orig_convention_corr
 for i in range(len(cosmology)):
     cosmology[i] = r"{\small "+"{}".format(cosmology[i])+"}"
 t['Cosmology'] = cosmology
-    
 # Write data out to latex file
+#'''
 t.write('/Users/groenera/Desktop/Dropbox/Private/Research/Papers/My_Publications/ConcentrationMassProject/Iteration1/cm_data_test.tex', format='latex')
+#'''
+
+t1 = Table()
+n_meas = [short_refs.count(i) for i in set(short_refs)]
+set_refs = [i for i in set(short_refs)]
+sorted_short_refs = [set_refs for (n_meas,set_refs) in sorted(zip(n_meas,set_refs))]
+t1['Reference'] = sorted_short_refs[::-1]
+n_meas = [short_refs.count(i) for i in set(short_refs)] # have to repeat this for some reason
+t1['N. Measurements'] = sorted(n_meas)[::-1]
+sorted_clusters_for_refs = [len(set([clusters[i] for i in range(len(short_refs)) if short_refs[i] == j])) for j in sorted_short_refs]
+t1['N. Clusters'] = sorted_clusters_for_refs[::-1]
+sorted_methods = []
+for i in sorted_short_refs:
+    tmp_list = []
+    for j in range(len(short_refs)):
+        if i == short_refs[j]:
+            tmp_list.append(methods[j])
+        else:
+            continue
+    sorted_methods.append([i for i in set(tmp_list)])
+sorted_methods_corrected = []
+for i in range(len(sorted_methods)):
+    if len(sorted_methods[i]) > 1:
+        tmp_str = ""
+        for j in range(len(sorted_methods[i])):
+            if j != len(sorted_methods[i])-1:
+                tmp_str = tmp_str + "{},\,".format(sorted_methods[i][j])
+            else:
+                tmp_str = tmp_str + "{}".format(sorted_methods[i][j])
+        sorted_methods_corrected.append(tmp_str)
+    else:
+        sorted_methods_corrected.append(sorted_methods[i][0])
+t1['Method'] = sorted_methods_corrected[::-1]
+
+#ipdb.set_trace()
+t1.write('/Users/groenera/Desktop/Dropbox/Private/Research/Papers/My_Publications/ConcentrationMassProject/Iteration1/cm_refs_test.tex', format='latex')
