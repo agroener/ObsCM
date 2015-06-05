@@ -1059,7 +1059,7 @@ def do_individual_repeat_analyses():
 # and also makes plots of the fits (extrapolated/non-extrapolated). Also has capability to
 # plot fits and uncertainties for simulations and bootstraps. Kind of sloppy at the moment,
 # and it requires reading comments about what to plot (and hence uncomment).
-def plot_fit_summary(extrap = False, regularsimdata = False, projectedsimdata = False, justlensing=False):
+def plot_fit_summary(extrap = False, regularsimdata = False, projectedsimdata = False, justlensing=False, plotwitherrors=False):
     # Plotting the fit (and uncertainty regions) over the data
     #'''
     fname = 'ObsCM_'
@@ -1109,20 +1109,26 @@ def plot_fit_summary(extrap = False, regularsimdata = False, projectedsimdata = 
     # plotting trends and error regions for method of least-squares (w/ errors); do not plot at the same time as bootstrap section below
     #'''
     plt.plot(xlist_wl,[m_wl*i+b_wl for i in xlist_wl],color='purple',label='WL')
-    plt.fill_between(xlist_wl,[(m_wl+sigm_wl)*i+(b_wl+sigb_wl+sig_wl) for i in xlist_wl],[(m_wl-sigm_wl)*i+(b_wl-sigb_wl-sig_wl) for i in xlist_wl],alpha=0.25,color='purple')
+    if plotwitherrors is True:
+        plt.fill_between(xlist_wl,[(m_wl+sigm_wl)*i+(b_wl+sigb_wl+sig_wl) for i in xlist_wl],[(m_wl-sigm_wl)*i+(b_wl-sigb_wl-sig_wl) for i in xlist_wl],alpha=0.25,color='purple')
     plt.plot(xlist_wlsl,[m_wlsl*i+b_wlsl for i in xlist_wlsl],color='black',label='WL+SL')
-    plt.fill_between(xlist_wlsl,[(m_wlsl+sigm_wlsl)*i+(b_wlsl+sigb_wlsl+sig_wlsl) for i in xlist_wlsl],[(m_wlsl-sigm_wlsl)*i+(b_wlsl-sigb_wlsl-sig_wlsl) for i in xlist_wlsl],alpha=0.25,color='black')
+    if plotwitherrors is True:
+        plt.fill_between(xlist_wlsl,[(m_wlsl+sigm_wlsl)*i+(b_wlsl+sigb_wlsl+sig_wlsl) for i in xlist_wlsl],[(m_wlsl-sigm_wlsl)*i+(b_wlsl-sigb_wlsl-sig_wlsl) for i in xlist_wlsl],alpha=0.25,color='black')
     
     if justlensing is False:
         
         plt.plot(xlist_sl,[m_sl*i+b_sl for i in xlist_sl],color='red',label='SL')
-        plt.fill_between(xlist_sl,[(m_sl+sigm_sl)*i+(b_sl+sigb_sl+sig_sl) for i in xlist_sl],[(m_sl-sigm_sl)*i+(b_sl-sigb_sl-sig_sl) for i in xlist_sl],alpha=0.25,color='red')
+        if plotwitherrors is True:
+            plt.fill_between(xlist_sl,[(m_sl+sigm_sl)*i+(b_sl+sigb_sl+sig_sl) for i in xlist_sl],[(m_sl-sigm_sl)*i+(b_sl-sigb_sl-sig_sl) for i in xlist_sl],alpha=0.25,color='red')
         plt.plot(xlist_xray,[m_xray*i+b_xray for i in xlist_xray],color='green',label='X-ray')
-        plt.fill_between(xlist_xray,[(m_xray+sigm_xray)*i+(b_xray+sigb_xray+sig_xray) for i in xlist_xray],[(m_xray-sigm_xray)*i+(b_xray-sigb_xray-sig_xray) for i in xlist_xray],alpha=0.25,color='green')
+        if plotwitherrors is True:
+            plt.fill_between(xlist_xray,[(m_xray+sigm_xray)*i+(b_xray+sigb_xray+sig_xray) for i in xlist_xray],[(m_xray-sigm_xray)*i+(b_xray-sigb_xray-sig_xray) for i in xlist_xray],alpha=0.25,color='green')
         plt.plot(xlist_cm,[m_cm*i+b_cm for i in xlist_cm],color='blue',label='CM')
-        plt.fill_between(xlist_cm,[(m_cm+sigm_cm)*i+(b_cm+sigb_cm+sig_cm) for i in xlist_cm],[(m_cm-sigm_cm)*i+(b_cm-sigb_cm-sig_cm) for i in xlist_cm],alpha=0.25,color='blue')
+        if plotwitherrors is True:
+            plt.fill_between(xlist_cm,[(m_cm+sigm_cm)*i+(b_cm+sigb_cm+sig_cm) for i in xlist_cm],[(m_cm-sigm_cm)*i+(b_cm-sigb_cm-sig_cm) for i in xlist_cm],alpha=0.25,color='blue')
         plt.plot(xlist_losvd,[m_losvd*i+b_losvd for i in xlist_losvd],color='orange',label='LOSVD')
-        plt.fill_between(xlist_losvd,[(m_losvd+sigm_losvd)*i+(b_losvd+sigb_losvd+sig_losvd) for i in xlist_losvd],[(m_losvd-sigm_losvd)*i+(b_losvd-sigb_losvd-sig_losvd) for i in xlist_losvd],alpha=0.25,color='orange')
+        if plotwitherrors is True:
+            plt.fill_between(xlist_losvd,[(m_losvd+sigm_losvd)*i+(b_losvd+sigb_losvd+sig_losvd) for i in xlist_losvd],[(m_losvd-sigm_losvd)*i+(b_losvd-sigb_losvd-sig_losvd) for i in xlist_losvd],alpha=0.25,color='orange')
     #'''
     # plotting bootstrap fits and error regions (w/ errors), manually
     '''
@@ -1408,8 +1414,8 @@ if __name__ == "__main__":
     # Making plot of fits to WL and WL+SL individually
     # (no individual data points plotted here), with sims overlaid
     # on top
-    #plot_fit_summary(extrap=False, regularsimdata=True, projectedsimdata=True, justlensing=True)
-    #plot_fit_summary(extrap=False, regularsimdata=False, projectedsimdata=False, justlensing=False)
+    plot_fit_summary(extrap=False, regularsimdata=True, projectedsimdata=True, justlensing=True, plotwitherrors=True)
+    #plot_fit_summary(extrap=False, regularsimdata=False, projectedsimdata=False, plotwitherrors=True, justlensing=False)
     
     # Making plot of the full sample (masses/concs)
     #plot_sample_summary(witherrors=False)
@@ -1418,5 +1424,5 @@ if __name__ == "__main__":
     #boostrap_summary()
 
     # Doing full bootstrap analysis on the full sample at once
-    m2_list, b2_list, sig = fit_bootstrap_allmethods(witherrors=True, nsamples=100)
-    ipdb.set_trace()
+    #m2_list, b2_list, sig = fit_bootstrap_allmethods(witherrors=True, nsamples=100)
+    #ipdb.set_trace()
