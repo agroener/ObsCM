@@ -1282,9 +1282,9 @@ def boostrap_summary():
     #'''
     #do_bootstrap(method='X-ray',witherrors=True,savepath=tmp_path,nsamples=100)
     #do_bootstrap(method='CM',witherrors=True,savepath=tmp_path,nsamples=200)
-    #do_bootstrap(method='WL',witherrors=True,savepath=tmp_path,nsamples=100)
-    #do_bootstrap(method='SL',witherrors=True,savepath=tmp_path,nsamples=100)
-    do_bootstrap(method='WL+SL',witherrors=True,savepath=tmp_path,nsamples=200)
+    do_bootstrap(method='WL',witherrors=True,savepath=tmp_path,nsamples=100)
+    do_bootstrap(method='SL',witherrors=True,savepath=tmp_path,nsamples=100)
+    #do_bootstrap(method='WL+SL',witherrors=True,savepath=tmp_path,nsamples=200)
     #do_bootstrap(method='LOSVD',witherrors=True,savepath=tmp_path,nsamples=100)
     #'''
 
