@@ -1415,8 +1415,8 @@ if __name__ == "__main__":
     #plot_sample_summary(witherrors=False)
 
     # Doing full bootstrap analysis on all methods (for each method individually)
-    boostrap_summary()
+    #boostrap_summary()
 
     # Doing full bootstrap analysis on the full sample at once
-    #m2_list, b2_list, sig = fit_bootstrap_allmethods(witherrors=True, nsamples=100)
-    
+    m2_list, b2_list, sig = fit_bootstrap_allmethods(witherrors=True, nsamples=100)
+    ipdb.set_trace()
