@@ -1403,7 +1403,7 @@ if __name__ == "__main__":
     plt.show()
     '''
     #fit(method='WL+SL', plot=True, savefig=True)
-    #fit(method='CM', plot=True, savefig=True)
+    fit(method='CM', plot=True, savefig=False)
     #fit(method='LOSVD', plot=True, savefig=True)
 
 
@@ -1414,7 +1414,7 @@ if __name__ == "__main__":
     # Making plot of fits to WL and WL+SL individually
     # (no individual data points plotted here), with sims overlaid
     # on top
-    plot_fit_summary(extrap=False, regularsimdata=True, projectedsimdata=True, justlensing=True, plotwitherrors=True)
+    #plot_fit_summary(extrap=False, regularsimdata=True, projectedsimdata=True, justlensing=True, plotwitherrors=True)
     #plot_fit_summary(extrap=False, regularsimdata=False, projectedsimdata=False, plotwitherrors=True, justlensing=False)
     
     # Making plot of the full sample (masses/concs)
