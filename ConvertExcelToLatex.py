@@ -69,6 +69,12 @@ headers.append(orig_convention.pop(0))
 cosmology = sheet1.col_values(17)
 headers.append(cosmology.pop(0))
 
+ra = sheet1.col_values(-2)
+headers.append(ra.pop(0))
+
+dec = sheet1.col_values(-1)
+headers.append(dec.pop(0))
+
 # Create astropy.Table object
 
 ## Other things to check: 'infty' turns into infinity symbol
@@ -142,21 +148,28 @@ for i in range(len(c200)):
         mvir_plus[i] = "+\infty"
 for i in range(len(cosmology)):
     cosmology[i] = cosmology[i].strip('(').strip(')')
-#ipdb.set_trace()     
+    
 for i in range(len(short_refs)):
-    short_refs[i] = r"{\footnotesize \citet{"+"{}".format(short_refs[i])+"}}"
+    short_refs[i] = r"\citet{"+"{}".format(short_refs[i])+"}"
 clusters = [i.encode('utf-8') for i in clusters]
+'''
 for i in range(len(clusters)):
     if len(clusters[i]) >= 14:
-        clusters[i] = r"{\footnotesize "+"{}".format(clusters[i])+"}"
+        clusters[i] = r"{\tiny "+"{}".format(clusters[i])+"}"
     else:
-        clusters[i] = r"{\small "+"{}".format(clusters[i])+"}"
-    redshift[i] = r"{\small "+"{}".format(redshift[i])+"}"
-    methods[i] = r"{\small "+"{}".format(methods[i])+"}"
-       
+        clusters[i] = r"{\scriptsize "+"{}".format(clusters[i])+"}"
+    redshift[i] = r"{\scriptsize "+"{}".format(redshift[i])+"}"
+    methods[i] = r"{\scriptsize "+"{}".format(methods[i])+"}"
+
+for i in range(len(ra)):
+    ra[i] = r"{\scriptsize " + "{}".format(ra[i]) + r"}"
+    dec[i] = r"{\scriptsize " + "{}".format(dec[i]) + r"}"
+'''
 t = Table()
 t['Clusters'] = clusters
 t['Redshift'] = redshift
+t['RA'] = ra
+t['Dec.'] = dec
 t['Method'] = methods
 c200_all = ["${"+"{}".format(c200[i])+"}^{" + "{}".format(c200_plus[i]) +"}_{" + "{}".format(c200_minus[i]) +"}$" for i in range(len(c200))]
 t['c200'] = c200_all
@@ -173,17 +186,17 @@ for i in range(len(orig_convention)):
         orig_convention_corr.append(int(orig_convention[i]))
     except ValueError:
         orig_convention_corr.append(orig_convention[i])
-for i in range(len(orig_convention_corr)):
-    orig_convention_corr[i] = r"{\small "+"{}".format(orig_convention_corr[i])+"}"
+#for i in range(len(orig_convention_corr)):
+#    orig_convention_corr[i] = r"{\small "+"{}".format(orig_convention_corr[i])+"}"
 t['Orig. Convention'] = orig_convention_corr
-for i in range(len(cosmology)):
-    cosmology[i] = r"{\small "+"{}".format(cosmology[i])+"}"
+#for i in range(len(cosmology)):
+#    cosmology[i] = r"{\small "+"{}".format(cosmology[i])+"}"
 t['Cosmology'] = cosmology
 # Write data out to latex file
 #'''
 t.write('/Users/groenera/Desktop/Dropbox/Private/Research/Papers/My_Publications/ConcentrationMassProject/Iteration1/cm_data_test.tex', format='latex')
 #'''
-
+ipdb.set_trace()
 t1 = Table()
 n_meas = [short_refs.count(i) for i in set(short_refs)]
 set_refs = [i for i in set(short_refs)]
