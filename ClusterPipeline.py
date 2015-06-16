@@ -10,7 +10,7 @@ import ipdb
 
 # For changing plotting parameters 
 from matplotlib import rcParams
-rcParams.update({'figure.autolayout': True})
+rcParams.update({'axes.facecolor': '#ffffff'})
 
 ## The general conversion process will take data in one convention (either 200 or virial), and
 ## convert these measurements to a common cosmology and uncertainty convention.
@@ -152,53 +152,38 @@ def plot_results(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,z_norm,uncertaintie
 
 def plot_redshift_mass_distr(mvir_norm,z_norm,methods_norm):
     # Plot distribution of masses for each method
-    '''
-    fig, axarr = plt.subplots(2, sharex=True)
-    fig.subplots_adjust(0,0,1,1,0,0)
-    #plt.figure(figsize=(8,8))
-    #plt.xlabel(r'$\mathrm{M_{vir}/M_{\odot}}$',fontsize=18)
-    #plt.ylabel(r'$\mathrm{z}$',fontsize=18)
-    #plt.xscale('log')
     
+    fig, axarr = plt.subplots(2, sharex=True, figsize=(9,9))
+    fig.subplots_adjust(hspace=0.0)
     wl = [np.log10(mvir_norm[i]*1e14) for i in range(len(mvir_norm)) if methods_norm[i] == 'WL']
     sl = [np.log10(mvir_norm[i]*1e14) for i in range(len(mvir_norm)) if methods_norm[i] == 'SL']
     wl_sl = [np.log10(mvir_norm[i]*1e14) for i in range(len(mvir_norm)) if methods_norm[i] == 'WL+SL']
     cm = [np.log10(mvir_norm[i]*1e14) for i in range(len(mvir_norm)) if methods_norm[i] == 'CM']
     xray = [np.log10(mvir_norm[i]*1e14) for i in range(len(mvir_norm)) if methods_norm[i] == 'X-ray']
     losvd = [np.log10(mvir_norm[i]*1e14) for i in range(len(mvir_norm)) if methods_norm[i] == 'LOSVD']
+    allmethods = [np.array(wl),np.array(sl),np.array(wl_sl),np.array(cm),np.array(xray),np.array(losvd)]
+
     axarr[0].scatter(wl,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'WL'],color='purple',marker='d',label='WL')
     axarr[0].scatter(sl,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'SL'],color='red',marker='s',label='SL')
     axarr[0].scatter(wl_sl,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'WL+SL'],color='black',marker='o',label='WL+SL')
     axarr[0].scatter(cm,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'CM'],color='blue',marker='x',label='CM')
     axarr[0].scatter(xray,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'X-ray'],color='green',marker='*',label='X-ray')
     axarr[0].scatter(losvd,[z_norm[i] for i in range(len(z_norm)) if methods_norm[i] == 'LOSVD'],color='orange',marker='^',label='LOSVD')
-    axarr[0].legend(loc=1,scatterpoints=1,fontsize=10)
+    axarr[0].legend(loc=0,scatterpoints=1,fontsize=12)
     axarr[0].set_xlim(13,16.5)
     axarr[0].set_ylim(0,1.5)
-    axarr[1].hist(cm,bins=10,normed=True,histtype='step',color='blue')
-    axarr[1].hist(xray,bins=10,normed=True,histtype='step',color='green')
-    axarr[1].hist(losvd,bins=10,normed=True,histtype='step',color='orange')
-    axarr[1].hist(sl,bins=10,normed=True,histtype='step',color='red')
-    axarr[1].hist(wl,bins=10,normed=True,histtype='step',color='purple')
-    axarr[1].hist(wl_sl,bins=10,normed=True,histtype='step',color='black')
+    axarr[0].set_ylabel(r'$\mathrm{z}$',fontsize=27)
+    
+    axarr[1].hist(allmethods,bins=20,histtype='stepfilled',stacked=True,color=['purple','red','black','blue','green','orange'],rwidth=1.0)
     axarr[1].set_xlim(13,16.5)
-    axarr[1].set_xlabel(r'$\mathrm{M_{vir}/M_{\odot}}$',fontsize=18)
+    axarr[1].set_xlabel(r'$\mathrm{\log \, M_{vir}/M_{\odot}}$',fontsize=22)
+    axarr[1].set_ylabel(r'$\mathrm{N_{cl}}$',fontsize=27)
+    max_yticks = 3
+    yloc = plt.MaxNLocator(max_yticks)
+    axarr[1].yaxis.set_major_locator(yloc)
     plt.show()
-    '''
-    # Simple data to display in various forms
-    x = np.linspace(0, 2 * np.pi, 400)
-    y = np.sin(x ** 2)
-    f, (ax1, ax2, ax3) = plt.subplots(3, sharex=True, sharey=True)
-    ax1.plot(x, y)
-    ax1.set_title('Sharing both axes')
-    ax2.scatter(x, y)
-    ax3.scatter(x, 2 * y ** 2 - 1, color='r')
-    # Fine-tune figure; make subplots close to each other and hide x ticks for
-    # all but bottom plot.
-    f.subplots_adjust(hspace=0)
-    plt.setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
-    plt.show()
-
+    
+    
 def compare_methods(method1, method2, scaleaxes = True, scaleto = None):
 
     # Setting up method 1 data

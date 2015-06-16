@@ -6,6 +6,7 @@ from scipy.integrate import quad
 
 import sys
 import copy
+import socket
 
 from astropy.table import Table
 from astropy.io import ascii
@@ -14,7 +15,10 @@ import ipdb
 
 def startup():
     # Opening Excel File
-    wb = open_workbook('/Users/groenera/Desktop/Dropbox/Private/Research/DataFiles/ObservedClusterConcsDB/cm_data.xlsx')
+    if socket.gethostname() == 'Umbriel':
+        wb = open_workbook('/home/groenera/Desktop/Dropbox/Private/Research/DataFiles/ObservedClusterConcsDB/cm_data.xlsx')
+    else:
+        wb = open_workbook('/Users/groenera/Desktop/Dropbox/Private/Research/DataFiles/ObservedClusterConcsDB/cm_data.xlsx')
     # First sheet
     sheet_names = wb.sheet_names()
     sheet1 = wb.sheet_by_name(sheet_names[0])
