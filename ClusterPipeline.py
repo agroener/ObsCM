@@ -54,7 +54,7 @@ for i in range(len(clusters)):
         methods_norm.append(methods[i])
         z_norm.append(redshift[i])
         cl_norm.append(clusters[i])
-
+ipdb.set_trace()
 ## Temporary section for outputting data for each method at this point
 ## Does not co-add like measurements for clusters together; for the moment
 ## it treats them as separate measurements.

@@ -124,8 +124,9 @@ def normalize_uncertainty(m,m_p,m_m,c,c_p,c_m,lamb=0.75):
             return m,m_p,m_m,c_expectedtheta,c_sigtheta,-1*c_sigtheta
 
     # both uncertainties for mass/conc are missing; need to decide on an observationally motived way of assigning uncertainties
+    # using maximum fractional uncertainty from LOSVD (and applying it to CM)
     if mass_bounds is False and conc_bounds is False:
-        return m,0.5*m,-0.5*m,c,0.5*c,-0.5*c
+        return m,0.8*m,-0.8*m,c,0.8*c,-0.8*c
 
 def propagate_A_uncertainty(m,m_err,b,b_err,M_star=1.3e13/0.7):
     '''
