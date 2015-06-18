@@ -266,7 +266,7 @@ def fit(method='X-ray', plot=False, savefig=False):
     Sxx=sum(x*x)
     m1=(N*Sxy-Sx*Sy)/(N*Sxx-Sx*Sx)
     b1=(-Sx*Sxy+Sxx*Sy)/(N*Sxx-Sx*Sx)
-    sig=np.sqrt(np.std(y-(m1*x+b1))**2-np.mean(sigy**2))
+    sig=np.sqrt(abs(np.std(y-(m1*x+b1))**2-np.mean(sigy**2))) # added in absolute value to avoid negative numbers in sqrt
     print("Linear model (assuming no uncertainties): m: {}, b: {}, sig: {} ".format(m1,b1,sig))
 
     # Using chi-squared fitting routine
@@ -1403,13 +1403,13 @@ if __name__ == "__main__":
     plt.show()
     '''
     #fit(method='WL+SL', plot=True, savefig=True)
-    fit(method='CM', plot=True, savefig=False)
+    #fit(method='CM', plot=True, savefig=True)
     #fit(method='LOSVD', plot=True, savefig=True)
 
 
     # Making plot of fit to ALL data (with data plotted, too),
     # with sims overlaid on top.
-    #fit_all(plot=True, savefig=True, plotwitherrorbars=True)
+    fit_all(plot=True, savefig=True, plotwitherrorbars=True)
 
     # Making plot of fits to WL and WL+SL individually
     # (no individual data points plotted here), with sims overlaid

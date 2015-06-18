@@ -54,11 +54,11 @@ for i in range(len(clusters)):
         methods_norm.append(methods[i])
         z_norm.append(redshift[i])
         cl_norm.append(clusters[i])
-ipdb.set_trace()
+
 ## Temporary section for outputting data for each method at this point
 ## Does not co-add like measurements for clusters together; for the moment
 ## it treats them as separate measurements.
-#'''
+'''
 import GenDataForLinearReg as GD
 print("Outputting X-ray data...")
 GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='x-ray',plot=True)
@@ -73,7 +73,7 @@ GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_
 print("Outputting LOSVD data...")
 GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='losvd',plot=True)
 ipdb.set_trace()
-#'''
+'''
 
 
 ## Normalize over cosmology at this point
@@ -305,7 +305,7 @@ if __name__ == "__main__":
     #ipdb.set_trace()
     #plot_results(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,z_norm,uncertainties=False)
     
-    plot_redshift_mass_distr(mvir_norm,z_norm,methods_norm)
+    #plot_redshift_mass_distr(mvir_norm,z_norm,methods_norm)
 
     ## Plotting concentration/mass comparisons of clusters which are measured in both
     #compare_methods('X-ray', 'WL',scaleaxes=True,scaleto=5)
