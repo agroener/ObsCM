@@ -267,10 +267,10 @@ def compare_methods(method1, method2, scaleaxes = True, scaleto = None):
     both_z = [i for i in set(both_z1 + both_z2)]
     
     # Plotting the results
-    plt.figure(figsize=(7,7))
+    plt.figure(figsize=(9,9))
     plt.title("({}/{})".format(method1,method2),fontsize=14)
-    plt.xlabel(r'$\mathrm{\frac{M_{vir}}{M_{vir}} - 1}$',fontsize=20)
-    plt.ylabel(r'$\mathrm{\frac{c_{vir}}{c_{vir}} - 1}$',fontsize=20,rotation='horizontal')
+    plt.xlabel(r'$\mathrm{\frac{M_{vir}}{M_{vir}} - 1}$',fontsize=22)
+    plt.ylabel(r'$\mathrm{\frac{c_{vir}}{c_{vir}} - 1}$',fontsize=22,rotation='horizontal')
     if scaleaxes is True:
         if scaleto is not None:
             plt.xlim(-1,scaleto)
@@ -308,6 +308,6 @@ if __name__ == "__main__":
     #plot_redshift_mass_distr(mvir_norm,z_norm,methods_norm)
 
     ## Plotting concentration/mass comparisons of clusters which are measured in both
-    #compare_methods('X-ray', 'WL',scaleaxes=True,scaleto=5)
-    #compare_methods('WL', 'WL+SL',scaleaxes=True,scaleto=3)
-    #compare_methods('CM', 'LOSVD',scaleaxes=True,scaleto=5)
+    compare_methods('X-ray', 'WL',scaleaxes=True,scaleto=5)
+    compare_methods('WL', 'WL+SL',scaleaxes=True,scaleto=3)
+    compare_methods('CM', 'LOSVD',scaleaxes=True,scaleto=5)
