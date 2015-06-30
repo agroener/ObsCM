@@ -1375,6 +1375,18 @@ def plot_sample_summary(plotrepeats=True, savefigure=True, witherrors=True):
     plt.tight_layout()
     plt.show()
 
+def oguri_comparison():
+    import DataHandler as DH
+    clusters,redshift,methods,c200,c200_plus,c200_minus,m200,m200_plus,m200_minus,cvir,cvir_plus,cvir_minus,mvir,mvir_plus,mvir_minus,short_refs,orig_convention,cosmology = DH.startup()
+    og12_clusters = [clusters[i] for i in range(len(clusters)) if short_refs[i] == 'OG12.1']
+    og12_redshifts = [redshift[i] for i in range(len(clusters)) if short_refs[i] == 'OG12.1']
+    og12_methods = [methods[i] for i in range(len(clusters)) if short_refs[i] == 'OG12.1']
+    og12_cosmology = [cosmology[i] for i in range(len(clusters)) if short_refs[i] == 'OG12.1']
+    og12_cvir = [cvir[i] for i in range(len(clusters)) if short_refs[i] == 'OG12.1']
+    og12_cvir_p = [cvir_plus[i] for i in range(len(clusters)) if short_refs[i] == 'OG12.1']
+    og12_cvir_m = [cvir_minus[i] for i in range(len(clusters)) if short_refs[i] == 'OG12.1']
+    ipdb.set_trace()
+    return 
     
 if __name__ == "__main__":
 
@@ -1409,7 +1421,7 @@ if __name__ == "__main__":
 
     # Making plot of fit to ALL data (with data plotted, too),
     # with sims overlaid on top.
-    fit_all(plot=True, savefig=True, plotwitherrorbars=True)
+    #fit_all(plot=True, savefig=True, plotwitherrorbars=True)
 
     # Making plot of fits to WL and WL+SL individually
     # (no individual data points plotted here), with sims overlaid
@@ -1426,3 +1438,6 @@ if __name__ == "__main__":
     # Doing full bootstrap analysis on the full sample at once
     #m2_list, b2_list, sig = fit_bootstrap_allmethods(witherrors=True, nsamples=100)
     #ipdb.set_trace()
+
+    # Comparins WL and WL+SL fits of just Oguri+12
+    oguri_comparison()

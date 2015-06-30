@@ -39,7 +39,7 @@ print("There are a total of {} studies.".format(len(set(short_refs))))
 
 # Take all virial measurements and normalize uncertainties
 mvir_norm,mvir_p_norm,mvir_m_norm,cvir_norm,cvir_p_norm,cvir_m_norm = ([],[],[],[],[],[])
-methods_norm,z_norm,cl_norm = ([],[],[])
+methods_norm,z_norm,cl_norm,refs_norm = ([],[],[],[])
 lamb = 0.75 # the multiplicative factor which controls how much to shift the mean in the procedure for adjusting
 print("Normalizing uncertainties...")
 for i in range(len(clusters)):
@@ -54,6 +54,7 @@ for i in range(len(clusters)):
         methods_norm.append(methods[i])
         z_norm.append(redshift[i])
         cl_norm.append(clusters[i])
+        refs_norm.append(short_refs[i])
 
 ## Temporary section for outputting data for each method at this point
 ## Does not co-add like measurements for clusters together; for the moment
@@ -74,6 +75,15 @@ print("Outputting LOSVD data...")
 GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='losvd',plot=True)
 ipdb.set_trace()
 '''
+# Outputting data for OG12.1
+'''
+import GenDataForLinearReg as GD
+print("Outputting OG12.1 WL data...")
+GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='wl',plot=True,ref='OG12.1',refs_norm=refs_norm)
+print("Outputting OG12.1 WL+SL data...")
+GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='wl+sl',plot=True,ref='OG12.1',refs_norm=refs_norm)
+'''
+#ipdb.set_trace()
 
 
 ## Normalize over cosmology at this point
@@ -308,6 +318,8 @@ if __name__ == "__main__":
     #plot_redshift_mass_distr(mvir_norm,z_norm,methods_norm)
 
     ## Plotting concentration/mass comparisons of clusters which are measured in both
-    compare_methods('X-ray', 'WL',scaleaxes=True,scaleto=5)
-    compare_methods('WL', 'WL+SL',scaleaxes=True,scaleto=3)
-    compare_methods('CM', 'LOSVD',scaleaxes=True,scaleto=5)
+    #compare_methods('X-ray', 'WL',scaleaxes=True,scaleto=5)
+    #compare_methods('WL', 'WL+SL',scaleaxes=True,scaleto=3)
+    #compare_methods('CM', 'LOSVD',scaleaxes=True,scaleto=5)
+
+    ipdb.set_trace()
