@@ -1376,15 +1376,62 @@ def plot_sample_summary(plotrepeats=True, savefigure=True, witherrors=True):
     plt.show()
 
 def oguri_comparison():
-    import DataHandler as DH
-    clusters,redshift,methods,c200,c200_plus,c200_minus,m200,m200_plus,m200_minus,cvir,cvir_plus,cvir_minus,mvir,mvir_plus,mvir_minus,short_refs,orig_convention,cosmology = DH.startup()
-    og12_clusters = [clusters[i] for i in range(len(clusters)) if short_refs[i] == 'OG12.1']
-    og12_redshifts = [redshift[i] for i in range(len(clusters)) if short_refs[i] == 'OG12.1']
-    og12_methods = [methods[i] for i in range(len(clusters)) if short_refs[i] == 'OG12.1']
-    og12_cosmology = [cosmology[i] for i in range(len(clusters)) if short_refs[i] == 'OG12.1']
-    og12_cvir = [cvir[i] for i in range(len(clusters)) if short_refs[i] == 'OG12.1']
-    og12_cvir_p = [cvir_plus[i] for i in range(len(clusters)) if short_refs[i] == 'OG12.1']
-    og12_cvir_m = [cvir_minus[i] for i in range(len(clusters)) if short_refs[i] == 'OG12.1']
+    x_wl,y_wl,sigx_wl,sigy_wl,cl_wl=startup(fname='OG12.1_WL_data.txt')
+    x_wlsl,y_wlsl,sigx_wlsl,sigy_wlsl,cl_wlsl=startup(fname='OG12.1_WL+SL_data.txt')
+    
+    # WL: Fitting as if there are no uncertainties
+    N=len(x_wl)
+    Sxy=sum(x_wl*y_wl)
+    Sx=sum(x_wl)
+    Sy=sum(y_wl)
+    Sxx=sum(x_wl*x_wl)
+    m1=(N*Sxy-Sx*Sy)/(N*Sxx-Sx*Sx)
+    b1=(-Sx*Sxy+Sxx*Sy)/(N*Sxx-Sx*Sx)
+    sig=np.sqrt(abs(np.std(y_wl-(m1*x_wl+b1))**2-np.mean(sigy_wl**2))) # added in absolute value to avoid negative numbers in sqrt
+    print("Linear model (assuming no uncertainties) for WL: m: {}, b: {}, sig: {} ".format(m1,b1,sig))
+
+    # Using chi-squared fitting routine
+    ## (not completely the correct thing to do,
+    ##  but a back of the envelope method)
+    m2,b2 = steepest_decent(x_wl,y_wl,sigx_wl,sigy_wl,sig,m1,b1,N,alpha=0.75,tol=1.e-6)
+
+    # Calculating second order partial derivatives for error of the fit
+    F11 = second_partial_derivative(chi2,var=5,point=[x_wl,y_wl,sigx_wl,sigy_wl,sig,m2,b2,N])
+    F22 = second_partial_derivative(chi2,var=6,point=[x_wl,y_wl,sigx_wl,sigy_wl,sig,m2,b2,N])
+    F12 = second_partial_derivative_mixed(chi2,var=[5,6],point=(x_wl,y_wl,sigx_wl,sigy_wl,sig,m2,b2,N))
+    F21 = F12
+    # Error in fit
+    sigm=1./np.sqrt(F11)
+    sigb=1./np.sqrt(F22)
+
+    print("Linear model (with uncertainties) for WL: m: {} +/- {}, b: {} +/- {}".format(m2,sigm,b2,sigb))
+
+    # WL+SL: Fitting as if there are no uncertainties
+    N=len(x_wlsl)
+    Sxy=sum(x_wlsl*y_wlsl)
+    Sx=sum(x_wlsl)
+    Sy=sum(y_wlsl)
+    Sxx=sum(x_wlsl*x_wlsl)
+    m1=(N*Sxy-Sx*Sy)/(N*Sxx-Sx*Sx)
+    b1=(-Sx*Sxy+Sxx*Sy)/(N*Sxx-Sx*Sx)
+    sig=np.sqrt(abs(np.std(y_wlsl-(m1*x_wlsl+b1))**2-np.mean(sigy_wlsl**2))) # added in absolute value to avoid negative numbers in sqrt
+    print("Linear model (assuming no uncertainties) for WL+SL: m: {}, b: {}, sig: {} ".format(m1,b1,sig))
+
+    # Using chi-squared fitting routine
+    ## (not completely the correct thing to do,
+    ##  but a back of the envelope method)
+    m2,b2 = steepest_decent(x_wlsl,y_wlsl,sigx_wlsl,sigy_wlsl,sig,m1,b1,N,alpha=0.75,tol=1.e-6)
+
+    # Calculating second order partial derivatives for error of the fit
+    F11 = second_partial_derivative(chi2,var=5,point=[x_wlsl,y_wlsl,sigx_wlsl,sigy_wlsl,sig,m2,b2,N])
+    F22 = second_partial_derivative(chi2,var=6,point=[x_wlsl,y_wlsl,sigx_wlsl,sigy_wlsl,sig,m2,b2,N])
+    F12 = second_partial_derivative_mixed(chi2,var=[5,6],point=(x_wlsl,y_wlsl,sigx_wlsl,sigy_wlsl,sig,m2,b2,N))
+    F21 = F12
+    # Error in fit
+    sigm=1./np.sqrt(F11)
+    sigb=1./np.sqrt(F22)
+
+    print("Linear model (with uncertainties) for WL+SL: m: {} +/- {}, b: {} +/- {}".format(m2,sigm,b2,sigb))
     ipdb.set_trace()
     return 
     
