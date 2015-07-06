@@ -557,29 +557,36 @@ def fit_all(plot=False, savefig=False, plotwitherrorbars = False):
         for i in range(len(x)):
             if methods[i] == 'X-ray':
                 tmp_col = 'green'
+                tmp_symb = '*'
             elif methods[i] == 'WL':
                 tmp_col = 'purple'
+                tmp_symb = 'd'
             elif methods[i] == 'SL':
                 tmp_col = 'red'
+                tmp_symb = 's'
             elif methods[i] == 'WL+SL':
                 tmp_col = 'black'
+                tmp_symb = 'o'
             elif methods[i] == 'CM':
                 tmp_col = 'blue'
+                tmp_symb = 'x'
             elif methods[i] == 'LOSVD':
                 tmp_col = 'orange'
+                tmp_symb = '^'
             elif methods[i] == 'COMB':
                 tmp_col = 'cyan'
+                tmp_symb = '+'
             else:
                 print("Undefined method found...")
                 return
             if plotwitherrorbars is True:
                 plt.errorbar(x[i],y[i],xerr=sigx[i],yerr=sigy[i],fmt='o',color=tmp_col)
             elif plotwitherrorbars is False:
-                plt.scatter(x[i],y[i],color=tmp_col)
+                plt.scatter(x[i],y[i],color=tmp_col,marker=tmp_symb)
         x0 = np.array([13.0,17.5])
         y0=m2*x0+b2
-        plt.plot(x0,y0,linewidth=3,color='yellow')
-        plt.fill_between(x0,[(m2+sigm)*i+(b2+sigb+sig) for i in x0],[(m2-sigm)*i+(b2-sigb-sig) for i in x0],alpha=0.5,color='yellow')
+        plt.plot(x0,y0,linewidth=3,color='black')
+        plt.fill_between(x0,[(m2+sigm)*i+(b2+sigb+sig) for i in x0],[(m2-sigm)*i+(b2-sigb-sig) for i in x0],alpha=0.25,color='black')
         l_concs,l_masses,m_concs,m_masses,h_concs,h_masses = startup_sims()
         plt.errorbar(np.log10(np.average(l_masses)),np.log10(np.average(l_concs)),yerr=np.log10(np.std(l_concs)),
                      fmt='*',color='magenta',capsize=10,capthick=3,elinewidth=8,label='Groener and Goldberg (2014)',zorder=20)
@@ -1468,7 +1475,7 @@ if __name__ == "__main__":
 
     # Making plot of fit to ALL data (with data plotted, too),
     # with sims overlaid on top.
-    #fit_all(plot=True, savefig=True, plotwitherrorbars=True)
+    fit_all(plot=True, savefig=True, plotwitherrorbars=False)
 
     # Making plot of fits to WL and WL+SL individually
     # (no individual data points plotted here), with sims overlaid
@@ -1487,4 +1494,4 @@ if __name__ == "__main__":
     #ipdb.set_trace()
 
     # Comparins WL and WL+SL fits of just Oguri+12
-    oguri_comparison()
+    #oguri_comparison()
