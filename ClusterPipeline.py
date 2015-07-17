@@ -91,7 +91,7 @@ GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_
 
 
 # Find best fit parameters for GMM
-weights,means,covs = GMM(mvir_norm)
+#weights,means,covs = GMM(mvir_norm)
 
 
 # Perform parameter fitting here
@@ -309,6 +309,8 @@ def compare_methods(method1, method2, scaleaxes = True, scaleto = None):
     plt.savefig("/Users/groenera/Desktop/{}".format(filename))
     plt.show()
 
+def get_normalized_data():
+    return mvir_norm,mvir_p_norm,mvir_m_norm,cvir_norm,cvir_p_norm,cvir_m_norm,methods_norm,z_norm,cl_norm,refs_norm
     
             
 if __name__ == "__main__":
