@@ -71,5 +71,5 @@ if __name__ == "__main__":
     plt.ylim(-0.1,1.1)
     plt.xlim(0,np.pi)
     plt.axvline(x=np.pi/2,linestyle='--',color='black',linewidth=2)
-    plt.text(np.pi/2,0.6,"Perpendicular to Major Axis",rotation=90,fontsize=17)
+    plt.text(np.pi/2,0.85,"Perpendicular to Major Axis",rotation=90,fontsize=17)
     plt.show()
