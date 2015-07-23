@@ -45,17 +45,31 @@ def conc_finder_pro(c,thetalist,q):
 
 
 if __name__ == "__main__":
+
+    ## Plotting
+    # C/c plot
+    plt.figure(1)
     conclist = [1,3,5,7,9]
     shapelist = np.linspace(0.25,1.0,100)
-
     outlist = [[(conc_finder_pro(conc,[0.0],shape)[0][0])/conc for shape in shapelist] for conc in conclist]
-
-    # Plotting
-
     plt.ylabel(r"$\mathrm{\frac{C_{2D}}{c}}$",fontsize=18,rotation="horizontal")
     plt.xlabel(r"$q$",fontsize=18)
     for i in range(len(outlist)):
         plt.plot(shapelist,outlist[i],label="c={}".format(conclist[i]))
+    plt.xlim(0.25,1.0)
     plt.legend(loc=0)
+    # Q vs q and theta plot
+    plt.figure(2)
+    qlist = [0.25,0.5,0.75,1.0]
+    thetalist = np.linspace(0.0,np.pi,100)
+    outlist2 = [[Q(shape,shape,0.0,theta) for theta in thetalist] for shape in qlist]
+    plt.ylabel(r"$\mathrm{Q}$",fontsize=18,rotation="horizontal")
+    plt.xlabel(r"$\mathrm{\theta}$",fontsize=18)
+    for i in range(len(outlist2)):
+        plt.plot(thetalist,outlist2[i],label="q={}".format(qlist[i]))
+    plt.legend(loc=0)
+    plt.ylim(-0.1,1.1)
+    plt.xlim(0,np.pi)
+    plt.axvline(x=np.pi/2,linestyle='--',color='black',linewidth=2)
+    plt.text(np.pi/2,0.6,"Perpendicular to Major Axis",rotation=90,fontsize=17)
     plt.show()
-    ipdb.set_trace()
