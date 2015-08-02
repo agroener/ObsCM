@@ -252,6 +252,24 @@ def fit(method='X-ray', plot=False, savefig=False):
 
     x_old,y_old,sigx_old,sigy_old,cl_old = startup(fname=filename) # doesn't take repeat measurements into account; but need it for original sample size
     x,y,sigx,sigy,cl=discover_repeats(method=method)
+    
+
+    print("Beginning chopping procedure. Startin with {} clusters.".format(len(x)))
+    # chop out: masses > 4.e15 (in log: 15.6), and masses < 1.e14 (in log: 14.0)
+    y_cut = [y[i] for i in range(len(x)) if x[i] >= 14.0 and x[i] <= 15.6]
+    sigx_cut = [sigx[i] for i in range(len(x)) if x[i] >= 14.0 and x[i] <= 15.6]
+    sigy_cut = [sigy[i] for i in range(len(x)) if x[i] >= 14.0 and x[i] <= 15.6]
+    cl_cut = [cl[i] for i in range(len(x)) if x[i] >= 14.0 and x[i] <= 15.6]
+    x_cut = [x[i] for i in range(len(x)) if x[i] >= 14.0 and x[i] <= 15.6] # need to do x last, since others depend on it
+    # chop out: concs < 2.0 (in log 0.301)
+    x = [x_cut[i] for i in range(len(x_cut)) if y_cut[i] >= 0.301]
+    sigx = [sigx_cut[i] for i in range(len(x_cut)) if y_cut[i] >= 0.301]
+    sigy = [sigy_cut[i] for i in range(len(x_cut)) if y_cut[i] >= 0.301]
+    cl = [cl_cut[i] for i in range(len(x_cut)) if y_cut[i] >= 0.301]
+    y = [y_cut[i] for i in range(len(x_cut)) if y_cut[i] >= 0.301] # need to do y last, since others depend on it
+    print("Chopped out low/high masses, and low concs. {} clusters left".format(len(x)))
+
+    
     x,y,sigx,sigy = (np.array(x),np.array(y),np.array(sigx),np.array(sigy))
     xmax,xmin = max(x),min(x)
 
@@ -518,7 +536,7 @@ def fit_all(plot=False, savefig=False, plotwitherrorbars = False):
                     filename_wlsl,filename_cm,filename_losvd])
     x,y,sigx,sigy = (np.array(x),np.array(y),np.array(sigx),np.array(sigy))
     xmax,xmin = max(x),min(x)
-    
+
     print("Number of measurements used: {}".format(tot))
     print("Number of unique clusters: {}".format(len(x)))
 
@@ -1449,7 +1467,7 @@ if __name__ == "__main__":
     #fit(method='X-ray', plot=True, savefig=True)
     #fit(method='WL', plot=True, savefig=True)
     #for strong lensing, use bootstrap plot instead
-    #fit(method='SL', plot=True, savefig=True)
+    fit(method='SL', plot=True, savefig=True)
     '''
     m_list, b_list, sig = fit_bootstrap(method='sl', witherrors=True, nsamples=100)
     m_ave,m_std = (np.average(m_list),np.std(m_list))
@@ -1475,7 +1493,7 @@ if __name__ == "__main__":
 
     # Making plot of fit to ALL data (with data plotted, too),
     # with sims overlaid on top.
-    fit_all(plot=True, savefig=True, plotwitherrorbars=False)
+    #fit_all(plot=True, savefig=True, plotwitherrorbars=False)
 
     # Making plot of fits to WL and WL+SL individually
     # (no individual data points plotted here), with sims overlaid
