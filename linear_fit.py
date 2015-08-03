@@ -254,7 +254,7 @@ def fit(method='X-ray', plot=False, savefig=False):
     x,y,sigx,sigy,cl=discover_repeats(method=method)
     
 
-    print("Beginning chopping procedure. Startin with {} clusters.".format(len(x)))
+    print("Beginning chopping procedure. Starting with {} clusters.".format(len(x)))
     # chop out: masses > 4.e15 (in log: 15.6), and masses < 1.e14 (in log: 14.0)
     y_cut = [y[i] for i in range(len(x)) if x[i] >= 14.0 and x[i] <= 15.6]
     sigx_cut = [sigx[i] for i in range(len(x)) if x[i] >= 14.0 and x[i] <= 15.6]
@@ -534,11 +534,27 @@ def fit_all(plot=False, savefig=False, plotwitherrorbars = False):
     x,y,sigx,sigy,uniques,methods = discover_repeats_all(
         fname_list=[filename_xray,filename_wl,filename_sl,
                     filename_wlsl,filename_cm,filename_losvd])
-    x,y,sigx,sigy = (np.array(x),np.array(y),np.array(sigx),np.array(sigy))
-    xmax,xmin = max(x),min(x)
 
     print("Number of measurements used: {}".format(tot))
     print("Number of unique clusters: {}".format(len(x)))
+    
+    print("Beginning chopping procedure. Starting with {} clusters.".format(len(x)))
+    # chop out: masses > 4.e15 (in log: 15.6), and masses < 1.e14 (in log: 14.0)
+    y_cut = [y[i] for i in range(len(x)) if x[i] >= 14.0 and x[i] <= 15.6]
+    sigx_cut = [sigx[i] for i in range(len(x)) if x[i] >= 14.0 and x[i] <= 15.6]
+    sigy_cut = [sigy[i] for i in range(len(x)) if x[i] >= 14.0 and x[i] <= 15.6]
+    uniques_cut = [uniques[i] for i in range(len(x)) if x[i] >= 14.0 and x[i] <= 15.6]
+    x_cut = [x[i] for i in range(len(x)) if x[i] >= 14.0 and x[i] <= 15.6] # need to do x last, since others depend on it
+    # chop out: concs < 2.0 (in log 0.301)
+    x = [x_cut[i] for i in range(len(x_cut)) if y_cut[i] >= 0.301]
+    sigx = [sigx_cut[i] for i in range(len(x_cut)) if y_cut[i] >= 0.301]
+    sigy = [sigy_cut[i] for i in range(len(x_cut)) if y_cut[i] >= 0.301]
+    uniques = [uniques_cut[i] for i in range(len(x_cut)) if y_cut[i] >= 0.301]
+    y = [y_cut[i] for i in range(len(x_cut)) if y_cut[i] >= 0.301] # need to do y last, since others depend on it
+    print("Chopped out low/high masses, and low concs. {} clusters left".format(len(x)))
+
+    x,y,sigx,sigy = (np.array(x),np.array(y),np.array(sigx),np.array(sigy))
+    xmax,xmin = max(x),min(x)
 
     # Fitting as if there are no uncertainties
     N=len(x)
@@ -1467,7 +1483,7 @@ if __name__ == "__main__":
     #fit(method='X-ray', plot=True, savefig=True)
     #fit(method='WL', plot=True, savefig=True)
     #for strong lensing, use bootstrap plot instead
-    fit(method='SL', plot=True, savefig=True)
+    #fit(method='SL', plot=True, savefig=True)
     '''
     m_list, b_list, sig = fit_bootstrap(method='sl', witherrors=True, nsamples=100)
     m_ave,m_std = (np.average(m_list),np.std(m_list))
@@ -1508,8 +1524,11 @@ if __name__ == "__main__":
     #boostrap_summary()
 
     # Doing full bootstrap analysis on the full sample at once
-    #m2_list, b2_list, sig = fit_bootstrap_allmethods(witherrors=True, nsamples=100)
-    #ipdb.set_trace()
+    m2_list, b2_list, sig = fit_bootstrap_allmethods(witherrors=True, nsamples=100)
+    print("sigma: {}".format(sig))
+    print("m: {} +/- {}".format(np.average(m2_list),np.std(m2_list)))
+    print("b: {} +/- {}".format(np.average(b2_list),np.std(b2_list)))
+    ipdb.set_trace()
 
     # Comparins WL and WL+SL fits of just Oguri+12
     #oguri_comparison()
