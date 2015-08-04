@@ -85,14 +85,14 @@ GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_
 '''
 #ipdb.set_trace()
 # Outputting data for ME14.1
-#'''
+'''
 ipdb.set_trace()
 import GenDataForLinearReg as GD
 print("Outputting ME14.1 WL data...")
 GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='wl',plot=True,ref='ME14.1',refs_norm=refs_norm)
 print("Outputting ME14.1 WL+SL data...")
 GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='wl+sl',plot=True,ref='ME14.1',refs_norm=refs_norm)
-#'''
+'''
 #ipdb.set_trace()
 
 
@@ -287,24 +287,13 @@ def compare_methods(method1, method2, scaleaxes = True, scaleto = None):
     both_z = [i for i in set(both_z1 + both_z2)]
     
     # Plotting the results
-    plt.figure(figsize=(9,9))
-    plt.title("({}/{})".format(method1,method2),fontsize=14)
-    plt.xlabel(r'$\mathrm{\frac{M_{vir}}{M_{vir}} - 1}$',fontsize=22)
-    plt.ylabel(r'$\mathrm{\frac{c_{vir}}{c_{vir}} - 1}$',fontsize=22,rotation='horizontal')
-    if scaleaxes is True:
-        if scaleto is not None:
-            plt.xlim(-1,scaleto)
-            plt.ylim(-1,scaleto)
-        else:
-            plt.xlim(-1,5)
-            plt.ylim(-1,5)
-        filename = "{}_{}_Comparison_Scaled.png".format(method1, method2)
-    else:
-        filename = "{}_{}_Comparison_NotScaled.png".format(method1, method2)
-    plt.axvline(x=0,color='black',linestyle='--')
-    plt.axhline(y=0,color='black',linestyle='--')
+    fig, axarr = plt.subplots(2, sharex=True)
+    filename = "{}_{}_Comparison.png".format(method1, method2)
+    axarr[0].set_title("({}/{})".format(method1,method2),fontsize=14)
+    
     maxz = max(both_z)
     cm = plt.cm.get_cmap('RdYlBu')
+
     for it, vals in enumerate(both_cl):
         m1_index = m1_cl_n.index(vals)
         m2_index = m2_cl_n.index(vals)
@@ -312,13 +301,27 @@ def compare_methods(method1, method2, scaleaxes = True, scaleto = None):
         tmp_y = m1_concs_n[m1_index]/m2_concs_n[m2_index]
         tmp_sigx = abs(m1_mass_n[m1_index]/m2_mass_n[m2_index]-1) * (m1_mass_err_n[m1_index]/m1_mass_n[m1_index] + m2_mass_err_n[m2_index]/m2_mass_n[m2_index])
         tmp_sigy = abs(m1_concs_n[m1_index]/m2_concs_n[m2_index]-1) * (m1_concs_err_n[m1_index]/m1_concs_n[m1_index] + m2_concs_err_n[m2_index]/m2_concs_n[m2_index])
-        plt.errorbar(tmp_x-1,tmp_y-1,yerr=tmp_sigy,xerr=tmp_sigx, zorder=1, color='black')
-        sc = plt.scatter(tmp_x-1, tmp_y-1, c=m1_z_n[m1_index], vmin=0, vmax=maxz, s=43, cmap=cm, zorder=2)
-    plt.colorbar(sc)
+        if tmp_x <= 10:
+            axarr[0].errorbar(it,tmp_x-1,yerr=tmp_sigx, zorder=1, color='black')
+            sc = axarr[0].scatter(it, tmp_x-1, c=m1_z_n[m1_index], vmin=0, vmax=maxz, s=43, cmap=cm, zorder=2,edgecolors='k')
+            axarr[1].errorbar(it,tmp_y-1,yerr=tmp_sigy, zorder=1, color='black')
+            sc = axarr[1].scatter(it, tmp_y-1, c=m1_z_n[m1_index], vmin=0, vmax=maxz, s=43, cmap=cm, zorder=2,edgecolors='k')
+        
+    axarr[0].set_xlim(-2,it+2)
+    axarr[0].set_ylabel(r'$\mathrm{\frac{M_{vir,CM}}{M_{vir,LOSVD}} - 1}$',fontsize=25)
+    axarr[0].axes.get_xaxis().set_visible(False)
+    axarr[1].axes.get_xaxis().set_visible(False)
+    axarr[1].set_xlim(-2,it+2)
+    axarr[1].set_ylabel(r'$\mathrm{\frac{c_{vir,CM}}{c_{vir,LOSVD}} - 1}$',fontsize=25)
+    axarr[0].axhline(y=0,color='black',linestyle='--')
+    axarr[1].axhline(y=0,color='black',linestyle='--')
+    fig.subplots_adjust(right=0.8)
+    cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+    plt.colorbar(sc, cax=cbar_ax)
     # Saves figure onto Desktop; path should work for laptop and work computer only
-    plt.savefig("/Users/groenera/Desktop/{}".format(filename))
-    plt.show()
+    plt.savefig("/home/groenera/Desktop/{}".format(filename))
 
+    
 def get_normalized_data():
     return mvir_norm,mvir_p_norm,mvir_m_norm,cvir_norm,cvir_p_norm,cvir_m_norm,methods_norm,z_norm,cl_norm,refs_norm
     
@@ -332,6 +335,6 @@ if __name__ == "__main__":
     ## Plotting concentration/mass comparisons of clusters which are measured in both
     #compare_methods('X-ray', 'WL',scaleaxes=True,scaleto=5)
     #compare_methods('WL', 'WL+SL',scaleaxes=True,scaleto=3)
-    #compare_methods('CM', 'LOSVD',scaleaxes=True,scaleto=5)
+    compare_methods('CM', 'LOSVD',scaleaxes=True,scaleto=5)
 
-    ipdb.set_trace()
+    #ipdb.set_trace()
