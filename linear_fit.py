@@ -1232,6 +1232,7 @@ def plot_fit_summary(extrap = False, regularsimdata = False, projectedsimdata = 
     else:
         fname = fname + '.png'
 
+    ipdb.set_trace()
     plt.legend(loc=0,numpoints=1,frameon=False,fontsize=12)
     plt.xlabel(r'$\mathrm{\log \, M_{vir}/M_{\odot}}$',fontsize=25)
     plt.ylabel(r'$\mathrm{\log \, c_{vir} (1+z) }$',fontsize=25)
@@ -1475,7 +1476,11 @@ def oguri_comparison():
     print("Linear model (with uncertainties) for WL+SL: m: {} +/- {}, b: {} +/- {}".format(m2,sigm,b2,sigb))
     ipdb.set_trace()
     return 
+
+def clash_relation():
     
+
+
 if __name__ == "__main__":
 
     # Doing fits to individual fits to each method sub-population
@@ -1524,11 +1529,14 @@ if __name__ == "__main__":
     #boostrap_summary()
 
     # Doing full bootstrap analysis on the full sample at once
-    m2_list, b2_list, sig = fit_bootstrap_allmethods(witherrors=True, nsamples=100)
-    print("sigma: {}".format(sig))
-    print("m: {} +/- {}".format(np.average(m2_list),np.std(m2_list)))
-    print("b: {} +/- {}".format(np.average(b2_list),np.std(b2_list)))
-    ipdb.set_trace()
+    #m2_list, b2_list, sig = fit_bootstrap_allmethods(witherrors=True, nsamples=100)
+    #print("sigma: {}".format(sig))
+    #print("m: {} +/- {}".format(np.average(m2_list),np.std(m2_list)))
+    #print("b: {} +/- {}".format(np.average(b2_list),np.std(b2_list)))
+    #ipdb.set_trace()
 
     # Comparins WL and WL+SL fits of just Oguri+12
     #oguri_comparison()
+
+    # CLASH c-M relation
+    clash_relation()

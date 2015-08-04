@@ -84,6 +84,16 @@ print("Outputting OG12.1 WL+SL data...")
 GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='wl+sl',plot=True,ref='OG12.1',refs_norm=refs_norm)
 '''
 #ipdb.set_trace()
+# Outputting data for ME14.1
+#'''
+ipdb.set_trace()
+import GenDataForLinearReg as GD
+print("Outputting ME14.1 WL data...")
+GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='wl',plot=True,ref='ME14.1',refs_norm=refs_norm)
+print("Outputting ME14.1 WL+SL data...")
+GD.writedata(mvir_norm,mvir_p_norm,cvir_norm,cvir_p_norm,methods_norm,z_norm,cl_norm,method='wl+sl',plot=True,ref='ME14.1',refs_norm=refs_norm)
+#'''
+#ipdb.set_trace()
 
 
 ## Normalize over cosmology at this point
