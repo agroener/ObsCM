@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import quad
 
+import MConvert_Personal as MC
+
 import ipdb
 
 Omega_m_0 = 0
@@ -53,8 +55,22 @@ def sigma(M,a):
 def sigma_inv_min(x):
     return 1.047 + (1.646 - 1.047) * ( (1/np.pi) * np.arctan(7.386*(x-0.526)) + (1/2) )
 
-
+def PradaRelation(Omega_m_0=0.3,Omega_L_0=0.7,z=0.0):
+    # Set cosmology
+    set_cosmology_global(Omega_m_0,Omega_L_0)
+    # Create mass list; calculate concentrations
+    M = np.linspace(10**11,10**15,200)
+    cout = c(M,z)
+    # Convert values
+    ipdb.set_trace()
+    cvir = MC.Cconvert(M,200,MC.DeltaFinder(Omega_m_0,Omega_L_0,z),cout)
+    mvir = MC.Mconvert(M,200,MC.DeltaFinder(Omega_m_0,Omega_L_0,z),cout)
+    return cvir,mvir
+    
+    
 if __name__ == "__main__":
+    # Producing the upturn plot
+    '''
     set_cosmology_global(0.30,0.70)
     print(Omega_m_0,Omega_L_0)
     M1 = np.linspace(10**11,10**15,200)
@@ -81,3 +97,6 @@ if __name__ == "__main__":
           ncol=2, fancybox=True, shadow=True)
     plt.tight_layout()
     plt.show()
+    '''
+    # Relation for comparing with WL and WL+SL relations
+    PradaRelation(0.3,0.7,0.5)

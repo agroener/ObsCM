@@ -1,11 +1,14 @@
 from astropy.io.ascii import read
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
+#import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 from scipy.misc import derivative
 from scipy.optimize import leastsq
 import numpy as np
 import collections
 import ipdb
+
+import MConvert_Personal as MC
 
 # Functions for finding projected concentrations
 def j(p,q,phi,theta):
@@ -1477,10 +1480,171 @@ def oguri_comparison():
     ipdb.set_trace()
     return 
 
-def clash_relation():
+def clash_relation(m200,z,A=3.66,B=-0.14,C=-0.32):
+    c200 = A * ((1.37/(1+z))**B) * (((m200*0.7)/8.e14)**C)
+    # convert to virial here
+    cvir = MC.Cconvert(m200,200,MC.DeltaFinder(0.3,0.7,z),c200)
+    Mvir = MC.Mconvert(m200,200,MC.DeltaFinder(0.3,0.7,z),c200)
+    return cvir,Mvir
+
+# compares the clash wl+sl relation to the one found in this paper
+def clash_comparison(z, highandlowredshift=False):
     
+    # wl parameters
+    m_wl = -0.379
+    m_err_wl = 0.001
+    A_wl = 35.246
+    A_err_wl = 2.213
+    sigint_wl = 0.118
+    
+    # wl+SL parameters
+    m_wlsl = -0.534
+    m_err_wlsl = 0.001
+    A_wlsl = 77.882
+    A_err_wlsl = 5.249
+    sigint_wlsl = 0.130
 
+    # CLASH parameters
+    #clash_relation(m200,z,A=3.66,B=-0.14,C=-0.32)
+    A_clash = 3.66
+    A_err_clash = 0.16
+    B_clash = -0.14
+    B_err_clash = 0.52
+    C_clash = -0.32
+    C_err_clash = 0.18
+    
+    # get clash values here
+    m200_list = np.linspace(4e14,2e15,25)
+    # given z
+    cvir,mvir = clash_relation(m200_list,z,A_clash,B_clash,C_clash)
+    cvir_p,mvir_p = clash_relation(m200_list,z,A_clash+A_err_clash,B_clash,C_clash) 
+    cvir_m,mvir_m = clash_relation(m200_list,z,A_clash-A_err_clash,B_clash,C_clash)
+    # z=0.5 (average lensing value)
+    if highandlowredshift is True:
+        cvir_2,mvir_2 = clash_relation(m200_list,1.0,A_clash,B_clash,C_clash)
+        cvir_p_2,mvir_p_2 = clash_relation(m200_list,1.0,A_clash+A_err_clash,B_clash,C_clash) 
+        cvir_m_2,mvir_m_2 = clash_relation(m200_list,1.0,A_clash-A_err_clash,B_clash,C_clash) 
+        cvir_3,mvir_3 = clash_relation(m200_list,0.0,A_clash,B_clash,C_clash)
+        cvir_p_3,mvir_p_3 = clash_relation(m200_list,0.0,A_clash+A_err_clash,B_clash,C_clash) 
+        cvir_m_3,mvir_m_3 = clash_relation(m200_list,0.0,A_clash-A_err_clash,B_clash,C_clash)
+        
+    # get wl values here
+    cvir_wl = (A_wl/(1+z))*((mvir/1.857e13)**m_wl)
+    cvir_wl_p = ((A_wl+A_err_wl)/(1+z))*((mvir/1.857e13)**(m_wl+m_err_wl))
+    cvir_wl_m = ((A_wl-A_err_wl)/(1+z))*((mvir/1.857e13)**(m_wl-m_err_wl))
+    # get wl+sl values here
+    cvir_wlsl = (A_wlsl/(1+z))*((mvir/1.857e13)**m_wlsl)
+    cvir_wlsl_p = ((A_wlsl+A_err_wlsl)/(1+z))*((mvir/1.857e13)**(m_wlsl+m_err_wlsl))
+    cvir_wlsl_m = ((A_wlsl-A_err_wlsl)/(1+z))*((mvir/1.857e13)**(m_wlsl-m_err_wlsl))
+    if highandlowredshift is True:
+        cvir_wl_2 = (A_wl/(1+1.0))*((mvir/1.857e13)**m_wl)
+        cvir_wl_p_2 = ((A_wl+A_err_wl)/(1+1.0))*((mvir/1.857e13)**(m_wl+m_err_wl))
+        cvir_wl_m_2 = ((A_wl-A_err_wl)/(1+1.0))*((mvir/1.857e13)**(m_wl-m_err_wl))
+        cvir_wl_3 = (A_wl/(1+0.0))*((mvir/1.857e13)**m_wl)
+        cvir_wl_p_3 = ((A_wl+A_err_wl)/(1+0.0))*((mvir/1.857e13)**(m_wl+m_err_wl))
+        cvir_wl_m_3 = ((A_wl-A_err_wl)/(1+0.0))*((mvir/1.857e13)**(m_wl-m_err_wl))
+    if highandlowredshift is True:    
+        cvir_wlsl_2 = (A_wlsl/(1+1.0))*((mvir/1.857e13)**m_wlsl)
+        cvir_wlsl_p_2 = ((A_wlsl+A_err_wlsl)/(1+1.0))*((mvir/1.857e13)**(m_wlsl+m_err_wlsl))
+        cvir_wlsl_m_2 = ((A_wlsl-A_err_wlsl)/(1+1.0))*((mvir/1.857e13)**(m_wlsl-m_err_wlsl))
+        cvir_wlsl_3 = (A_wlsl/(1+0.0))*((mvir/1.857e13)**m_wlsl)
+        cvir_wlsl_p_3 = ((A_wlsl+A_err_wlsl)/(1+0.0))*((mvir/1.857e13)**(m_wlsl+m_err_wlsl))
+        cvir_wlsl_m_3 = ((A_wlsl-A_err_wlsl)/(1+0.0))*((mvir/1.857e13)**(m_wlsl-m_err_wlsl))
+    
+    
+    # plot comparisons here
+    if highandlowredshift is False:
+        import matplotlib
+        fig, ax = plt.subplots()
+        ax.plot(mvir,cvir,color='teal',label='CLASH z={}'.format(z))
+        ax.fill_between(mvir,cvir_p,cvir_m,alpha=0.25,color='teal')
+        ax.plot(mvir,cvir_wl,color='purple',label='WL z={} (this work)'.format(z))
+        ax.fill_between(mvir,cvir_wl_p,cvir_wl_m,alpha=0.25,color='purple')
+        ax.plot(mvir,cvir_wlsl,color='black',label='WL+SL z={} (this work)'.format(z))
+        ax.fill_between(mvir,cvir_wlsl_p,cvir_wlsl_m,alpha=0.25,color='black')
+        ax.set_yscale('log')
+        ax.set_xscale('log')
+        ax.set_ylim(3.5,12)
+        ax.set_xlim(min(mvir),max(mvir))
+        ax.set_yticks([4,5,6,7,8,9,10])
+        ax.set_xticks([5e14,6e14,7e14,8e14,1e15,2e15])
+        ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+        ax.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+        ax.set_ylabel(r'$\mathrm{c_{vir}}$',fontsize=18,rotation='horizontal')
+        ax.set_xlabel(r'$\mathrm{M_{vir}}$',fontsize=18)
+        plt.legend(loc=0)
+        plt.show()
+    elif highandlowredshift is True:
+        import matplotlib
+        fig, axarr = plt.subplots(2,1)
+        
+        axarr[0].plot(mvir,cvir,color='teal',label='CLASH z={}'.format(z))
+        axarr[0].fill_between(mvir,cvir_p,cvir_m,alpha=0.25,color='teal')
+        axarr[0].plot(mvir,cvir_wl,color='purple',label='WL z={} (this work)'.format(z))
+        axarr[0].fill_between(mvir,cvir_wl_p,cvir_wl_m,alpha=0.25,color='purple')
+        axarr[0].plot(mvir,cvir_wlsl,color='black',label='WL+SL z={} (this work)'.format(z))
+        axarr[0].fill_between(mvir,cvir_wlsl_p,cvir_wlsl_m,alpha=0.25,color='black')
+        axarr[0].set_yscale('log')
+        axarr[0].set_xscale('log')
+        axarr[0].set_ylim(3.5,12)
+        axarr[0].set_xlim(min(mvir),max(mvir))
+        axarr[0].set_yticks([4,5,6,7,8,9,10])
+        axarr[0].set_xticks([5e14,6e14,7e14,8e14,1e15,2e15])
+        axarr[0].get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+        axarr[0].get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+        axarr[0].set_ylabel(r'$\mathrm{c_{vir}}$',fontsize=18,rotation='horizontal')
+        axarr[0].set_xlabel(r'$\mathrm{M_{vir}}$',fontsize=18)
 
+        axarr[1].plot(mvir_2,cvir_2,color='teal',label='CLASH z={}'.format(z))
+        axarr[1].fill_between(mvir_2,cvir_p_2,cvir_m_2,alpha=0.25,color='teal')
+        axarr[1].plot(mvir_2,cvir_wl_2,color='purple',label='WL z={} (this work)'.format(z))
+        axarr[1].fill_between(mvir_2,cvir_wl_p_2,cvir_wl_m_2,alpha=0.25,color='purple')
+        axarr[1].plot(mvir_2,cvir_wlsl_2,color='black',label='WL+SL z={} (this work)'.format(z))
+        axarr[1].fill_between(mvir_2,cvir_wlsl_p_2,cvir_wlsl_m_2,alpha=0.25,color='black')
+        axarr[1].set_yscale('log')
+        axarr[1].set_xscale('log')
+        axarr[1].set_ylim(3.5,12)
+        axarr[1].set_xlim(min(mvir_2),max(mvir_2))
+        axarr[1].set_yticks([4,5,6,7,8,9,10])
+        axarr[1].set_xticks([5e14,6e14,7e14,8e14,1e15,2e15])
+        axarr[1].get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+        axarr[1].get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+        axarr[1].set_ylabel(r'$\mathrm{c_{vir}}$',fontsize=18,rotation='horizontal')
+        axarr[1].set_xlabel(r'$\mathrm{M_{vir}}$',fontsize=18)
+        
+        plt.legend(loc=0)
+        plt.show()
+    return
+
+def prada_comparison(z):
+
+    # wl parameters
+    m_wl = -0.379
+    m_err_wl = 0.001
+    A_wl = 35.246
+    A_err_wl = 2.213
+    sigint_wl = 0.118
+    
+    # wl+SL parameters
+    m_wlsl = -0.534
+    m_err_wlsl = 0.001
+    A_wlsl = 77.882
+    A_err_wlsl = 5.249
+    sigint_wlsl = 0.130
+
+    mvir = np.linspace(1e14,3e15,100)
+    
+    # get wl values here
+    cvir_wl = (A_wl/(1+z))*((mvir/1.857e13)**m_wl)
+    cvir_wl_p = ((A_wl+A_err_wl)/(1+z))*((mvir/1.857e13)**(m_wl+m_err_wl))
+    cvir_wl_m = ((A_wl-A_err_wl)/(1+z))*((mvir/1.857e13)**(m_wl-m_err_wl))
+    # get wl+sl values here
+    cvir_wlsl = (A_wlsl/(1+z))*((mvir/1.857e13)**m_wlsl)
+    cvir_wlsl_p = ((A_wlsl+A_err_wlsl)/(1+z))*((mvir/1.857e13)**(m_wlsl+m_err_wlsl))
+    cvir_wlsl_m = ((A_wlsl-A_err_wlsl)/(1+z))*((mvir/1.857e13)**(m_wlsl-m_err_wlsl))
+
+    ipdb.set_trace()
+    
 if __name__ == "__main__":
 
     # Doing fits to individual fits to each method sub-population
@@ -1539,4 +1703,11 @@ if __name__ == "__main__":
     #oguri_comparison()
 
     # CLASH c-M relation
-    clash_relation()
+    #m200_list = np.linspace(4e14,2e15,25)
+    #cvir,mvir = clash_relation(m200_list,0.2)
+    # CLASH c-M comparison
+    #clash_comparison(0.20,highandlowredshift=False)
+    #clash_comparison(0.50,highandlowredshift=False)
+
+    # Prada c-M relation
+    prada_comparison(0.50)
