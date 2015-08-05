@@ -59,10 +59,10 @@ def PradaRelation(Omega_m_0=0.3,Omega_L_0=0.7,z=0.0):
     # Set cosmology
     set_cosmology_global(Omega_m_0,Omega_L_0)
     # Create mass list; calculate concentrations
-    M = np.linspace(10**11,10**15,200)
+    M = np.linspace(10**11,5*10**15,200)
     cout = c(M,z)
     # Convert values
-    ipdb.set_trace()
+    #ipdb.set_trace()
     cvir = MC.Cconvert(M,200,MC.DeltaFinder(Omega_m_0,Omega_L_0,z),cout)
     mvir = MC.Mconvert(M,200,MC.DeltaFinder(Omega_m_0,Omega_L_0,z),cout)
     return cvir,mvir

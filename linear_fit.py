@@ -1616,7 +1616,7 @@ def clash_comparison(z, highandlowredshift=False):
         plt.show()
     return
 
-def prada_comparison(z):
+def prada_comparison(z, projected = False):
 
     # wl parameters
     m_wl = -0.379
@@ -1643,7 +1643,41 @@ def prada_comparison(z):
     cvir_wlsl_p = ((A_wlsl+A_err_wlsl)/(1+z))*((mvir/1.857e13)**(m_wlsl+m_err_wlsl))
     cvir_wlsl_m = ((A_wlsl-A_err_wlsl)/(1+z))*((mvir/1.857e13)**(m_wlsl-m_err_wlsl))
 
-    ipdb.set_trace()
+    # get Prada values
+    import Prada_2012 as PR
+    if projected is False:
+        prada_cvir1,prada_mvir1 = PR.PradaRelation(Omega_m_0=0.3,Omega_L_0=0.7,z=0.0)
+        prada_cvir2,prada_mvir2 = PR.PradaRelation(Omega_m_0=0.3,Omega_L_0=0.7,z=0.2)
+        prada_cvir3,prada_mvir3 = PR.PradaRelation(Omega_m_0=0.3,Omega_L_0=0.7,z=0.5)
+    elif projected is True:
+        prada_cvir1,prada_mvir1 = PR.PradaRelation(Omega_m_0=0.3,Omega_L_0=0.7,z=0.0)
+        prada_cvir1 = [conc_finder_pro(prada_cvir1[i],[0],0.65)[0][0] for i in range(len(prada_cvir1))]
+        prada_cvir2,prada_mvir2 = PR.PradaRelation(Omega_m_0=0.3,Omega_L_0=0.7,z=0.2)
+        prada_cvir2 = [conc_finder_pro(prada_cvir2[i],[0],0.65)[0][0] for i in range(len(prada_cvir2))]
+        prada_cvir3,prada_mvir3 = PR.PradaRelation(Omega_m_0=0.3,Omega_L_0=0.7,z=0.5)
+        prada_cvir3 = [conc_finder_pro(prada_cvir3[i],[0],0.65)[0][0] for i in range(len(prada_cvir3))]
+
+    import matplotlib
+    fig, axarr = plt.subplots(1,1)
+    axarr.plot(prada_mvir1,prada_cvir1,color='#CC33FF',linestyle='--',linewidth=3,label='Prada et al. 2012 (z={})'.format(0.0))
+    axarr.plot(prada_mvir2,prada_cvir2,color='#9966FF',linestyle='--',linewidth=3,label='Prada et al. 2012 (z={})'.format(0.2))
+    axarr.plot(prada_mvir3,prada_cvir3,color='#6666FF',linestyle='--',linewidth=3,label='Prada et al. 2012 (z={})'.format(0.5))
+    axarr.plot(mvir,cvir_wl,color='purple',label='WL z={} (this work)'.format(z))
+    axarr.fill_between(mvir,cvir_wl_p,cvir_wl_m,alpha=0.25,color='purple')
+    axarr.plot(mvir,cvir_wlsl,color='black',label='WL+SL z={} (this work)'.format(z))
+    axarr.fill_between(mvir,cvir_wlsl_p,cvir_wlsl_m,alpha=0.25,color='black')
+    axarr.set_yscale('log')
+    axarr.set_xscale('log')
+    axarr.set_ylim(3.5,20)
+    axarr.set_xlim(min(mvir),max(mvir))
+    axarr.set_yticks([4,5,6,7,8,9,10,15,20])
+    axarr.set_xticks([1e14,2e14,3e14,4e14,5e14,6e14,7e14,8e14,1e15,2e15,3e15])
+    axarr.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    axarr.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    axarr.set_ylabel(r'$\mathrm{c_{vir}}$',fontsize=18,rotation='horizontal')
+    axarr.set_xlabel(r'$\mathrm{M_{vir}}$',fontsize=18)
+    axarr.legend(loc=0)
+    plt.show()
     
 if __name__ == "__main__":
 
@@ -1710,4 +1744,7 @@ if __name__ == "__main__":
     #clash_comparison(0.50,highandlowredshift=False)
 
     # Prada c-M relation
-    prada_comparison(0.50)
+    # Not projected
+    prada_comparison(0.50,projected=False)
+    # Projected
+    #prada_comparison(0.50,projected=True)
