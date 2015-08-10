@@ -1678,6 +1678,95 @@ def prada_comparison(z, projected = False):
     axarr.set_xlabel(r'$\mathrm{M_{vir}}$',fontsize=18)
     axarr.legend(loc=0)
     plt.show()
+
+def latest_sims_comparison(z=0.0, projected=False): #z must be less than 4 (due to Correa model)
+
+    # wl parameters
+    m_wl = -0.379
+    m_err_wl = 0.001
+    A_wl = 35.246
+    A_err_wl = 2.213
+    sigint_wl = 0.118
+    
+    # wl+SL parameters
+    m_wlsl = -0.534
+    m_err_wlsl = 0.001
+    A_wlsl = 77.882
+    A_err_wlsl = 5.249
+    sigint_wlsl = 0.130
+
+    mvir = np.linspace(9e13,3e15,100)
+    
+    # get wl values here
+    cvir_wl = (A_wl/(1+z))*((mvir/1.857e13)**m_wl)
+    cvir_wl_p = ((A_wl+A_err_wl)/(1+z))*((mvir/1.857e13)**(m_wl+m_err_wl))
+    cvir_wl_m = ((A_wl-A_err_wl)/(1+z))*((mvir/1.857e13)**(m_wl-m_err_wl))
+    # get wl+sl values here
+    cvir_wlsl = (A_wlsl/(1+z))*((mvir/1.857e13)**m_wlsl)
+    cvir_wlsl_p = ((A_wlsl+A_err_wlsl)/(1+z))*((mvir/1.857e13)**(m_wlsl+m_err_wlsl))
+    cvir_wlsl_m = ((A_wlsl-A_err_wlsl)/(1+z))*((mvir/1.857e13)**(m_wlsl-m_err_wlsl))
+    
+    # Correa model; get concs and masses (mvir is used as m200)
+    alpha = 1.62774 - 0.2458*(1+z) + 0.01716*((1+z)**2)
+    beta = 1.66079 + 0.00359*(1+z) - 1.6901*((1+z)**(0.00417))
+    gamma = -0.02049 + 0.0253*((1+z)**(-0.1044))
+    corr_c200 = 10**(alpha + beta*np.log10(mvir)*(1+gamma*(np.log10(mvir)**2)))
+    # convert 200's to virial's
+    corr_mvir = MC.Mconvert(mvir,200,MC.DeltaFinder(0.3,0.7,z),corr_c200)
+    corr_cvir = MC.Cconvert(mvir,200,MC.DeltaFinder(0.3,0.7,z),corr_c200)
+    if projected is True:
+        corr_cvir = [conc_finder_pro(corr_cvir[i],[0],0.65)[0][0] for i in range(len(corr_cvir))]      
+
+    # Klypin et al. (2014) model; locked in at z=0.5
+    C0 = 5.65
+    M0 = 2e4*1.0e12*0.7
+    gamma = 0.115
+    kly_c200 = C0 * (((mvir*0.7)/(1.0e12))**(-1*gamma)) * (1+(mvir/M0)**(0.4))
+    # convert 200's to virial's
+    kly_mvir = MC.Mconvert(mvir,200,MC.DeltaFinder(0.3,0.7,z),kly_c200)
+    kly_cvir = MC.Cconvert(mvir,200,MC.DeltaFinder(0.3,0.7,z),kly_c200)
+    if projected is True:
+        kly_cvir = [conc_finder_pro(kly_cvir[i],[0],0.65)[0][0] for i in range(len(kly_cvir))]    
+
+    # Dutton and Maccio
+    b = -0.097 +0.024*z
+    a = 0.537 + (1.025-0.537)*np.exp(-0.718*(z**(1.08)))
+    dutt_cvir = 10**(a+b*np.log10((mvir*0.7)/1.0e12))
+    if projected is True:
+        dutt_cvir = [conc_finder_pro(dutt_cvir[i],[0],0.65)[0][0] for i in range(len(dutt_cvir))]
+
+
+    # Prada et al. 2012
+    import Prada_2012 as PR
+    prada_cvir,prada_mvir = PR.PradaRelation(Omega_m_0=0.3,Omega_L_0=0.7,z=0.5)
+    if projected is True:
+        prada_cvir = [conc_finder_pro(prada_cvir[i],[0],0.65)[0][0] for i in range(len(prada_cvir))]
+    
+    import matplotlib
+    fig, axarr = plt.subplots(1,1)
+    axarr.plot(corr_mvir,corr_cvir,color='#CC33FF',linestyle='--',linewidth=3,label='Correa et al. 2015 (z={})'.format(z))
+    axarr.plot(kly_mvir,kly_cvir,color='#9966FF',linestyle='--',linewidth=3,label='Klypin et al. 2014 (z={})'.format(z))
+    axarr.plot(mvir,dutt_cvir,color='#6666FF',linestyle='--',linewidth=3,label='Dutton and Maccio 2014 (z={})'.format(z))
+    axarr.plot(prada_mvir,prada_cvir,color='#CC0099',linestyle='--',linewidth=3,label='Prada et. al 2012 (z={})'.format(z))
+    axarr.plot(mvir,cvir_wl,color='purple',label='WL z={} (this work)'.format(z))
+    axarr.fill_between(mvir,cvir_wl_p,cvir_wl_m,alpha=0.25,color='purple')
+    axarr.plot(mvir,cvir_wlsl,color='black',label='WL+SL z={} (this work)'.format(z))
+    axarr.fill_between(mvir,cvir_wlsl_p,cvir_wlsl_m,alpha=0.25,color='black')
+    axarr.set_yscale('log')
+    axarr.set_xscale('log')
+    axarr.set_ylim(3.5,20)
+    axarr.set_xlim(1.0e14,max(mvir))
+    axarr.set_yticks([4,5,6,7,8,9,10,15,20])
+    axarr.set_xticks([1e14,2e14,3e14,4e14,5e14,6e14,7e14,8e14,1e15,2e15,3e15])
+    axarr.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    axarr.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    axarr.set_ylabel(r'$\mathrm{c_{vir}}$',fontsize=18,rotation='horizontal')
+    axarr.set_xlabel(r'$\mathrm{M_{vir}}$',fontsize=18)
+    axarr.legend(bbox_to_anchor=(1.05, 1), loc=1, borderaxespad=0.)
+    plt.show()
+    
+    #ipdb.set_trace()
+    return
     
 if __name__ == "__main__":
 
@@ -1745,6 +1834,12 @@ if __name__ == "__main__":
 
     # Prada c-M relation
     # Not projected
-    prada_comparison(0.50,projected=False)
+    #prada_comparison(0.50,projected=False)
     # Projected
     #prada_comparison(0.50,projected=True)
+
+    # Correa c-M comparison
+    # Not projected
+    latest_sims_comparison(z=0.5,projected=False)
+    # Projected
+    latest_sims_comparison(z=0.5,projected=True)
