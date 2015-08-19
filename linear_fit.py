@@ -1767,7 +1767,16 @@ def latest_sims_comparison(z=0.0, projected=False): #z must be less than 4 (due 
     
     #ipdb.set_trace()
     return
+
+# inputs are lists of values; ordering needs to be dictated by methods list
+def plot_bootstrap_uncertainty_regions(m,merr,b,berr,methods): 
+    num_methods = len(methods)
     
+    ipdb.set_trace()
+    #for i in range(num_methods):
+        
+    return
+
 if __name__ == "__main__":
 
     # Doing fits to individual fits to each method sub-population
@@ -1840,6 +1849,13 @@ if __name__ == "__main__":
 
     # Correa c-M comparison
     # Not projected
-    latest_sims_comparison(z=0.5,projected=False)
+    #latest_sims_comparison(z=0.5,projected=False)
     # Projected
-    latest_sims_comparison(z=0.5,projected=True)
+    #latest_sims_comparison(z=0.5,projected=True)
+
+    # Plot bootstrap uncertainty regions in m/b space
+    plot_bootstrap_uncertainty_regions([0.28,0.13,-0.17,-0.43,-0.54,0.11],
+                                       [0.19,0.17,0.03,0.11,0.10,0.23],
+                                       [-3.16,-1.00,3.38,7.35,9.10,-0.60],
+                                       [2.73,2.55,0.44,1.62,1.46,3.49],
+                                       ['CM','LOSVD','X-ray','WL','WL+SL','SL'])
