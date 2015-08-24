@@ -1771,10 +1771,51 @@ def latest_sims_comparison(z=0.0, projected=False): #z must be less than 4 (due 
 # inputs are lists of values; ordering needs to be dictated by methods list
 def plot_bootstrap_uncertainty_regions(m,merr,b,berr,methods): 
     num_methods = len(methods)
-    
-    ipdb.set_trace()
-    #for i in range(num_methods):
+    from matplotlib.patches import Ellipse
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    for i in range(num_methods):
+        if methods[i] == 'WL':
+            tmp_col = 'purple'
+            tmp_z_order = 1
+            xtext = m[i]+0.06
+            ytext = b[i]-0.2
+        elif methods[i] == 'SL':
+            tmp_col = 'red'
+            tmp_z_order = 1
+            xtext = m[i]-0.02
+            ytext = b[i]+1.85
+        elif methods[i] == 'WL+SL':
+            tmp_col = 'black'
+            tmp_z_order = 1
+            xtext = m[i]+0.06
+            ytext = b[i]-0.2
+        elif methods[i] == 'CM':
+            tmp_col = 'blue'
+            tmp_z_order = 1
+            xtext = m[i]+0.1
+            ytext = b[i]-0.2 
+        elif methods[i] == 'LOSVD':
+            tmp_col = 'orange'
+            tmp_z_order = 2
+            xtext = m[i]+0.065
+            ytext = b[i]-0.24 
+        elif methods[i] == 'X-ray':
+            tmp_col = 'green'
+            tmp_z_order = 1
+            xtext = m[i]+0.02
+            ytext = b[i]-0.24
+        ell = Ellipse(xy=(m[i],b[i]),width=merr[i],height=berr[i],
+                      color=tmp_col,zorder=tmp_z_order)
+        ax.axvline(x=0,color='black',linewidth=3,linestyle='--')
+        ax.add_artist(ell)
+        ax.text(xtext,ytext,"{}".format(methods[i]),fontsize=16)
         
+    ax.set_xlabel("m",fontsize=20)
+    ax.set_ylabel("b",fontsize=20,rotation='horizontal')
+    ax.set_xlim(-0.75, 0.5)
+    ax.set_ylim(-5, 10)
+    plt.show()
     return
 
 if __name__ == "__main__":
