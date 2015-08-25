@@ -1778,43 +1778,43 @@ def plot_bootstrap_uncertainty_regions(m,merr,b,berr,methods):
         if methods[i] == 'WL':
             tmp_col = 'purple'
             tmp_z_order = 1
-            xtext = m[i]+0.06
-            ytext = b[i]-0.2
+            xtext = m[i]+merr[i]
+            ytext = b[i]+berr[i]
         elif methods[i] == 'SL':
             tmp_col = 'red'
             tmp_z_order = 1
-            xtext = m[i]-0.02
-            ytext = b[i]+1.85
+            xtext = m[i]-0.03
+            ytext = b[i]+berr[i]+0.1
         elif methods[i] == 'WL+SL':
             tmp_col = 'black'
             tmp_z_order = 1
-            xtext = m[i]+0.06
-            ytext = b[i]-0.2
+            xtext = m[i]+merr[i]
+            ytext = b[i]+berr[i]
         elif methods[i] == 'CM':
             tmp_col = 'blue'
             tmp_z_order = 1
-            xtext = m[i]+0.1
-            ytext = b[i]-0.2 
+            xtext = m[i]+0.03
+            ytext = b[i]-0.2
         elif methods[i] == 'LOSVD':
             tmp_col = 'orange'
             tmp_z_order = 2
-            xtext = m[i]+0.065
-            ytext = b[i]-0.24 
+            xtext = m[i]
+            ytext = b[i]
         elif methods[i] == 'X-ray':
             tmp_col = 'green'
             tmp_z_order = 1
-            xtext = m[i]+0.02
-            ytext = b[i]-0.24
-        ell = Ellipse(xy=(m[i],b[i]),width=merr[i],height=berr[i],
+            xtext = m[i]+merr[i]
+            ytext = b[i]+berr[i]
+        ell = Ellipse(xy=(m[i],b[i]),width=2*merr[i],height=2*berr[i],
                       color=tmp_col,zorder=tmp_z_order)
-        ax.axvline(x=0,color='black',linewidth=3,linestyle='--')
+        ax.axvline(x=0,color='black',linewidth=3,linestyle='--',zorder=3)
         ax.add_artist(ell)
         ax.text(xtext,ytext,"{}".format(methods[i]),fontsize=16)
         
     ax.set_xlabel("m",fontsize=20)
     ax.set_ylabel("b",fontsize=20,rotation='horizontal')
     ax.set_xlim(-0.75, 0.5)
-    ax.set_ylim(-5, 10)
+    ax.set_ylim(-6, 11)
     plt.show()
     return
 
