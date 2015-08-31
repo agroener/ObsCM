@@ -1366,36 +1366,37 @@ def plot_sample_summary(plotrepeats=True, savefigure=True, witherrors=True):
     print("Number of unique clusters for LOSVD: {}".format(len(x_losvd)))
     print("Number of total unique clusters: {}".format(len(x_xray)+len(x_wl)+len(x_sl)+len(x_wlsl)+len(x_cm)+len(x_losvd)))
     plt.figure(1,figsize=(7.5,7.5))
+    size=75
     for i in range(len(x_xray)):
         if witherrors is True:
             plt.errorbar(x_xray[i],y_xray[i],yerr=sigy_xray[i],xerr=sigx_xray[i],color='green')
         elif witherrors is False:
-            plt.scatter(x_xray[i],y_xray[i],marker='*',color='green')
+            plt.scatter(x_xray[i],y_xray[i],marker='*',color='green',s=size)
     for i in range(len(x_wl)):
         if witherrors is True:
             plt.errorbar(x_wl[i],y_wl[i],yerr=sigy_wl[i],xerr=sigx_wl[i],color='purple',zorder=2)
         elif witherrors is False:
-            plt.scatter(x_wl[i],y_wl[i],color='purple',marker='d',zorder=2)
+            plt.scatter(x_wl[i],y_wl[i],color='purple',marker='d',zorder=2,s=size)
     for i in range(len(x_sl)):
         if witherrors is True:
             plt.errorbar(x_sl[i],y_sl[i],yerr=sigy_sl[i],xerr=sigx_sl[i],color='red')
         elif witherrors is False:
-            plt.scatter(x_sl[i],y_sl[i],marker='s',color='red')
+            plt.scatter(x_sl[i],y_sl[i],marker='s',color='red',s=size)
     for i in range(len(x_wlsl)):
         if witherrors is True:
             plt.errorbar(x_wlsl[i],y_wlsl[i],yerr=sigy_wlsl[i],xerr=sigx_wlsl[i],color='black')
         elif witherrors is False:
-            plt.scatter(x_wlsl[i],y_wlsl[i],marker='o',color='black')
+            plt.scatter(x_wlsl[i],y_wlsl[i],marker='o',color='black',s=size)
     for i in range(len(x_cm)):
         if witherrors is True:
             plt.errorbar(x_cm[i],y_cm[i],yerr=sigy_cm[i],xerr=sigx_cm[i],color='blue')
         elif witherrors is False:
-            plt.scatter(x_cm[i],y_cm[i],marker='x',color='blue')
+            plt.scatter(x_cm[i],y_cm[i],marker='x',color='blue',s=size)
     for i in range(len(x_losvd)):
         if witherrors is True:
             plt.errorbar(x_losvd[i],y_losvd[i],yerr=sigy_losvd[i],xerr=sigx_losvd[i],color='orange')
         elif witherrors is False:
-            plt.scatter(x_losvd[i],y_losvd[i],marker='^',color='orange')
+            plt.scatter(x_losvd[i],y_losvd[i],marker='^',color='orange',s=size)
     if witherrors is True:
         plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='green',label='X-ray')
         plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='purple',label='WL')
@@ -1404,17 +1405,17 @@ def plot_sample_summary(plotrepeats=True, savefigure=True, witherrors=True):
         plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='blue',label='CM')
         plt.errorbar(1e16,1e16,yerr=1e16,xerr=1e16,color='orange',label='LOSVD')
     elif witherrors is False:
-        plt.scatter(1e16,1e16,color='green',marker='*',label='X-ray')
-        plt.scatter(1e16,1e16,color='purple',marker='d',label='WL')
-        plt.scatter(1e16,1e16,color='red',marker='s',label='SL')
-        plt.scatter(1e16,1e16,color='black',marker='o',label='WL+SL')
-        plt.scatter(1e16,1e16,color='blue',marker='x',label='CM')
-        plt.scatter(1e16,1e16,color='orange',marker='^',label='LOSVD')
+        plt.scatter(1e16,1e16,color='green',marker='*',label='X-ray',s=size)
+        plt.scatter(1e16,1e16,color='purple',marker='d',label='WL',s=size)
+        plt.scatter(1e16,1e16,color='red',marker='s',label='SL',s=size)
+        plt.scatter(1e16,1e16,color='black',marker='o',label='WL+SL',s=size)
+        plt.scatter(1e16,1e16,color='blue',marker='x',label='CM',s=size)
+        plt.scatter(1e16,1e16,color='orange',marker='^',label='LOSVD',s=size)
     plt.xlim(13.0,17.0)
     plt.ylim(-0.5,2.0)
     plt.legend(loc=0,numpoints=1,scatterpoints=1,fontsize=12,frameon=True)
-    plt.xlabel(r'$\mathrm{\log\,{ M_{vir}/M_{\odot}}}$',fontsize=18)
-    plt.ylabel(r'$\mathrm{\log\,{ \, c_{vir} \, (1+z) }}$',fontsize=18)
+    plt.xlabel(r'$\mathrm{\log\,{ M_{vir}/M_{\odot}}}$',fontsize=22)
+    plt.ylabel(r'$\mathrm{\log\,{ \, c_{vir} \, (1+z) }}$',fontsize=22)
     if savefigure is True:
         plt.savefig("CMRelation_FullSample_Symmetrized.png")
     plt.tight_layout()
@@ -1805,6 +1806,11 @@ def plot_bootstrap_uncertainty_regions(m,merr,b,berr,methods):
             tmp_z_order = 1
             xtext = m[i]+merr[i]
             ytext = b[i]+berr[i]
+        elif methods[i] == 'All Methods':
+            tmp_col = 'cyan'
+            tmp_z_order = 1
+            xtext = m[i]+merr[i]-0.20
+            ytext = b[i]+berr[i]-1.4
         ell = Ellipse(xy=(m[i],b[i]),width=2*merr[i],height=2*berr[i],
                       color=tmp_col,zorder=tmp_z_order)
         ax.axvline(x=0,color='black',linewidth=3,linestyle='--',zorder=3)
@@ -1895,8 +1901,10 @@ if __name__ == "__main__":
     #latest_sims_comparison(z=0.5,projected=True)
 
     # Plot bootstrap uncertainty regions in m/b space
-    plot_bootstrap_uncertainty_regions([0.28,0.13,-0.17,-0.43,-0.54,0.11],
-                                       [0.19,0.17,0.03,0.11,0.10,0.23],
-                                       [-3.16,-1.00,3.38,7.35,9.10,-0.60],
-                                       [2.73,2.55,0.44,1.62,1.46,3.49],
-                                       ['CM','LOSVD','X-ray','WL','WL+SL','SL'])
+    #'''
+    plot_bootstrap_uncertainty_regions([0.28,0.13,-0.17,-0.43,-0.54,0.11,-0.16],
+                                       [0.19,0.17,0.03,0.11,0.10,0.23,0.03],
+                                       [-3.16,-1.00,3.38,7.35,9.10,-0.60,3.26],
+                                       [2.73,2.55,0.44,1.62,1.46,3.49,0.44],
+                                       ['CM','LOSVD','X-ray','WL','WL+SL','SL','All Methods'])
+    #'''
