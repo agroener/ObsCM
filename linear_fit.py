@@ -1780,7 +1780,7 @@ def plot_bootstrap_uncertainty_regions(m,merr,b,berr,methods):
             tmp_col = 'purple'
             tmp_z_order = 1
             xtext = m[i]+merr[i]
-            ytext = b[i]+berr[i]
+            ytext = b[i]+berr[i]-0.2
         elif methods[i] == 'SL':
             tmp_col = 'red'
             tmp_z_order = 1
@@ -1790,7 +1790,7 @@ def plot_bootstrap_uncertainty_regions(m,merr,b,berr,methods):
             tmp_col = 'black'
             tmp_z_order = 1
             xtext = m[i]+merr[i]
-            ytext = b[i]+berr[i]
+            ytext = b[i]+berr[i]-0.2
         elif methods[i] == 'CM':
             tmp_col = 'blue'
             tmp_z_order = 1
@@ -1812,7 +1812,7 @@ def plot_bootstrap_uncertainty_regions(m,merr,b,berr,methods):
             xtext = m[i]+merr[i]-0.20
             ytext = b[i]+berr[i]-1.4
         ell = Ellipse(xy=(m[i],b[i]),width=2*merr[i],height=2*berr[i],
-                      color=tmp_col,zorder=tmp_z_order)
+                      color=tmp_col,zorder=tmp_z_order,alpha=0.7)
         ax.axvline(x=0,color='black',linewidth=3,linestyle='--',zorder=3)
         ax.add_artist(ell)
         ax.text(xtext,ytext,"{}".format(methods[i]),fontsize=16)
@@ -1866,7 +1866,7 @@ if __name__ == "__main__":
     #plot_fit_summary(extrap=False, regularsimdata=False, projectedsimdata=False, plotwitherrors=True, justlensing=False)
     
     # Making plot of the full sample (masses/concs)
-    plot_sample_summary(witherrors=False)
+    #plot_sample_summary(witherrors=False)
 
     # Doing full bootstrap analysis on all methods (for each method individually)
     #boostrap_summary()
@@ -1901,10 +1901,10 @@ if __name__ == "__main__":
     #latest_sims_comparison(z=0.5,projected=True)
 
     # Plot bootstrap uncertainty regions in m/b space
-    '''
+    #'''
     plot_bootstrap_uncertainty_regions([0.28,0.13,-0.17,-0.43,-0.54,0.11,-0.16],
                                        [0.19,0.17,0.03,0.11,0.10,0.23,0.03],
                                        [-3.16,-1.00,3.38,7.35,9.10,-0.60,3.26],
                                        [2.73,2.55,0.44,1.62,1.46,3.49,0.44],
                                        ['CM','LOSVD','X-ray','WL','WL+SL','SL','All Methods'])
-    '''
+    #'''
