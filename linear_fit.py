@@ -1413,9 +1413,9 @@ def plot_sample_summary(plotrepeats=True, savefigure=True, witherrors=True):
         plt.scatter(1e16,1e16,color='orange',marker='^',label='LOSVD',s=size)
     plt.xlim(13.0,17.0)
     plt.ylim(-0.5,2.0)
-    plt.legend(loc=0,numpoints=1,scatterpoints=1,fontsize=12,frameon=True)
-    plt.xlabel(r'$\mathrm{\log\,{ M_{vir}/M_{\odot}}}$',fontsize=22)
-    plt.ylabel(r'$\mathrm{\log\,{ \, c_{vir} \, (1+z) }}$',fontsize=22)
+    #plt.legend(loc=0,numpoints=1,scatterpoints=1,fontsize=12,frameon=True)
+    plt.xlabel(r'$\mathrm{\log\,{ M_{vir}/M_{\odot}}}$',fontsize=24)
+    plt.ylabel(r'$\mathrm{\log\,{ \, c_{vir} \, (1+z) }}$',fontsize=24)
     if savefigure is True:
         plt.savefig("CMRelation_FullSample_Symmetrized.png")
     plt.tight_layout()
@@ -1866,7 +1866,7 @@ if __name__ == "__main__":
     #plot_fit_summary(extrap=False, regularsimdata=False, projectedsimdata=False, plotwitherrors=True, justlensing=False)
     
     # Making plot of the full sample (masses/concs)
-    #plot_sample_summary(witherrors=False)
+    plot_sample_summary(witherrors=False)
 
     # Doing full bootstrap analysis on all methods (for each method individually)
     #boostrap_summary()
@@ -1901,10 +1901,10 @@ if __name__ == "__main__":
     #latest_sims_comparison(z=0.5,projected=True)
 
     # Plot bootstrap uncertainty regions in m/b space
-    #'''
+    '''
     plot_bootstrap_uncertainty_regions([0.28,0.13,-0.17,-0.43,-0.54,0.11,-0.16],
                                        [0.19,0.17,0.03,0.11,0.10,0.23,0.03],
                                        [-3.16,-1.00,3.38,7.35,9.10,-0.60,3.26],
                                        [2.73,2.55,0.44,1.62,1.46,3.49,0.44],
                                        ['CM','LOSVD','X-ray','WL','WL+SL','SL','All Methods'])
-    #'''
+    '''
