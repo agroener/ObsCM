@@ -1152,7 +1152,7 @@ def plot_fit_summary(extrap = False, regularsimdata = False, projectedsimdata = 
     #'''
     # plotting trends and error regions for method of least-squares (w/ errors); do not plot at the same time as bootstrap section below
     #'''
-    plt.plot(xlist_wl,[m_wl*i+b_wl for i in xlist_wl],color='purple',label='WL')
+    plt.plot(xlist_wl,[m_wl*i+b_wl for i in xlist_wl],linestyle="--",color='purple',label='WL')
     if plotwitherrors is True:
         plt.fill_between(xlist_wl,[(m_wl+sigm_wl)*i+(b_wl+sigb_wl+sig_wl) for i in xlist_wl],[(m_wl-sigm_wl)*i+(b_wl-sigb_wl-sig_wl) for i in xlist_wl],alpha=0.25,color='purple')
     plt.plot(xlist_wlsl,[m_wlsl*i+b_wlsl for i in xlist_wlsl],color='black',label='WL+SL')
@@ -1557,11 +1557,11 @@ def clash_comparison(z, highandlowredshift=False):
     if highandlowredshift is False:
         import matplotlib
         fig, ax = plt.subplots()
-        ax.plot(mvir,cvir,color='teal',label='CLASH z={}'.format(z))
+        ax.plot(mvir,cvir,linestyle="--",color='teal',label='CLASH z={}'.format(z))
         ax.fill_between(mvir,cvir_p,cvir_m,alpha=0.25,color='teal')
-        ax.plot(mvir,cvir_wl,color='purple',label='WL z={} (this work)'.format(z))
+        ax.plot(mvir,cvir_wl,linestyle="-",dashes=[8, 4, 2, 4, 2, 4],color='purple',label='WL z={} (this work)'.format(z))
         ax.fill_between(mvir,cvir_wl_p,cvir_wl_m,alpha=0.25,color='purple')
-        ax.plot(mvir,cvir_wlsl,color='black',label='WL+SL z={} (this work)'.format(z))
+        ax.plot(mvir,cvir_wlsl,linestyle=":",color='black',label='WL+SL z={} (this work)'.format(z))
         ax.fill_between(mvir,cvir_wlsl_p,cvir_wlsl_m,alpha=0.25,color='black')
         ax.set_yscale('log')
         ax.set_xscale('log')
@@ -1572,18 +1572,18 @@ def clash_comparison(z, highandlowredshift=False):
         ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
         ax.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
         ax.set_ylabel(r'$\mathrm{c_{vir}}$',fontsize=18,rotation='horizontal')
-        ax.set_xlabel(r'$\mathrm{M_{vir}}$',fontsize=18)
+        ax.set_xlabel(r'$\mathrm{M_{vir}\,(M_{\odot})}$',fontsize=18)
         plt.legend(loc=0)
         plt.show()
     elif highandlowredshift is True:
         import matplotlib
         fig, axarr = plt.subplots(2,1)
         
-        axarr[0].plot(mvir,cvir,color='teal',label='CLASH z={}'.format(z))
+        axarr[0].plot(mvir,cvir,linestyle="--",color='teal',label='CLASH z={}'.format(z))
         axarr[0].fill_between(mvir,cvir_p,cvir_m,alpha=0.25,color='teal')
-        axarr[0].plot(mvir,cvir_wl,color='purple',label='WL z={} (this work)'.format(z))
+        axarr[0].plot(mvir,cvir_wl,linestyle="-",dashes=[8, 4, 2, 4, 2, 4],color='purple',label='WL z={} (this work)'.format(z))
         axarr[0].fill_between(mvir,cvir_wl_p,cvir_wl_m,alpha=0.25,color='purple')
-        axarr[0].plot(mvir,cvir_wlsl,color='black',label='WL+SL z={} (this work)'.format(z))
+        axarr[0].plot(mvir,cvir_wlsl,linestyle=":",color='black',label='WL+SL z={} (this work)'.format(z))
         axarr[0].fill_between(mvir,cvir_wlsl_p,cvir_wlsl_m,alpha=0.25,color='black')
         axarr[0].set_yscale('log')
         axarr[0].set_xscale('log')
@@ -1594,7 +1594,7 @@ def clash_comparison(z, highandlowredshift=False):
         axarr[0].get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
         axarr[0].get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
         axarr[0].set_ylabel(r'$\mathrm{c_{vir}}$',fontsize=18,rotation='horizontal')
-        axarr[0].set_xlabel(r'$\mathrm{M_{vir}}$',fontsize=18)
+        axarr[0].set_xlabel(r'$\mathrm{M_{vir}\,(M_{\odot})}$',fontsize=18)
 
         axarr[1].plot(mvir_2,cvir_2,color='teal',label='CLASH z={}'.format(z))
         axarr[1].fill_between(mvir_2,cvir_p_2,cvir_m_2,alpha=0.25,color='teal')
@@ -1745,13 +1745,13 @@ def latest_sims_comparison(z=0.0, projected=False): #z must be less than 4 (due 
     
     import matplotlib
     fig, axarr = plt.subplots(1,1)
-    axarr.plot(corr_mvir,corr_cvir,color='#CC33FF',linestyle='--',linewidth=3,label='Correa et al. 2015 (z={})'.format(z))
-    axarr.plot(kly_mvir,kly_cvir,color='#9966FF',linestyle='--',linewidth=3,label='Klypin et al. 2014 (z={})'.format(z))
-    axarr.plot(mvir,dutt_cvir,color='#6666FF',linestyle='--',linewidth=3,label='Dutton and Maccio 2014 (z={})'.format(z))
-    axarr.plot(prada_mvir,prada_cvir,color='#CC0099',linestyle='--',linewidth=3,label='Prada et. al 2012 (z={})'.format(z))
+    axarr.plot(corr_mvir,corr_cvir,color='#CC33FF',linestyle=':',linewidth=2,label='Correa et al. 2015 (z={})'.format(z))
+    axarr.plot(kly_mvir,kly_cvir,color='#9966FF',linestyle='-.',linewidth=2,label='Klypin et al. 2014 (z={})'.format(z))
+    axarr.plot(mvir,dutt_cvir,color='#6666FF',linestyle='--',linewidth=2,label='Dutton and Maccio 2014 (z={})'.format(z))
+    axarr.plot(prada_mvir,prada_cvir,color='#CC0099',linestyle='-',dashes=[8, 4, 2, 4, 2, 4],linewidth=2,label='Prada et. al 2012 (z={})'.format(z))
     axarr.plot(mvir,cvir_wl,color='purple',label='WL z={} (this work)'.format(z))
     axarr.fill_between(mvir,cvir_wl_p,cvir_wl_m,alpha=0.25,color='purple')
-    axarr.plot(mvir,cvir_wlsl,color='black',label='WL+SL z={} (this work)'.format(z))
+    axarr.plot(mvir,cvir_wlsl,linestyle='-',dashes=[8, 4, 2, 4,],color='black',label='WL+SL z={} (this work)'.format(z))
     axarr.fill_between(mvir,cvir_wlsl_p,cvir_wlsl_m,alpha=0.25,color='black')
     axarr.set_yscale('log')
     axarr.set_xscale('log')
@@ -1762,7 +1762,7 @@ def latest_sims_comparison(z=0.0, projected=False): #z must be less than 4 (due 
     axarr.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     axarr.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     axarr.set_ylabel(r'$\mathrm{c_{vir}}$',fontsize=18,rotation='horizontal')
-    axarr.set_xlabel(r'$\mathrm{M_{vir}}$',fontsize=18)
+    axarr.set_xlabel(r'$\mathrm{M_{vir}\,(M_{\odot})}$',fontsize=18)
     axarr.legend(bbox_to_anchor=(1.05, 1), loc=1, borderaxespad=0.)
     plt.show()
     
@@ -1862,7 +1862,7 @@ if __name__ == "__main__":
     # Making plot of fits to WL and WL+SL individually
     # (no individual data points plotted here), with sims overlaid
     # on top
-    #plot_fit_summary(extrap=False, regularsimdata=True, projectedsimdata=True, justlensing=True, plotwitherrors=True)
+    plot_fit_summary(extrap=False, regularsimdata=True, projectedsimdata=True, justlensing=True, plotwitherrors=True)
     #plot_fit_summary(extrap=False, regularsimdata=False, projectedsimdata=False, plotwitherrors=True, justlensing=False)
     
     # Making plot of the full sample (masses/concs)
@@ -1878,7 +1878,7 @@ if __name__ == "__main__":
     #print("b: {} +/- {}".format(np.average(b2_list),np.std(b2_list)))
     #ipdb.set_trace()
 
-    # Comparins WL and WL+SL fits of just Oguri+12
+    # Comparing WL and WL+SL fits of just Oguri+12
     #oguri_comparison()
 
     # CLASH c-M relation
@@ -1901,10 +1901,10 @@ if __name__ == "__main__":
     #latest_sims_comparison(z=0.5,projected=True)
 
     # Plot bootstrap uncertainty regions in m/b space
-    #'''
+    '''
     plot_bootstrap_uncertainty_regions([0.28,0.13,-0.17,-0.43,-0.54,0.11],#,-0.16],
                                        [0.19,0.17,0.03,0.11,0.10,0.23],#,0.03],
                                        [-3.16,-1.00,3.38,7.35,9.10,-0.60],#,3.26],
                                        [2.73,2.55,0.44,1.62,1.46,3.49],#,0.44],
                                        ['CM','LOSVD','X-ray','WL','WL+SL','SL'])#,'All Methods'])
-    #'''
+    '''
